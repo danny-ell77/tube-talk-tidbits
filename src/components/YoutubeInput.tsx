@@ -2,28 +2,48 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Youtube } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface YoutubeInputProps {
-  onSubmit: (url: string, type: string) => void;
+  onSubmit: (url: string, type: string, customPrompt?: string, model?: string) => void;
   isLoading: boolean;
+  isPremium?: boolean;
 }
 
-const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading }) => {
+const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPremium = false }) => {
   const [url, setUrl] = useState('');
   const [summaryType, setSummaryType] = useState('tldr');
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [model, setModel] = useState('standard');
+  const [showCustomPrompt, setShowCustomPrompt] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation for YouTube URL
     if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
-      toast.error('Please enter a valid YouTube URL');
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid YouTube URL",
+        variant: "destructive"
+      });
       return;
     }
     
-    onSubmit(url, summaryType);
+    // Pass the custom prompt only if it's shown and not empty
+    const prompt = showCustomPrompt && customPrompt.trim() ? customPrompt : undefined;
+    const selectedModel = isPremium ? model : 'standard';
+    
+    onSubmit(url, summaryType, prompt, selectedModel);
   };
 
   return (
@@ -44,17 +64,56 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading }) => {
             disabled={isLoading}
           />
           
-          <select
+          <Select
             value={summaryType}
-            onChange={(e) => setSummaryType(e.target.value)}
-            className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onValueChange={(value) => {
+              setSummaryType(value);
+              // Show custom prompt option when "custom" is selected
+              setShowCustomPrompt(value === "custom");
+            }}
             disabled={isLoading}
           >
-            <option value="tldr">TLDR</option>
-            <option value="key_insights">Key Insights</option>
-            <option value="comprehensive">Comprehensive</option>
-          </select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Summary Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tldr">TLDR</SelectItem>
+              <SelectItem value="key_insights">Key Insights</SelectItem>
+              <SelectItem value="comprehensive">Comprehensive</SelectItem>
+              <SelectItem value="custom">Custom Prompt</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
+        {showCustomPrompt && (
+          <Textarea
+            placeholder="Enter your custom prompt instructions here..."
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            className="min-h-[100px]"
+            disabled={isLoading}
+          />
+        )}
+        
+        {isPremium && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+            <h3 className="font-medium text-amber-800 mb-2">Premium Options</h3>
+            <Select
+              value={model}
+              onValueChange={setModel}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard">Standard</SelectItem>
+                <SelectItem value="advanced">Advanced</SelectItem>
+                <SelectItem value="premium">Premium (GPT-4)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         
         <Button 
           type="submit" 

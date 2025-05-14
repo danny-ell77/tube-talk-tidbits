@@ -14,6 +14,7 @@ const Index = () => {
   const [currentResult, setCurrentResult] = useState<DigestResult | null>(null);
   const [history, setHistory] = useState<DigestResult[]>([]);
   const [activeTab, setActiveTab] = useState<string>("new");
+  const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
 
   // Load history from localStorage on component mount
   useEffect(() => {
@@ -25,6 +26,11 @@ const Index = () => {
         console.error('Failed to parse history from localStorage:', error);
       }
     }
+    
+    // In a real app, you would check if the user is premium from your authentication system
+    // This is just a mock implementation for demonstration
+    const premiumStatus = localStorage.getItem('isPremiumUser');
+    setIsPremiumUser(premiumStatus === 'true');
   }, []);
 
   // Save history to localStorage whenever it changes
@@ -34,15 +40,19 @@ const Index = () => {
     }
   }, [history]);
 
-  const handleSubmit = async (url: string, type: string) => {
+  const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard") => {
     setIsLoading(true);
     try {
-      const result = await generateDigest(url, type);
+      const result = await generateDigest(url, type, customPrompt, model);
       setCurrentResult(result);
       
-      // Add to history (avoiding duplicates by URL+type)
+      // Add to history (avoiding duplicates by URL+type+customPrompt)
       setHistory(prev => {
-        const exists = prev.some(item => item.videoUrl === url && item.type === type);
+        const exists = prev.some(
+          item => item.videoUrl === url && 
+                 item.type === type && 
+                 item.customPrompt === customPrompt
+        );
         if (!exists) {
           return [result, ...prev].slice(0, 10); // Keep only latest 10 items
         }
@@ -65,6 +75,14 @@ const Index = () => {
     toast.success("History cleared");
   };
 
+  // Mock function to toggle premium status (for demo purposes)
+  const togglePremiumStatus = () => {
+    const newStatus = !isPremiumUser;
+    setIsPremiumUser(newStatus);
+    localStorage.setItem('isPremiumUser', String(newStatus));
+    toast.success(newStatus ? "Premium features activated!" : "Premium features deactivated");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="py-8 px-4 sm:px-6">
@@ -77,6 +95,20 @@ const Index = () => {
             <p className="text-gray-600 max-w-2xl mx-auto">
               Transform lengthy YouTube videos into concise summaries, key insights, or comprehensive notes.
             </p>
+            
+            {/* Premium status toggle (for demo purposes) */}
+            <div className="mt-4">
+              <button 
+                onClick={togglePremiumStatus}
+                className={`text-sm px-4 py-1 rounded-full ${
+                  isPremiumUser 
+                    ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {isPremiumUser ? '✨ Premium Active' : 'Activate Premium'}
+              </button>
+            </div>
           </header>
 
           <Tabs defaultValue="new" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -96,7 +128,11 @@ const Index = () => {
             </TabsList>
             
             <TabsContent value="new" className="space-y-6">
-              <YoutubeInput onSubmit={handleSubmit} isLoading={isLoading} />
+              <YoutubeInput 
+                onSubmit={handleSubmit} 
+                isLoading={isLoading} 
+                isPremium={isPremiumUser}
+              />
               {isLoading && <LoadingState />}
             </TabsContent>
             

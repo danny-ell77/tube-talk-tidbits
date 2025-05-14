@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,19 @@ interface SummaryCardProps {
   content: string;
   videoUrl: string;
   timestamp: string;
+  model?: string;
+  customPrompt?: string;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ title, type, content, videoUrl, timestamp }) => {
+const SummaryCard: React.FC<SummaryCardProps> = ({ 
+  title, 
+  type, 
+  content, 
+  videoUrl, 
+  timestamp,
+  model,
+  customPrompt
+}) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
     toast.success("Summary copied to clipboard!");
@@ -27,6 +38,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, type, content, videoUr
         return 'Key Insights';
       case 'comprehensive':
         return 'Comprehensive Summary';
+      case 'custom':
+        return 'Custom Summary';
       default:
         return type;
     }
@@ -56,18 +69,43 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, type, content, videoUr
     ));
   };
 
+  const getModelBadgeClass = () => {
+    switch (model) {
+      case 'premium':
+        return 'bg-amber-100 text-amber-800';
+      case 'advanced':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
       <CardHeader className="bg-digest-blue text-white rounded-t-lg">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-xl">{title}</CardTitle>
-            <p className="text-sm opacity-80">{formatType(type)}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm opacity-80">{formatType(type)}</span>
+              {model && (
+                <span className={`text-xs px-2 py-0.5 rounded-full ${getModelBadgeClass()}`}>
+                  {model.charAt(0).toUpperCase() + model.slice(1)} Model
+                </span>
+              )}
+            </div>
           </div>
           <FileText className="h-6 w-6" />
         </div>
       </CardHeader>
       <CardContent className="pt-6 pb-4 summary-container">
+        {customPrompt && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+            <p className="text-xs text-gray-500 mb-1">Custom Prompt:</p>
+            <p className="text-sm italic text-gray-700">{customPrompt}</p>
+          </div>
+        )}
+        
         {formatContent(content)}
         <Separator className="my-4" />
         <div className="text-sm text-muted-foreground">
