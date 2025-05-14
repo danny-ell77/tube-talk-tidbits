@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
+import ExportButton from './ExportButton';
 
 interface SummaryCardProps {
   title: string;
@@ -113,7 +114,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           <p>Generated: {timestamp}</p>
         </div>
       </CardContent>
-      <CardFooter className="bg-gray-50 rounded-b-lg flex justify-end">
+      <CardFooter className="bg-gray-50 rounded-b-lg flex justify-end gap-2">
+        <ExportButton content={content} title={title} />
         <Button variant="outline" onClick={copyToClipboard} className="flex items-center gap-2">
           <Copy className="h-4 w-4" />
           Copy

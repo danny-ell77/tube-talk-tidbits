@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import YoutubeInput from '@/components/YoutubeInput';
 import SummaryCard from '@/components/SummaryCard';
 import LoadingState from '@/components/LoadingState';
 import Footer from '@/components/Footer';
+import FloatingNav from '@/components/FloatingNav';
 import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
-import { Youtube, ListVideo, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Index = () => {
@@ -83,13 +82,52 @@ const Index = () => {
     toast.success(newStatus ? "Premium features activated!" : "Premium features deactivated");
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "new":
+        return (
+          <div className="space-y-6">
+            <YoutubeInput 
+              onSubmit={handleSubmit} 
+              isLoading={isLoading} 
+              isPremium={isPremiumUser}
+            />
+            {isLoading && <LoadingState />}
+          </div>
+        );
+      case "current":
+        return currentResult ? <SummaryCard {...currentResult} /> : null;
+      case "history":
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Previous Digests</h2>
+              {history.length > 0 && (
+                <button 
+                  onClick={handleClearHistory}
+                  className="text-sm text-red-500 hover:text-red-700"
+                >
+                  Clear History
+                </button>
+              )}
+            </div>
+            
+            {history.map((item, index) => (
+              <SummaryCard key={index} {...item} />
+            ))}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <header className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Youtube className="h-8 w-8 text-youtube" />
               <h1 className="text-3xl font-bold text-digest-blue">YouTube Digest</h1>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -111,55 +149,19 @@ const Index = () => {
             </div>
           </header>
 
-          <Tabs defaultValue="new" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="new" className="flex items-center gap-2">
-                <Youtube className="h-4 w-4" />
-                <span>New Digest</span>
-              </TabsTrigger>
-              <TabsTrigger value="current" disabled={!currentResult} className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                <span>Current</span>
-              </TabsTrigger>
-              <TabsTrigger value="history" disabled={history.length === 0} className="flex items-center gap-2">
-                <ListVideo className="h-4 w-4" />
-                <span>History</span>
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="new" className="space-y-6">
-              <YoutubeInput 
-                onSubmit={handleSubmit} 
-                isLoading={isLoading} 
-                isPremium={isPremiumUser}
-              />
-              {isLoading && <LoadingState />}
-            </TabsContent>
-            
-            <TabsContent value="current">
-              {currentResult && <SummaryCard {...currentResult} />}
-            </TabsContent>
-            
-            <TabsContent value="history">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold">Previous Digests</h2>
-                  {history.length > 0 && (
-                    <button 
-                      onClick={handleClearHistory}
-                      className="text-sm text-red-500 hover:text-red-700"
-                    >
-                      Clear History
-                    </button>
-                  )}
-                </div>
-                
-                {history.map((item, index) => (
-                  <SummaryCard key={index} {...item} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+          {/* Floating Navigation */}
+          <FloatingNav 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+            disabled={{
+              current: !currentResult,
+              history: history.length === 0
+            }}
+          />
+          
+          <div className="mt-8">
+            {renderContent()}
+          </div>
         </div>
       </div>
       <Footer />
