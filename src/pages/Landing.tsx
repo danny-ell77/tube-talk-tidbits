@@ -98,12 +98,12 @@ const Landing = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 font-sans">
       <Header transparent />
       
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-24 px-4 bg-gradient-to-br from-red-400 to-red-500 text-white">
-        <div className="max-w-6xl mx-auto text-center pt-16">
+      {/* Hero Section with Curve */}
+      <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-youtube to-red-700 text-white hero-curve">
+        <div className="max-w-6xl mx-auto text-center pt-16 pb-12">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
             Transform YouTube Videos into Digestible Summaries
           </h1>
@@ -112,7 +112,7 @@ const Landing = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
-              <Button className="bg-white text-red-500 hover:bg-gray-100 font-semibold text-lg px-8 py-6">
+              <Button className="bg-white text-youtube hover:bg-gray-100 font-semibold text-lg px-8 py-6">
                 Get Started for Free
               </Button>
             </Link>
@@ -137,17 +137,17 @@ const Landing = () => {
             <FeatureCard 
               title="TL;DR Summaries" 
               description="Get the key points from any video in a concise, easy-to-read format."
-              icon={<Youtube className="h-6 w-6 text-red-500" />}
+              icon={<Youtube className="h-6 w-6 text-youtube" />}
             />
             <FeatureCard 
               title="Key Insights" 
               description="Extract the most important insights and data points from educational content."
-              icon={<Youtube className="h-6 w-6 text-red-500" />}
+              icon={<Youtube className="h-6 w-6 text-youtube" />}
             />
             <FeatureCard 
               title="Comprehensive Notes" 
               description="Generate detailed, structured notes from lectures and long-form content."
-              icon={<Youtube className="h-6 w-6 text-red-500" />}
+              icon={<Youtube className="h-6 w-6 text-youtube" />}
             />
           </div>
         </div>
@@ -271,14 +271,14 @@ const Landing = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-red-500 text-white text-center">
+      <section className="py-20 px-4 bg-youtube text-white text-center">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to transform how you consume video content?</h2>
           <p className="text-xl mb-8 opacity-90">
             Join thousands of students, professionals, and lifelong learners who use YouTube Digest to save time and extract valuable information.
           </p>
           <Link to="/register">
-            <Button size="lg" className="bg-white text-red-500 hover:bg-gray-100">
+            <Button size="lg" className="bg-white text-youtube hover:bg-gray-100">
               Get Started for Free
             </Button>
           </Link>
