@@ -24,8 +24,8 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disab
   return (
     <div 
       className={cn(
-        "fixed top-6 right-6 bg-white z-40 shadow-lg rounded-lg transition-all duration-300 overflow-hidden",
-        expanded ? "w-48 pr-4" : "w-12",
+        "fixed top-20 left-6 bg-white z-40 shadow-lg rounded-lg transition-all duration-300 overflow-hidden",
+        expanded ? "w-48" : "w-12",
       )}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
