@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserAvatar from './auth/UserAvatar';
@@ -13,13 +13,41 @@ interface HeaderProps {
 
 const Header = ({ transparent = false, user }: HeaderProps) => {
   const isLoggedIn = !!user;
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 30;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrolled]);
+
+  // Apply header styling based on scroll position and transparent prop
+  const headerBg = scrolled 
+    ? 'bg-white dark:bg-gray-800 shadow-sm border-b' 
+    : transparent 
+      ? 'bg-transparent' 
+      : 'bg-white dark:bg-gray-800 shadow-sm border-b';
+
+  const textColor = scrolled 
+    ? 'text-gray-900 dark:text-white' 
+    : transparent 
+      ? 'text-white' 
+      : 'text-gray-900 dark:text-white';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 ${transparent ? 'bg-transparent' : 'bg-white dark:bg-gray-800 shadow-sm border-b'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <Youtube className={`h-6 w-6 ${transparent ? 'text-white' : 'text-youtube'}`} />
-          <span className={`font-bold text-lg ${transparent ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+          <Youtube className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
+          <span className={`font-bold text-lg ${textColor}`}>
             YouTube Digest
           </span>
         </Link>
@@ -29,7 +57,7 @@ const Header = ({ transparent = false, user }: HeaderProps) => {
           
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
-              <div className={`text-sm ${transparent ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+              <div className={textColor}>
                 {user.credits} credits
               </div>
               <UserAvatar user={user} />
@@ -38,8 +66,8 @@ const Header = ({ transparent = false, user }: HeaderProps) => {
             <div className="flex gap-2">
               <Link to="/login">
                 <Button 
-                  variant={transparent ? "outline" : "ghost"} 
-                  className={transparent ? "text-white border-white hover:bg-white/20" : ""}
+                  variant={transparent && !scrolled ? "outline" : "ghost"} 
+                  className={transparent && !scrolled ? "text-white border-white hover:bg-white/20" : ""}
                 >
                   Log in
                 </Button>

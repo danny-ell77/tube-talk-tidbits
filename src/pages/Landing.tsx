@@ -7,22 +7,22 @@ import DemoSection from '@/components/landing/DemoSection';
 import PricingSection from '@/components/landing/PricingSection';
 import CTASection from '@/components/landing/CTASection';
 import FooterSection from '@/components/landing/FooterSection';
-import ThemeToggle from '@/components/ThemeToggle';
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans text-foreground">
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
       <Header transparent />
       
       <HeroSection />
       <FeaturesSection />
       <DemoSection />
       <PricingSection />
-      <CTASection />
-      <FooterSection />
+      
+      {/* CTA and Footer with gradient */}
+      <div className="cta-footer-gradient">
+        <CTASection />
+        <FooterSection />
+      </div>
     </div>
   );
 };

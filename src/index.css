@@ -94,7 +94,16 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans transition-colors duration-200;
+  }
+
+  /* Apply dark mode styles to more elements */
+  input, textarea, select {
+    @apply bg-background text-foreground border-border;
+  }
+
+  button {
+    @apply text-foreground;
   }
 }
 
@@ -102,8 +111,13 @@
   background: linear-gradient(to bottom right, #FF0000, #CC0000);
 }
 
+/* CTA and Footer gradient */
+.cta-footer-gradient {
+  background: linear-gradient(to bottom, #FF0000, #990000);
+}
+
 .summary-container h2 {
-  @apply text-xl font-semibold mt-4 mb-2 text-youtube;
+  @apply text-xl font-semibold mt-4 mb-2 text-youtube dark:text-red-400;
 }
 
 .summary-container ul {
@@ -127,14 +141,14 @@
   left: 0;
   width: 100%;
   height: 100px;
-  background-color: var(--background-color, rgb(249, 250, 251));
+  background-color: var(--curve-color);
   clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 50%, 0 0);
 }
 
-:root.dark .hero-curve::after {
-  --background-color: rgb(17, 24, 39); /* dark:bg-gray-900 */
+:root {
+  --curve-color: rgb(249, 250, 251); /* light mode default */
 }
 
-:root:not(.dark) .hero-curve::after {
-  --background-color: rgb(249, 250, 251); /* bg-gray-50 */
+:root.dark {
+  --curve-color: rgb(17, 24, 39); /* dark mode default */
 }
