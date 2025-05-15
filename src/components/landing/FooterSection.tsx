@@ -3,10 +3,12 @@ import React from 'react';
 import { Youtube } from "lucide-react";
 
 const FooterSection = () => {
+  console.log(import.meta.env);
+  const isDetailedFooterActive = Boolean(parseInt(import.meta.env.VITE_FF__DETAILED_FOOTER_SECTION_ACTIVE, 10));
   return (
     <footer className="bg-gradient-to-b from-red-800 to-red-900 text-gray-300 py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between">
+        {isDetailedFooterActive && <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-8 md:mb-0">
             <div className="flex items-center gap-2 mb-4">
               <Youtube className="h-6 w-6 text-white" />
@@ -42,7 +44,7 @@ const FooterSection = () => {
               </ul>
             </div>
           </div>
-        </div>
+        </div>}
         
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm">© {new Date().getFullYear()} YouTube Digest. All rights reserved.</p>
