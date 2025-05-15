@@ -112,9 +112,9 @@
 }
 
 /* CTA and Footer gradient */
-.cta-footer-gradient {
-  background: linear-gradient(to bottom, #FF0000, #990000);
-}
+/* .cta-footer-gradient {
+  background: linear-gradient(to bottom, #FF0000, #f35454);
+} */
 
 .summary-container h2 {
   @apply text-xl font-semibold mt-4 mb-2 text-youtube dark:text-red-400;

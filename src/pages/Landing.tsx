@@ -17,12 +17,8 @@ const Landing = () => {
       <FeaturesSection />
       <DemoSection />
       <PricingSection />
-      
-      {/* CTA and Footer with gradient */}
-      <div className="cta-footer-gradient">
-        <CTASection />
-        <FooterSection />
-      </div>
+      <CTASection />
+      <FooterSection />
     </div>
   );
 };

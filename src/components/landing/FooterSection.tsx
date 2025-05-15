@@ -12,9 +12,6 @@ const FooterSection = () => {
               <Youtube className="h-6 w-6 text-white" />
               <h3 className="text-xl font-bold text-white">YouTube Digest</h3>
             </div>
-            <p className="max-w-xs text-gray-400">
-              Transforming video content into actionable knowledge since 2023.
-            </p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">

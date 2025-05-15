@@ -21,12 +21,12 @@ type UserData = {
   credits: number;
 };
 
-const UserAvatar = () => {
+const UserAvatar = ({ user }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserData | null>(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  // const [user, setUser] = useState<UserData | null>(() => {
+  //   const storedUser = localStorage.getItem('user');
+  //   return storedUser ? JSON.parse(storedUser) : null;
+  // });
 
   if (!user) return null;
 
@@ -39,7 +39,7 @@ const UserAvatar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    setUser(null);
+    // setUser(null);
     toast.success('Logged out successfully');
     navigate('/');
   };

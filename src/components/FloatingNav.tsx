@@ -53,20 +53,6 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disab
             </span>
           </button>
         ))}
-        
-        {/* Theme toggle button */}
-        <div className="px-3 py-2">
-          <ThemeToggle 
-            variant="ghost" 
-            size={expanded ? "default" : "icon"}
-          />
-          <span className={cn(
-            "ml-2 whitespace-nowrap transition-opacity duration-300",
-            expanded ? "opacity-100" : "opacity-0"
-          )}>
-            Theme
-          </span>
-        </div>
       </div>
     </div>
   );
