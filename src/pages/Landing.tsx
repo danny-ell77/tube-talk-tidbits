@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 
 const FeatureCard = ({ title, description, icon }: { title: string; description: string; icon: React.ReactNode }) => (
   <div className="bg-white p-6 rounded-lg shadow-sm border flex flex-col items-center text-center">
-    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+    <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
       {icon}
     </div>
     <h3 className="text-lg font-semibold mb-2">{title}</h3>
@@ -36,9 +36,9 @@ const PricingCard = ({
   isPopular?: boolean;
   buttonText?: string;
 }) => (
-  <div className={`bg-white rounded-xl shadow-sm border overflow-hidden ${isPopular ? 'ring-2 ring-primary' : ''}`}>
+  <div className={`bg-white rounded-xl shadow-sm border overflow-hidden ${isPopular ? 'ring-2 ring-red-500' : ''}`}>
     {isPopular && (
-      <div className="bg-primary text-primary-foreground text-center py-1 text-sm font-medium">
+      <div className="bg-red-500 text-white text-center py-1 text-sm font-medium">
         Most Popular
       </div>
     )}
@@ -102,7 +102,7 @@ const Landing = () => {
       <Header transparent />
       
       {/* Hero Section */}
-      <section className="pt-20 pb-24 px-4 bg-gradient-to-br from-primary/90 to-primary text-white">
+      <section className="relative pt-20 pb-24 px-4 bg-gradient-to-br from-red-400 to-red-500 text-white">
         <div className="max-w-6xl mx-auto text-center pt-16">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
             Transform YouTube Videos into Digestible Summaries
@@ -112,7 +112,7 @@ const Landing = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
-              <Button className="bg-white text-primary hover:bg-gray-100 font-semibold text-lg px-8 py-6">
+              <Button className="bg-white text-red-500 hover:bg-gray-100 font-semibold text-lg px-8 py-6">
                 Get Started for Free
               </Button>
             </Link>
@@ -137,55 +137,18 @@ const Landing = () => {
             <FeatureCard 
               title="TL;DR Summaries" 
               description="Get the key points from any video in a concise, easy-to-read format."
-              icon={<Youtube className="h-6 w-6 text-primary" />}
+              icon={<Youtube className="h-6 w-6 text-red-500" />}
             />
             <FeatureCard 
               title="Key Insights" 
               description="Extract the most important insights and data points from educational content."
-              icon={<Youtube className="h-6 w-6 text-primary" />}
+              icon={<Youtube className="h-6 w-6 text-red-500" />}
             />
             <FeatureCard 
               title="Comprehensive Notes" 
               description="Generate detailed, structured notes from lectures and long-form content."
-              icon={<Youtube className="h-6 w-6 text-primary" />}
+              icon={<Youtube className="h-6 w-6 text-red-500" />}
             />
-          </div>
-        </div>
-      </section>
-      
-      {/* How It Works */}
-      <section className="py-20 px-4 bg-gray-100">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            Transform any YouTube video into valuable content in just a few simple steps.
-          </p>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
-              <h3 className="text-lg font-semibold mb-2">Paste YouTube URL</h3>
-              <p className="text-gray-600">Simply paste the link to any YouTube video you want to analyze.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
-              <h3 className="text-lg font-semibold mb-2">Choose Digest Type</h3>
-              <p className="text-gray-600">Select whether you want a brief summary, key insights, or comprehensive notes.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
-              <h3 className="text-lg font-semibold mb-2">Get Your Digest</h3>
-              <p className="text-gray-600">Our AI processes the video and delivers your customized content in seconds.</p>
-            </div>
-          </div>
-          
-          <div className="mt-12">
-            <Button size="lg" onClick={() => {
-              // Scroll to the demo section
-              document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
-            }}>Try It Now</Button>
           </div>
         </div>
       </section>
@@ -308,14 +271,14 @@ const Landing = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-primary text-white text-center">
+      <section className="py-20 px-4 bg-red-500 text-white text-center">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to transform how you consume video content?</h2>
           <p className="text-xl mb-8 opacity-90">
             Join thousands of students, professionals, and lifelong learners who use YouTube Digest to save time and extract valuable information.
           </p>
           <Link to="/register">
-            <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+            <Button size="lg" className="bg-white text-red-500 hover:bg-gray-100">
               Get Started for Free
             </Button>
           </Link>
