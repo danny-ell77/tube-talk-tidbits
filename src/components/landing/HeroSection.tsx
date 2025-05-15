@@ -11,7 +11,7 @@ const HeroSection = () => {
           Transform YouTube Videos into Digestible Summaries
         </h1>
         <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-          Extract key insights, comprehensive notes, and concise summaries from any YouTube video in seconds.
+          Save time and retain more. YouTube Digest uses AI to turn long videos into clear, concise summaries, notes, and key insights—in seconds.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/register">

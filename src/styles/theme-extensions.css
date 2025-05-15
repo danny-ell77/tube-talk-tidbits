@@ -1,0 +1,36 @@
+
+/* Yellow highlight styling */
+.highlight {
+  background-color: #fff3b0;
+  padding: 0.2em 0.4em;
+  display: inline-block;
+  line-height: 1.4;
+  border-radius: 0.15em;
+}
+
+/* Role hover animations */
+.role-content {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, height 0.3s ease;
+}
+
+.role-option:hover + .role-content,
+.role-content:hover {
+  opacity: 1;
+  height: auto;
+  min-height: 100px;
+}
+
+/* Hero section curve fix */
+.hero-curve::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: var(--curve-color);
+  clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 50%, 0 0);
+}

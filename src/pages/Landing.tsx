@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/landing/HeroSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
+import RolesSection from '@/components/landing/RolesSection';
 import DemoSection from '@/components/landing/DemoSection';
 import PricingSection from '@/components/landing/PricingSection';
 import CTASection from '@/components/landing/CTASection';
@@ -16,6 +17,7 @@ const Landing = () => {
       <HeroSection />
       <FeaturesSection />
       <DemoSection />
+      <RolesSection />
       <PricingSection />
       <CTASection />
       <FooterSection />
