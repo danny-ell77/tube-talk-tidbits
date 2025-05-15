@@ -11,6 +11,7 @@ const DemoSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentResult, setCurrentResult] = useState<DigestResult | null>(null);
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState("input");
   
   // Toggle premium status (for demo purposes)
   const togglePremiumStatus = () => {
@@ -26,8 +27,8 @@ const DemoSection = () => {
       const result = await generateDigest(url, type, customPrompt, model);
       setCurrentResult(result);
       
-      // Switch to the result tab
-      document.querySelector('[data-state="inactive"][value="result"]')?.click();
+      // Switch to the result tab using state instead of DOM manipulation
+      setActiveTab("result");
       
       toast.success("Digest generated successfully!");
     } catch (error) {
@@ -39,10 +40,10 @@ const DemoSection = () => {
   };
   
   return (
-    <section className="py-20 px-4 bg-white" id="demo-section">
+    <section className="py-20 px-4 bg-white dark:bg-gray-900" id="demo-section">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl font-bold mb-4 text-center">See It In Action</h2>
-        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto text-center">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto text-center">
           Try the YouTube Digest tool with your own video or use one of our examples.
         </p>
         
@@ -52,16 +53,16 @@ const DemoSection = () => {
             onClick={togglePremiumStatus}
             className={`text-sm px-4 py-1 rounded-full ${
               isPremiumUser 
-                ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-200 dark:hover:bg-amber-800' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
             }`}
           >
             {isPremiumUser ? '✨ Premium Active' : 'Activate Premium Features'}
           </button>
         </div>
         
-        <div className="bg-gray-50 p-8 rounded-xl shadow-lg">
-          <Tabs defaultValue="input" className="w-full">
+        <div className="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-lg">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger 
                 value="input"
@@ -90,7 +91,7 @@ const DemoSection = () => {
               {currentResult ? (
                 <SummaryCard {...currentResult} />
               ) : (
-                <div className="text-center text-gray-500 p-12">
+                <div className="text-center text-gray-500 dark:text-gray-400 p-12">
                   No digest generated yet. Create one to see results here.
                 </div>
               )}

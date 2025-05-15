@@ -60,6 +60,7 @@ const Header = ({ transparent = false, user }: HeaderProps) => {
               <div className={textColor}>
                 {user.credits} credits
               </div>
+              {/* Fix: Pass user as prop, which is already available from Header props */}
               <UserAvatar user={user} />
             </div>
           ) : (
