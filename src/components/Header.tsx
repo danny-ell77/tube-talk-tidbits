@@ -1,36 +1,51 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Youtube } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import UserAvatar from './auth/UserAvatar';
+import { Youtube } from "lucide-react";
+import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
-  user?: any;
   transparent?: boolean;
+  user?: any;
 }
 
-const Header = ({ user, transparent = false }: HeaderProps) => {
+const Header = ({ transparent = false, user }: HeaderProps) => {
+  const isLoggedIn = !!user;
+
   return (
-    <header className={`w-full py-4 px-6 ${transparent ? 'absolute top-0 left-0 z-10 text-white' : 'bg-white shadow-sm'}`}>
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 ${transparent ? 'bg-transparent' : 'bg-white dark:bg-gray-800 shadow-sm border-b'}`}>
+      <div className="container mx-auto flex justify-between items-center">
+        <Link to="/" className="flex items-center gap-2">
           <Youtube className={`h-6 w-6 ${transparent ? 'text-white' : 'text-youtube'}`} />
-          <Link to="/" className="text-xl font-bold">
+          <span className={`font-bold text-lg ${transparent ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
             YouTube Digest
-          </Link>
-        </div>
-        
+          </span>
+        </Link>
+
         <div className="flex items-center gap-4">
-          {user ? (
-            <UserAvatar />
+          <ThemeToggle variant="ghost" />
+          
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <div className={`text-sm ${transparent ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                {user.credits} credits
+              </div>
+              <UserAvatar user={user} />
+            </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
               <Link to="/login">
-                <Button variant="ghost" size="sm" className={transparent ? "text-white hover:text-white/90" : ""}>Sign In</Button>
+                <Button 
+                  variant={transparent ? "outline" : "ghost"} 
+                  className={transparent ? "text-white border-white hover:bg-white/20" : ""}
+                >
+                  Log in
+                </Button>
               </Link>
               <Link to="/register">
-                <Button size="sm">Sign Up</Button>
+                <Button>Sign up</Button>
               </Link>
             </div>
           )}

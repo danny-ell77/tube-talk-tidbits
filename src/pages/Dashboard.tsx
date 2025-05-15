@@ -113,7 +113,7 @@ const Dashboard = () => {
               {history.length > 0 && (
                 <button 
                   onClick={handleClearHistory}
-                  className="text-sm text-red-500 hover:text-red-700"
+                  className="text-sm text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                 >
                   Clear History
                 </button>
@@ -133,21 +133,21 @@ const Dashboard = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header user={user} />
       
       <div className="py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Transform lengthy YouTube videos into concise summaries, key insights, or comprehensive notes.
             </p>
             
             <div className="mt-4">
-              <div className="text-sm px-4 py-2 bg-gray-100 rounded-md inline-flex items-center gap-2">
+              <div className="text-sm px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md inline-flex items-center gap-2">
                 <span className="font-medium">Credits:</span> {user.credits}
                 {user.isPremium && (
-                  <span className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full">
+                  <span className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100 text-xs px-2 py-0.5 rounded-full">
                     Premium
                   </span>
                 )}
