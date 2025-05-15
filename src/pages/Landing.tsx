@@ -104,7 +104,7 @@ const Landing = () => {
       {/* Hero Section with Curve */}
       <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-youtube to-red-700 text-white hero-curve">
         <div className="max-w-6xl mx-auto text-center pt-16 pb-12">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-white">
             Transform YouTube Videos into Digestible Summaries
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">

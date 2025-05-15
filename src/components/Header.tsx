@@ -12,10 +12,10 @@ interface HeaderProps {
 
 const Header = ({ user, transparent = false }: HeaderProps) => {
   return (
-    <header className={`w-full py-4 px-6 ${transparent ? 'absolute top-0 left-0 z-10' : 'bg-white shadow-sm'}`}>
+    <header className={`w-full py-4 px-6 ${transparent ? 'absolute top-0 left-0 z-10 text-white' : 'bg-white shadow-sm'}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Youtube className="h-6 w-6 text-youtube" />
+          <Youtube className={`h-6 w-6 ${transparent ? 'text-white' : 'text-youtube'}`} />
           <Link to="/" className="text-xl font-bold">
             YouTube Digest
           </Link>
@@ -27,7 +27,7 @@ const Header = ({ user, transparent = false }: HeaderProps) => {
           ) : (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="ghost" size="sm">Sign In</Button>
+                <Button variant="ghost" size="sm" className={transparent ? "text-white hover:text-white/90" : ""}>Sign In</Button>
               </Link>
               <Link to="/register">
                 <Button size="sm">Sign Up</Button>
