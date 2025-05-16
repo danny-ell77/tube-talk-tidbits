@@ -1,17 +1,20 @@
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserAvatar from './auth/UserAvatar';
 import { Youtube } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
   transparent?: boolean;
-  user?: any;
+  user?: any; // For backward compatibility
 }
 
-const Header = ({ transparent = false, user }: HeaderProps) => {
+const Header = ({ transparent = false }: HeaderProps) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const isLoggedIn = !!user;
   const [scrolled, setScrolled] = useState(false);
 
@@ -42,6 +45,11 @@ const Header = ({ transparent = false, user }: HeaderProps) => {
       ? 'text-white' 
       : 'text-gray-900 dark:text-white';
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
@@ -60,8 +68,7 @@ const Header = ({ transparent = false, user }: HeaderProps) => {
               <div className={textColor}>
                 {user.credits} credits
               </div>
-              {/* Fix: Pass user as prop, which is already available from Header props */}
-              <UserAvatar user={user} />
+              <UserAvatar user={user} onLogout={handleLogout} />
             </div>
           ) : (
             <div className="flex gap-2">

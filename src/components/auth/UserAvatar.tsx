@@ -1,6 +1,5 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -11,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, Settings, LogOut } from "lucide-react";
-import { toast } from "sonner";
 
 type UserData = {
   id: string;
@@ -21,13 +19,12 @@ type UserData = {
   credits: number;
 };
 
-const UserAvatar = ({ user }) => {
-  const navigate = useNavigate();
-  // const [user, setUser] = useState<UserData | null>(() => {
-  //   const storedUser = localStorage.getItem('user');
-  //   return storedUser ? JSON.parse(storedUser) : null;
-  // });
+interface UserAvatarProps {
+  user: UserData;
+  onLogout?: () => void;
+}
 
+const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
   if (!user) return null;
 
   const initials = user.name
@@ -38,10 +35,9 @@ const UserAvatar = ({ user }) => {
     .substring(0, 2);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    // setUser(null);
-    toast.success('Logged out successfully');
-    navigate('/');
+    if (onLogout) {
+      onLogout();
+    }
   };
 
   return (

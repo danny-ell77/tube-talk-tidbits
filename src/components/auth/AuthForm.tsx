@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { useAuth } from '@/contexts/AuthContext';
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email."),
@@ -30,6 +31,7 @@ interface AuthFormProps {
 
 const AuthForm = ({ type }: AuthFormProps) => {
   const navigate = useNavigate();
+  const { signIn, signUp, loading: authLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,28 +44,30 @@ const AuthForm = ({ type }: AuthFormProps) => {
   });
 
   const onSubmit = async (data: AuthFormData) => {
-    setIsLoading(true);
+    // Don't set loading state if auth provider is already loading
+    if (!authLoading) {
+      setIsLoading(true);
+    }
 
     try {
-      // In a real app, you would connect this to your authentication system
-      console.log('Auth data:', data);
+      if (type === 'login') {
+        await signIn(data.email, data.password);
+      } else {
+        await signUp(data.email, data.password);
+      }
       
-      // Mock auth for demo purposes
-      localStorage.setItem('user', JSON.stringify({
-        id: 'user-123',
-        email: data.email,
-        name: data.email.split('@')[0],
-        isPremium: Math.random() > 0.5, // 50% chance of being premium for demo
-        credits: Math.floor(Math.random() * 50) + 10, // Random credits between 10-60
-      }));
-
-      toast.success(type === 'login' ? 'Logged in successfully!' : 'Account created successfully!');
-      navigate('/dashboard');
+      // Navigate to digest page on successful login
+      // For signup, the user will need to verify their email first
+      if (type === 'login') {
+        navigate('/digest');
+      }
     } catch (error) {
+      // Error is already handled in auth context
       console.error('Authentication error:', error);
-      toast.error(type === 'login' ? 'Login failed' : 'Registration failed');
     } finally {
-      setIsLoading(false);
+      if (!authLoading) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -114,8 +118,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : type === 'login' ? 'Sign In' : 'Sign Up'}
+          <Button type="submit" className="w-full" disabled={isLoading || authLoading}>
+            {isLoading || authLoading ? "Processing..." : type === 'login' ? 'Sign In' : 'Sign Up'}
           </Button>
         </form>
       </Form>

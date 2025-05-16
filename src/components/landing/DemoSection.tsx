@@ -1,17 +1,15 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from 'react-router-dom';
 import YoutubeInput from '@/components/YoutubeInput';
-import SummaryCard from '@/components/SummaryCard';
 import LoadingState from '@/components/LoadingState';
 import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { toast } from 'sonner';
 
 const DemoSection = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [currentResult, setCurrentResult] = useState<DigestResult | null>(null);
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState("input");
   
   // Toggle premium status (for demo purposes)
   const togglePremiumStatus = () => {
@@ -25,10 +23,9 @@ const DemoSection = () => {
     setIsLoading(true);
     try {
       const result = await generateDigest(url, type, customPrompt, model);
-      setCurrentResult(result);
       
-      // Switch to the result tab using state instead of DOM manipulation
-      setActiveTab("result");
+      // Navigate to digest page with the result
+      navigate('/digest', { state: { result } });
       
       toast.success("Digest generated successfully!");
     } catch (error) {
@@ -62,41 +59,14 @@ const DemoSection = () => {
         </div>
         
         <div className="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-lg">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger 
-                value="input"
-                disabled={isLoading}
-              >
-                Create New Digest
-              </TabsTrigger>
-              <TabsTrigger 
-                value="result"
-                disabled={!currentResult}
-              >
-                View Digest
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="input" className="space-y-4">
-              <YoutubeInput 
-                onSubmit={handleSubmit} 
-                isLoading={isLoading} 
-                isPremium={isPremiumUser}
-              />
-              {isLoading && <LoadingState />}
-            </TabsContent>
-            
-            <TabsContent value="result">
-              {currentResult ? (
-                <SummaryCard {...currentResult} />
-              ) : (
-                <div className="text-center text-gray-500 dark:text-gray-400 p-12">
-                  No digest generated yet. Create one to see results here.
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+          <div className="space-y-4">
+            <YoutubeInput 
+              onSubmit={handleSubmit} 
+              isLoading={isLoading} 
+              isPremium={isPremiumUser}
+            />
+            {isLoading && <LoadingState />}
+          </div>
         </div>
       </div>
     </section>
