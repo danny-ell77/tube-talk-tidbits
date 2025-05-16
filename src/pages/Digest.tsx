@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import YoutubeInput from '@/components/YoutubeInput';
@@ -9,6 +8,7 @@ import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
+import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
 
 interface DigestPageProps {
   showSaved?: boolean;
@@ -54,6 +54,12 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   }, [history]);
 
   const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard") => {
+    // Validate YouTube URL
+    if (!isValidYoutubeUrl(url)) {
+      toast.error("Invalid YouTube URL. Please enter a valid URL.");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const result = await generateDigest(url, type, customPrompt, model);

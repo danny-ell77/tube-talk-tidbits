@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import YouTubePreviewCard from './YouTubePreviewCard';
+import { isValidYoutubeUrl, extractVideoId } from '@/utils/youtubeUtils';
 
 interface YoutubeInputProps {
   onSubmit: (url: string, type: string, customPrompt?: string, model?: string) => void;
@@ -25,12 +27,30 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
   const [customPrompt, setCustomPrompt] = useState('');
   const [model, setModel] = useState('standard');
   const [showCustomPrompt, setShowCustomPrompt] = useState(false);
+  const [isValidUrl, setIsValidUrl] = useState(false);
+  const [videoId, setVideoId] = useState<string | null>(null);
+
+  // Demo video info (this would be fetched from YouTube API in a real app)
+  const demoVideoInfo = {
+    title: "How BAD is Test Driven Development? - The Standup #6",
+    channelName: "ThePrimeTime",
+    views: "103K views",
+    likes: "3.5K likes",
+    date: "May 13, 2025"
+  };
+
+  useEffect(() => {
+    // Validate URL and extract video ID whenever URL changes
+    const id = extractVideoId(url);
+    setIsValidUrl(!!id);
+    setVideoId(id);
+  }, [url]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation for YouTube URL
-    if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+    if (!isValidUrl) {
       toast({
         title: "Invalid URL",
         description: "Please enter a valid YouTube URL",
@@ -85,6 +105,11 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           </Select>
         </div>
 
+        {/* YouTube Preview Card */}
+        {isValidUrl && videoId && (
+          <YouTubePreviewCard videoId={videoId} videoInfo={demoVideoInfo} />
+        )}
+
         {showCustomPrompt && (
           <Textarea
             placeholder="Enter your custom prompt instructions here..."
@@ -118,7 +143,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
         <Button 
           type="submit" 
           className="w-full bg-digest-blue hover:bg-digest-blue-light transition-colors"
-          disabled={isLoading}
+          disabled={isLoading || !isValidUrl}
         >
           {isLoading ? 'Generating Digest...' : 'Generate Digest'}
         </Button>

@@ -5,6 +5,7 @@ import YoutubeInput from '@/components/YoutubeInput';
 import LoadingState from '@/components/LoadingState';
 import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { toast } from 'sonner';
+import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
 
 const DemoSection = () => {
   const navigate = useNavigate();
@@ -20,6 +21,12 @@ const DemoSection = () => {
   
   // Handle the submission of YouTube URL for digest
   const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard") => {
+    // Validate URL before processing
+    if (!isValidYoutubeUrl(url)) {
+      toast.error("Invalid YouTube URL. Please enter a valid URL.");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const result = await generateDigest(url, type, customPrompt, model);
