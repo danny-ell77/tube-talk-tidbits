@@ -1,33 +1,22 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Volume2, VolumeX, Moon } from 'lucide-react';
+import { X, Volume2, VolumeX, Moon, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import SummaryCard from './SummaryCard';
+import { DigestResult } from '@/services/youtubeDigestService';
 
 interface ZenModeProps {
   isActive: boolean;
   onClose: () => void;
+  currentResult?: DigestResult | null;
 }
 
-const ZenMode: React.FC<ZenModeProps> = ({ isActive, onClose }) => {
+const ZenMode: React.FC<ZenModeProps> = ({ isActive, onClose, currentResult }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(30);
-  const [useDialog, setUseDialog] = useState<boolean>(false);
   const [fontSize, setFontSize] = useState<number>(16);
-
-  useEffect(() => {
-    // Check if we should use Dialog instead of Drawer based on viewport
-    const checkViewportSize = () => {
-      setUseDialog(window.innerWidth > 768);
-    };
-
-    checkViewportSize();
-    window.addEventListener('resize', checkViewportSize);
-    return () => window.removeEventListener('resize', checkViewportSize);
-  }, []);
 
   useEffect(() => {
     // Create audio element for white noise
@@ -42,17 +31,13 @@ const ZenMode: React.FC<ZenModeProps> = ({ isActive, onClose }) => {
         audioRef.current.play().catch(e => console.error('Error playing audio:', e));
       }
       
-      // Apply focus mode styles to body
-      document.body.classList.add('zen-mode-active');
-
-      // Apply additional focus enhancements
+      // Apply font size to content
       document.documentElement.style.setProperty('--zen-font-size', `${fontSize}px`);
     } else {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
-      document.body.classList.remove('zen-mode-active');
       
       // Reset font size
       document.documentElement.style.removeProperty('--zen-font-size');
@@ -63,7 +48,6 @@ const ZenMode: React.FC<ZenModeProps> = ({ isActive, onClose }) => {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
-      document.body.classList.remove('zen-mode-active');
       document.documentElement.style.removeProperty('--zen-font-size');
     };
   }, [isActive, isMuted, volume, fontSize]);
@@ -93,95 +77,80 @@ const ZenMode: React.FC<ZenModeProps> = ({ isActive, onClose }) => {
     document.documentElement.style.setProperty('--zen-font-size', `${newSize}px`);
   };
 
-  if (!isActive) return null;
+  if (!isActive || !currentResult) return null;
 
-  const renderControls = () => (
-    <div className="p-4">
-      <div className="space-y-6">
-        <div className="space-y-3">
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg shadow-xl bg-[#F9F8FF] dark:bg-[#121620]">
+        {/* Header with controls */}
+        <div className="sticky top-0 z-10 px-6 py-4 bg-[#F9F8FF] dark:bg-[#121620] border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between">
-            <label htmlFor="volume" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              White Noise Volume
-            </label>
-            <button 
-              onClick={toggleMute} 
-              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2 text-gray-600 dark:text-gray-300"
+              onClick={onClose}
             >
-              {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-            </button>
+              <ChevronLeft size={16} />
+              Exit Focus Mode
+            </Button>
+            
+            <div className="flex items-center space-x-4">
+              {/* Font size control */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-600 dark:text-gray-300">Aa</span>
+                <input
+                  type="range"
+                  min="14"
+                  max="22"
+                  value={fontSize}
+                  onChange={handleFontSizeChange}
+                  className="w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                />
+                <span className="text-sm text-gray-600 dark:text-gray-300">{fontSize}px</span>
+              </div>
+              
+              {/* Volume control */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleMute}
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+                >
+                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  disabled={isMuted}
+                  className={cn(
+                    "w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
+                    isMuted && "opacity-50"
+                  )}
+                />
+              </div>
+              
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={onClose}
+                className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
+              >
+                <X size={18} />
+                <span className="sr-only">Close</span>
+              </Button>
+            </div>
           </div>
-          <input
-            id="volume"
-            type="range"
-            min="0"
-            max="100"
-            value={volume}
-            onChange={handleVolumeChange}
-            disabled={isMuted}
-            className={cn(
-              "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
-              isMuted && "opacity-50"
-            )}
-          />
         </div>
         
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label htmlFor="font-size" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Font Size
-            </label>
-            <span className="text-sm text-gray-600 dark:text-gray-400">{fontSize}px</span>
-          </div>
-          <input
-            id="font-size"
-            type="range"
-            min="14"
-            max="22"
-            value={fontSize}
-            onChange={handleFontSizeChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-          />
-        </div>
-        
-        <div className="pt-4 flex justify-center">
-          <Button onClick={onClose} variant="outline" className="flex items-center gap-2">
-            <Moon className="h-4 w-4" />
-            Exit Focus Mode
-          </Button>
+        {/* Content area with enhanced reading experience */}
+        <div className="p-6 md:p-8 zen-content">
+          <SummaryCard {...currentResult} />
         </div>
       </div>
     </div>
-  );
-
-  // Use Dialog on larger screens, Drawer on mobile
-  return (
-    <>
-      {/* Overlay effect */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-30" onClick={onClose} />
-
-      {useDialog ? (
-        <Dialog open={isActive} onOpenChange={onClose}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle className="text-center">Focus Mode</DialogTitle>
-            </DialogHeader>
-            {renderControls()}
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Drawer open={isActive} onOpenChange={onClose}>
-          <DrawerContent className="bg-white dark:bg-gray-800 rounded-t-xl max-w-sm mx-auto">
-            <DrawerHeader>
-              <DrawerTitle className="text-center">Focus Mode</DrawerTitle>
-              <DrawerClose className="absolute right-4 top-4">
-                <X size={18} />
-              </DrawerClose>
-            </DrawerHeader>
-            {renderControls()}
-          </DrawerContent>
-        </Drawer>
-      )}
-    </>
   );
 };
 

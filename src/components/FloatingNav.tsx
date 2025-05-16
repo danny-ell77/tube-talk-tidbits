@@ -138,7 +138,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
           </button>
         ))}
         
-        {/* Zen Mode Button - Updated to be disabled when not viewing a summary */}
+        {/* Focus Mode Button */}
         <button
           onClick={onZenModeToggle}
           disabled={isZenModeDisabled}

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import YoutubeInput from '@/components/YoutubeInput';
@@ -201,8 +202,12 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         </div>
       </div>
       
-      {/* Zen Mode Component */}
-      <ZenMode isActive={isZenMode} onClose={() => setIsZenMode(false)} />
+      {/* Updated ZenMode Component */}
+      <ZenMode 
+        isActive={isZenMode} 
+        onClose={() => setIsZenMode(false)}
+        currentResult={currentResult}
+      />
     </div>
   );
 };

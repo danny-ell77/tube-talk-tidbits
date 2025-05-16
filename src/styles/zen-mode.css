@@ -1,9 +1,7 @@
 
 /* Zen mode styles */
 body.zen-mode-active {
-  background-color: #F9F8FF; /* Very soft background for better focus */
-  color: #1A1F2C; /* Dark readable text */
-  transition: background-color 0.5s ease, color 0.5s ease;
+  overflow: hidden; /* Prevent background scrolling when modal is open */
 }
 
 /* Define font-size variable with fallback */
@@ -11,132 +9,95 @@ body.zen-mode-active {
   --zen-font-size: 16px;
 }
 
-/* Dark mode variables */
-.dark body.zen-mode-active {
-  background-color: #121620; /* Soft dark background that's easier on the eyes */
-  color: #E8E9F3; /* Soft light text for better contrast */
-}
-
-/* Apply consistent background to all containers */
-body.zen-mode-active .bg-background,
-body.zen-mode-active .bg-gray-50,
-body.zen-mode-active .bg-gray-900,
-body.zen-mode-active .bg-white {
-  background-color: transparent !important;
-}
-
-body.zen-mode-active .text-gray-600,
-body.zen-mode-active .text-gray-700,
-body.zen-mode-active .text-gray-800,
-body.zen-mode-active .text-gray-900 {
-  color: #1A1F2C !important; /* Consistent text color */
-}
-
-/* Improve focus on content */
-body.zen-mode-active .max-w-4xl {
-  max-width: 65ch !important; /* Optimal reading width */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Improve text readability */
-body.zen-mode-active p,
-body.zen-mode-active li {
+/* Enhanced content styles within the zen modal */
+.zen-content p,
+.zen-content li {
   line-height: 1.8 !important;
   font-size: var(--zen-font-size) !important;
   letter-spacing: 0.01em !important;
+  color: #1A1F2C !important;
 }
 
-/* Make headers stand out more clearly */
-body.zen-mode-active h1,
-body.zen-mode-active h2,
-body.zen-mode-active h3,
-body.zen-mode-active h4 {
+.dark .zen-content p,
+.dark .zen-content li {
+  color: #E8E9F3 !important;
+}
+
+/* Make headers stand out more clearly in zen mode */
+.zen-content h1,
+.zen-content h2,
+.zen-content h3,
+.zen-content h4 {
   margin-top: 1.5em !important;
   margin-bottom: 0.75em !important;
   font-weight: 600 !important;
   color: #333 !important;
 }
 
-.dark body.zen-mode-active h1,
-.dark body.zen-mode-active h2,
-.dark body.zen-mode-active h3,
-.dark body.zen-mode-active h4 {
+.dark .zen-content h1,
+.dark .zen-content h2,
+.dark .zen-content h3,
+.dark .zen-content h4 {
   color: #E8E9F3 !important;
 }
 
-/* Reduce distractions */
-body.zen-mode-active header,
-body.zen-mode-active footer,
-body.zen-mode-active nav:not(.zen-mode-controls) {
-  opacity: 0.2;
-  transition: opacity 0.3s ease;
-}
-
-body.zen-mode-active header:hover,
-body.zen-mode-active footer:hover,
-body.zen-mode-active nav:hover {
-  opacity: 0.8;
-}
-
-/* Hide everything except the main content when in zen mode */
-body.zen-mode-active .FloatingNav {
-  opacity: 0.4;
-  transform: scale(0.9);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-body.zen-mode-active .FloatingNav:hover {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Add a subtle ambient glow around main content */
-body.zen-mode-active .summary-container {
-  padding: 2rem !important;
+/* Enhance summary-container in zen mode to be more readable */
+.zen-content .summary-container {
+  padding: 1rem !important;
   background-color: rgba(255, 255, 255, 0.7) !important;
-  backdrop-filter: blur(10px);
   border-radius: 12px !important;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05) !important;
   transition: all 0.3s ease;
 }
 
-.dark body.zen-mode-active .summary-container {
+.dark .zen-content .summary-container {
   background-color: rgba(30, 34, 45, 0.7) !important;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Enhance readability of links */
-body.zen-mode-active a {
+/* Enhance readability of links in zen mode */
+.zen-content a {
   text-decoration: none;
   border-bottom: 1px solid rgba(37, 99, 235, 0.3);
   transition: color 0.2s, border-color 0.2s;
 }
 
-body.zen-mode-active a:hover {
+.zen-content a:hover {
   border-bottom-color: rgba(37, 99, 235, 0.8);
 }
 
-/* Additional focus enhancements for dark mode */
-.dark body.zen-mode-active {
-  --zen-text-color: #E8E9F3;
+/* Customize scrollbars in zen mode for better reading experience */
+.zen-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-.dark body.zen-mode-active .text-gray-300,
-.dark body.zen-mode-active .text-gray-200,
-.dark body.zen-mode-active .text-gray-100 {
-  color: var(--zen-text-color) !important;
+.zen-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.zen-content::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 8px;
+}
+
+.dark .zen-content::-webkit-scrollbar-thumb {
+  background-color: #444;
 }
 
 /* Improve content card visibility in zen mode */
-body.zen-mode-active .Card,
-body.zen-mode-active .card {
+.zen-content .Card,
+.zen-content .card {
   border: none !important;
   background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(8px);
 }
 
-.dark body.zen-mode-active .Card,
-.dark body.zen-mode-active .card {
+.dark .zen-content .Card,
+.dark .zen-content .card {
   background: rgba(30, 34, 45, 0.8) !important;
+}
+
+/* Hide footer in the zen mode modal */
+.zen-content .CardFooter,
+.zen-content .card-footer {
+  display: none !important;
 }
