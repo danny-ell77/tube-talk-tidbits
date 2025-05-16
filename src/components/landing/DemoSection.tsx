@@ -42,9 +42,9 @@ const DemoSection = () => {
   return (
     <section className="py-20 px-4 bg-white dark:bg-gray-900" id="demo-section">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold mb-4 text-center">Try It Yourself</h2>
+        <h2 className="text-3xl font-bold mb-4 text-center">See It In Action</h2>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto text-center">
-          No gimmicks. No fluff. Just real value. See how YouTube Digest works with any video you choose, or explore one of our examples.
+          Try the YouTube Digest tool with your own video or use one of our examples.
         </p>
         
         {/* Premium status toggle (for demo purposes) */}
