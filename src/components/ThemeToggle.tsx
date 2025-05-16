@@ -1,14 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Moon, Sun, Laptop } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 interface ThemeToggleProps {
   variant?: "default" | "outline" | "ghost";
@@ -20,40 +15,64 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
   size = "icon" 
 }) => {
   const { theme, setTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Icon based on current theme
+  const ThemeIcon = theme === "dark" 
+    ? Moon 
+    : theme === "system" 
+      ? Laptop 
+      : Sun;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          aria-label="Select a theme"
+    <div 
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <Button
+        variant={variant}
+        size={size}
+        aria-label="Select a theme"
+        className="relative"
+      >
+        <ThemeIcon className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+      
+      {/* Popup that appears on hover */}
+      <div className={cn(
+        "absolute right-0 mt-2 min-w-[8rem] rounded-md border bg-popover p-1 shadow-md",
+        "origin-top-right transition-all duration-200 z-50",
+        isOpen 
+          ? "opacity-100 translate-y-0 visible" 
+          : "opacity-0 translate-y-1 invisible"
+      )}>
+        <button 
+          onClick={() => setTheme("light")}
+          className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
         >
-          {theme === "dark" ? (
-            <Moon className="h-[1.2rem] w-[1.2rem]" />
-          ) : theme === "system" ? (
-            <Laptop className="h-[1.2rem] w-[1.2rem]" />
-          ) : (
-            <Sun className="h-[1.2rem] w-[1.2rem]" />
-          )}
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun className="mr-2 h-4 w-4" />
           <span>Light</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        </button>
+        
+        <button 
+          onClick={() => setTheme("dark")}
+          className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+        >
           <Moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        </button>
+        
+        <button 
+          onClick={() => setTheme("system")}
+          className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+        >
           <Laptop className="mr-2 h-4 w-4" />
           <span>System</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </button>
+      </div>
+    </div>
   );
 };
 

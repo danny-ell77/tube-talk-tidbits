@@ -1,8 +1,6 @@
-
-import React, { useState } from 'react';
-import { Plus, Clock, History } from "lucide-react";
+import React, { useState, useRef, useEffect } from 'react';
+import { Plus, Clock, History, GripHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ThemeToggle from './ThemeToggle';
 
 interface FloatingNavProps {
   activeTab: string;
@@ -15,6 +13,16 @@ interface FloatingNavProps {
 
 const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disabled }) => {
   const [expanded, setExpanded] = useState(false);
+  const [position, setPosition] = useState({ x: 6, y: 20 });
+  const navRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const lastMousePos = useRef({ x: 0, y: 0 });
+  
+  // Movement dampening factor (lower = less sensitive)
+  const SENSITIVITY = 0.7;
+  // Minimum movement threshold in pixels to trigger an update
+  const MOVEMENT_THRESHOLD = 2;
 
   const navItems = [
     { id: 'new', icon: Plus, label: 'New Digest', disabled: false },
@@ -22,12 +30,77 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disab
     { id: 'history', icon: History, label: 'History', disabled: disabled.history },
   ];
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging.current && navRef.current) {
+        // Calculate movement delta since last position
+        const deltaX = e.clientX - lastMousePos.current.x;
+        const deltaY = e.clientY - lastMousePos.current.y;
+        
+        // Update last mouse position
+        lastMousePos.current = { x: e.clientX, y: e.clientY };
+        
+        // Check if movement exceeds threshold
+        if (Math.abs(deltaX) < MOVEMENT_THRESHOLD && Math.abs(deltaY) < MOVEMENT_THRESHOLD) {
+          return; // Skip small movements
+        }
+        
+        // Apply sensitivity factor to make movement less responsive
+        const dampedDeltaX = deltaX * SENSITIVITY;
+        const dampedDeltaY = deltaY * SENSITIVITY;
+        
+        // Update position based on dampened movement
+        const newX = position.x + dampedDeltaX / 16; // Convert pixels to rem (assuming 1rem = 16px)
+        const newY = position.y + dampedDeltaY / 16;
+        
+        // Ensure nav stays within viewport
+        const maxX = (window.innerWidth - (expanded ? 192 : 48)) / 16; // Width in rem
+        const maxY = (window.innerHeight - 200) / 16; // Approximate height in rem
+        
+        setPosition({
+          x: Math.max(0, Math.min(newX, maxX)),
+          y: Math.max(0, Math.min(newY, maxY))
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDragging.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [expanded, position]);
+
+  const handleDragStart = (e: React.MouseEvent) => {
+    if (navRef.current) {
+      isDragging.current = true;
+      // Set initial mouse position for delta calculations
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+      document.body.style.cursor = 'grabbing';
+      document.body.style.userSelect = 'none';
+      e.preventDefault(); // Prevent text selection during drag
+    }
+  };
+
   return (
     <div 
+      ref={navRef}
       className={cn(
-        "fixed top-20 left-6 bg-white dark:bg-gray-800 z-40 shadow-lg rounded-lg transition-all duration-300 overflow-hidden",
-        expanded ? "w-48" : "w-12",
+        "fixed z-40 bg-white dark:bg-gray-800 shadow-lg rounded-lg transition-all duration-300 overflow-visible",
+        expanded ? "w-48" : "w-12"
       )}
+      style={{ 
+        top: `${position.y}rem`, 
+        left: `${position.x}rem`,
+      }}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
@@ -53,6 +126,17 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disab
             </span>
           </button>
         ))}
+      </div>
+
+      {/* Semi-circular drag handle */}
+      <div 
+        className={cn(
+          "absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-gray-200 dark:bg-gray-700 rounded-b-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-opacity duration-200",
+          expanded ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}
+        onMouseDown={handleDragStart}
+      >
+        <GripHorizontal className="h-3 w-3 text-gray-500 dark:text-gray-400" />
       </div>
     </div>
   );

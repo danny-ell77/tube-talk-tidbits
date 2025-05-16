@@ -68,7 +68,7 @@ const Header = ({ transparent = false, user }: HeaderProps) => {
               <Link to="/login">
                 <Button 
                   variant={transparent && !scrolled ? "outline" : "ghost"} 
-                  className={transparent && !scrolled ? "text-white border-white hover:bg-white/20" : ""}
+                  className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
                 >
                   Log in
                 </Button>

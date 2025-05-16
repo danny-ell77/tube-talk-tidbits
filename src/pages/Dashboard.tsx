@@ -18,7 +18,6 @@ const Dashboard = () => {
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
   const [user, setUser] = useState<any>(null);
 
-  // Check authentication and load user data
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (!userData) {
@@ -30,7 +29,6 @@ const Dashboard = () => {
     setUser(parsedUser);
     setIsPremiumUser(parsedUser.isPremium);
     
-    // Load history from localStorage
     const savedHistory = localStorage.getItem('youtubeDigestHistory');
     if (savedHistory) {
       try {
@@ -41,7 +39,6 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  // Save history to localStorage whenever it changes
   useEffect(() => {
     if (history.length > 0) {
       localStorage.setItem('youtubeDigestHistory', JSON.stringify(history));
@@ -54,7 +51,6 @@ const Dashboard = () => {
       const result = await generateDigest(url, type, customPrompt, model);
       setCurrentResult(result);
       
-      // Add to history (avoiding duplicates by URL+type+customPrompt)
       setHistory(prev => {
         const exists = prev.some(
           item => item.videoUrl === url && 
