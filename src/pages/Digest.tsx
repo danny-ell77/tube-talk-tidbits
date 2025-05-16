@@ -1,14 +1,17 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import YoutubeInput from '@/components/YoutubeInput';
 import SummaryCard from '@/components/SummaryCard';
 import LoadingState from '@/components/LoadingState';
 import FloatingNav from '@/components/FloatingNav';
+import ZenMode from '@/components/ZenMode';
 import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
+import '@/styles/zen-mode.css';
 
 interface DigestPageProps {
   showSaved?: boolean;
@@ -23,6 +26,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   const [history, setHistory] = useState<DigestResult[]>([]);
   const [activeTab, setActiveTab] = useState<string>(showSaved ? "history" : "new");
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(user?.isPremium || false);
+  const [isZenMode, setIsZenMode] = useState<boolean>(false);
   
   useEffect(() => {
     // Handle case where result is passed via location state (from demo section)
@@ -97,6 +101,13 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     setHistory([]);
     localStorage.removeItem('youtubeDigestHistory');
     toast.success("History cleared");
+  };
+
+  const toggleZenMode = () => {
+    setIsZenMode(prev => !prev);
+    if (!isZenMode) {
+      toast.success("Zen mode activated. Enjoy focused reading.");
+    }
   };
 
   const renderContent = () => {
@@ -178,6 +189,8 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
               current: !currentResult,
               history: history.length === 0
             }}
+            onZenModeToggle={toggleZenMode}
+            isZenMode={isZenMode}
           />
           
           <div className="mt-8">
@@ -185,6 +198,9 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
           </div>
         </div>
       </div>
+      
+      {/* Zen Mode Component */}
+      <ZenMode isActive={isZenMode} onClose={() => setIsZenMode(false)} />
     </div>
   );
 };

@@ -1,0 +1,82 @@
+
+/* Zen mode styles */
+body.zen-mode-active {
+  background-color: #F1F0FB; /* Soft background color */
+  color: #1A1F2C; /* Dark readable text */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+body.zen-mode-active .bg-gray-50,
+body.zen-mode-active .bg-white {
+  background-color: #F1F0FB !important;
+}
+
+body.zen-mode-active .text-gray-600,
+body.zen-mode-active .text-gray-700,
+body.zen-mode-active .text-gray-800,
+body.zen-mode-active .text-gray-900 {
+  color: #1A1F2C !important; /* Consistent text color */
+}
+
+/* Improve focus on content */
+body.zen-mode-active .max-w-4xl {
+  max-width: 65ch !important; /* Optimal reading width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Improve text readability */
+body.zen-mode-active p,
+body.zen-mode-active li {
+  line-height: 1.8 !important;
+  font-size: 1.05rem !important;
+}
+
+/* Reduce distractions */
+body.zen-mode-active header,
+body.zen-mode-active footer {
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+body.zen-mode-active header:hover,
+body.zen-mode-active footer:hover {
+  opacity: 1;
+}
+
+/* Add a subtle ambient glow around main content */
+body.zen-mode-active .max-w-4xl > div {
+  box-shadow: 0 0 40px rgba(241, 240, 251, 0.8);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+/* Enhance card readability */
+body.zen-mode-active .bg-white.shadow-lg,
+body.zen-mode-active .dark\:bg-gray-800 {
+  background-color: #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Soften the contrast for dark mode */
+.dark body.zen-mode-active {
+  background-color: #1A1F2C;
+  color: #F1F0FB;
+}
+
+.dark body.zen-mode-active .bg-gray-900,
+.dark body.zen-mode-active .bg-gray-800 {
+  background-color: #1A1F2C !important;
+}
+
+.dark body.zen-mode-active .text-gray-300,
+.dark body.zen-mode-active .text-gray-200,
+.dark body.zen-mode-active .text-gray-100 {
+  color: #F1F0FB !important;
+}
+
+/* Enhance card readability in dark mode */
+.dark body.zen-mode-active .bg-gray-800 {
+  background-color: #262b38 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}

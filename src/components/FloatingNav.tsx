@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, Clock, History, GripHorizontal } from "lucide-react";
+import { Plus, Clock, History, GripHorizontal, Meditation } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FloatingNavProps {
@@ -9,9 +10,17 @@ interface FloatingNavProps {
     current: boolean;
     history: boolean;
   };
+  onZenModeToggle?: () => void;
+  isZenMode?: boolean;
 }
 
-const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disabled }) => {
+const FloatingNav: React.FC<FloatingNavProps> = ({ 
+  activeTab, 
+  onTabChange, 
+  disabled, 
+  onZenModeToggle = () => {},
+  isZenMode = false
+}) => {
   const [expanded, setExpanded] = useState(false);
   const [position, setPosition] = useState({ x: 6, y: 20 });
   const navRef = useRef<HTMLDivElement>(null);
@@ -126,6 +135,24 @@ const FloatingNav: React.FC<FloatingNavProps> = ({ activeTab, onTabChange, disab
             </span>
           </button>
         ))}
+        
+        {/* Zen Mode Button */}
+        <button
+          onClick={onZenModeToggle}
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-2 text-left",
+            isZenMode ? "text-green-600 dark:text-green-400" : "text-gray-600 dark:text-gray-300",
+            "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
+          )}
+        >
+          <Meditation className="h-5 w-5 flex-shrink-0" />
+          <span className={cn(
+            "whitespace-nowrap transition-opacity duration-300",
+            expanded ? "opacity-100" : "opacity-0"
+          )}>
+            Zen Mode
+          </span>
+        </button>
       </div>
 
       {/* Semi-circular drag handle */}
