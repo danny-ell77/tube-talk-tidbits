@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import YoutubeInput from '@/components/YoutubeInput';
@@ -104,9 +103,12 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   };
 
   const toggleZenMode = () => {
-    setIsZenMode(prev => !prev);
-    if (!isZenMode) {
-      toast.success("Zen mode activated. Enjoy focused reading.");
+    // Only toggle Zen Mode if viewing a current summary
+    if (activeTab === "current" && currentResult) {
+      setIsZenMode(prev => !prev);
+      if (!isZenMode) {
+        toast.success("Focus mode activated. Enjoy focused reading.");
+      }
     }
   };
 

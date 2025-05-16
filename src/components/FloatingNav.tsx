@@ -38,6 +38,9 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
     { id: 'history', icon: History, label: 'History', disabled: disabled.history },
   ];
 
+  // Check if zen mode should be disabled (when not viewing a summary)
+  const isZenModeDisabled = activeTab !== 'current' || disabled.current;
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging.current && navRef.current) {
@@ -135,13 +138,15 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
           </button>
         ))}
         
-        {/* Zen Mode Button - Updated with Headphones icon */}
+        {/* Zen Mode Button - Updated to be disabled when not viewing a summary */}
         <button
           onClick={onZenModeToggle}
+          disabled={isZenModeDisabled}
           className={cn(
             "w-full flex items-center gap-3 px-3 py-2 text-left",
             isZenMode ? "text-green-600 dark:text-green-400" : "text-gray-600 dark:text-gray-300",
-            "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
+            isZenModeDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+            "focus:outline-none"
           )}
         >
           <Headphones className="h-5 w-5 flex-shrink-0" />
@@ -149,7 +154,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
             "whitespace-nowrap transition-opacity duration-300",
             expanded ? "opacity-100" : "opacity-0"
           )}>
-            Zen Mode
+            Focus Mode
           </span>
         </button>
       </div>

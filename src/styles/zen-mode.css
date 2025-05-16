@@ -1,14 +1,28 @@
 
 /* Zen mode styles */
 body.zen-mode-active {
-  background-color: #F1F0FB; /* Soft background color */
+  background-color: #F9F8FF; /* Very soft background for better focus */
   color: #1A1F2C; /* Dark readable text */
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
+/* Define font-size variable with fallback */
+:root {
+  --zen-font-size: 16px;
+}
+
+/* Dark mode variables */
+.dark body.zen-mode-active {
+  background-color: #121620; /* Soft dark background that's easier on the eyes */
+  color: #E8E9F3; /* Soft light text for better contrast */
+}
+
+/* Apply consistent background to all containers */
+body.zen-mode-active .bg-background,
 body.zen-mode-active .bg-gray-50,
+body.zen-mode-active .bg-gray-900,
 body.zen-mode-active .bg-white {
-  background-color: #F1F0FB !important;
+  background-color: transparent !important;
 }
 
 body.zen-mode-active .text-gray-600,
@@ -29,54 +43,100 @@ body.zen-mode-active .max-w-4xl {
 body.zen-mode-active p,
 body.zen-mode-active li {
   line-height: 1.8 !important;
-  font-size: 1.05rem !important;
+  font-size: var(--zen-font-size) !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Make headers stand out more clearly */
+body.zen-mode-active h1,
+body.zen-mode-active h2,
+body.zen-mode-active h3,
+body.zen-mode-active h4 {
+  margin-top: 1.5em !important;
+  margin-bottom: 0.75em !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+.dark body.zen-mode-active h1,
+.dark body.zen-mode-active h2,
+.dark body.zen-mode-active h3,
+.dark body.zen-mode-active h4 {
+  color: #E8E9F3 !important;
 }
 
 /* Reduce distractions */
 body.zen-mode-active header,
-body.zen-mode-active footer {
-  opacity: 0.4;
+body.zen-mode-active footer,
+body.zen-mode-active nav:not(.zen-mode-controls) {
+  opacity: 0.2;
   transition: opacity 0.3s ease;
 }
 
 body.zen-mode-active header:hover,
-body.zen-mode-active footer:hover {
+body.zen-mode-active footer:hover,
+body.zen-mode-active nav:hover {
+  opacity: 0.8;
+}
+
+/* Hide everything except the main content when in zen mode */
+body.zen-mode-active .FloatingNav {
+  opacity: 0.4;
+  transform: scale(0.9);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+body.zen-mode-active .FloatingNav:hover {
   opacity: 1;
+  transform: scale(1);
 }
 
 /* Add a subtle ambient glow around main content */
-body.zen-mode-active .max-w-4xl > div {
-  box-shadow: 0 0 40px rgba(241, 240, 251, 0.8);
-  border-radius: 8px;
-  padding: 2rem;
+body.zen-mode-active .summary-container {
+  padding: 2rem !important;
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 12px !important;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease;
 }
 
-/* Enhance card readability */
-body.zen-mode-active .bg-white.shadow-lg,
-body.zen-mode-active .dark\:bg-gray-800 {
-  background-color: #fff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+.dark body.zen-mode-active .summary-container {
+  background-color: rgba(30, 34, 45, 0.7) !important;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Soften the contrast for dark mode */
+/* Enhance readability of links */
+body.zen-mode-active a {
+  text-decoration: none;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+body.zen-mode-active a:hover {
+  border-bottom-color: rgba(37, 99, 235, 0.8);
+}
+
+/* Additional focus enhancements for dark mode */
 .dark body.zen-mode-active {
-  background-color: #1A1F2C;
-  color: #F1F0FB;
-}
-
-.dark body.zen-mode-active .bg-gray-900,
-.dark body.zen-mode-active .bg-gray-800 {
-  background-color: #1A1F2C !important;
+  --zen-text-color: #E8E9F3;
 }
 
 .dark body.zen-mode-active .text-gray-300,
 .dark body.zen-mode-active .text-gray-200,
 .dark body.zen-mode-active .text-gray-100 {
-  color: #F1F0FB !important;
+  color: var(--zen-text-color) !important;
 }
 
-/* Enhance card readability in dark mode */
-.dark body.zen-mode-active .bg-gray-800 {
-  background-color: #262b38 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+/* Improve content card visibility in zen mode */
+body.zen-mode-active .Card,
+body.zen-mode-active .card {
+  border: none !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(8px);
+}
+
+.dark body.zen-mode-active .Card,
+.dark body.zen-mode-active .card {
+  background: rgba(30, 34, 45, 0.8) !important;
 }
