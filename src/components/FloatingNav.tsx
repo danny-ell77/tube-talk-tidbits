@@ -1,6 +1,5 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, Clock, History, GripHorizontal, Meditation } from "lucide-react";
+import { Plus, Clock, History, GripHorizontal, Headphones } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FloatingNavProps {
@@ -136,7 +135,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
           </button>
         ))}
         
-        {/* Zen Mode Button */}
+        {/* Zen Mode Button - Updated with Headphones icon */}
         <button
           onClick={onZenModeToggle}
           className={cn(
@@ -145,7 +144,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
             "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
           )}
         >
-          <Meditation className="h-5 w-5 flex-shrink-0" />
+          <Headphones className="h-5 w-5 flex-shrink-0" />
           <span className={cn(
             "whitespace-nowrap transition-opacity duration-300",
             expanded ? "opacity-100" : "opacity-0"
