@@ -19,7 +19,10 @@ const HeroSection = () => {
               Get Started for Free
             </Button>
           </Link>
-          <Link to="/dashboard">
+          <Link to="/" onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
+          }}>
             <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-semibold text-lg px-8 py-6">
               Try Demo
             </Button>
