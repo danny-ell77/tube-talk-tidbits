@@ -106,6 +106,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
               <SelectItem value="tldr">TLDR</SelectItem>
               <SelectItem value="key_insights">Key Insights</SelectItem>
               <SelectItem value="comprehensive">Comprehensive</SelectItem>
+              <SelectItem value="article">Article Format</SelectItem>
               <SelectItem value="custom">Custom Prompt</SelectItem>
             </SelectContent>
           </Select>

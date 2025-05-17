@@ -1,3 +1,4 @@
+
 /**
  * Format the summary type into a display-friendly string
  */
@@ -9,6 +10,8 @@ export const formatType = (type: string): string => {
       return 'Key Insights';
     case 'comprehensive':
       return 'Comprehensive Summary';
+    case 'article':
+      return 'Article Format';
     case 'custom':
       return 'Custom Summary';
     default:
@@ -37,6 +40,15 @@ export const formatContent = (content: string, type: string, format: "html" | "m
       __html: `<ul class="list-disc pl-5 space-y-2">
         ${points.map(point => `<li>${point}</li>`).join('')}
       </ul>` 
+    };
+  }
+  
+  // Article format with enhanced styling
+  if (type === 'article') {
+    return {
+      __html: `<article class="prose prose-lg dark:prose-invert max-w-none">
+        ${content}
+      </article>`
     };
   }
   
