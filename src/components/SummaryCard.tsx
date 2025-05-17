@@ -17,6 +17,7 @@ interface SummaryCardProps {
   model?: string;
   customPrompt?: string;
   outputFormat?: "html" | "markdown";
+  creator?: string;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ 
@@ -27,7 +28,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   timestamp,
   model,
   customPrompt,
-  outputFormat = "html"
+  outputFormat = "html",
+  creator
 }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
@@ -46,15 +48,21 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   };
 
   const formattedContent = formatContent(content, type, outputFormat);
+  
+  // Extract video title from URL if not provided
+  const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
       <CardHeader className="bg-digest-blue text-white rounded-t-lg">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-xl">{title}</CardTitle>
+            <CardTitle className="text-xl">{displayTitle}</CardTitle>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-sm opacity-80">{formatType(type)}</span>
+              {creator && (
+                <span className="text-sm opacity-80">by {creator}</span>
+              )}
               {model && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${getModelBadgeClass()}`}>
                   {model.charAt(0).toUpperCase() + model.slice(1)} Model
@@ -83,7 +91,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         </div>
       </CardContent>
       <CardFooter className="bg-gray-50 rounded-b-lg flex justify-end gap-2">
-        <ExportButton content={content} title={title} />
+        <ExportButton content={content} title={displayTitle} />
         <Button variant="outline" onClick={copyToClipboard} className="flex items-center gap-2">
           <Copy className="h-4 w-4" />
           Copy

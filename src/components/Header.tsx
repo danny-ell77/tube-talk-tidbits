@@ -10,12 +10,13 @@ import { useAuth } from '@/contexts/AuthContext';
 interface HeaderProps {
   transparent?: boolean;
   user?: any; // For backward compatibility
+  hideUserInfo?: boolean;
 }
 
-const Header = ({ transparent = false }: HeaderProps) => {
+const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const isLoggedIn = !!user;
+  const isLoggedIn = !!user && !hideUserInfo;
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -69,6 +70,20 @@ const Header = ({ transparent = false }: HeaderProps) => {
                 {user.credits} credits
               </div>
               <UserAvatar user={user} onLogout={handleLogout} />
+            </div>
+          ) : hideUserInfo ? (
+            <div className="flex gap-2">
+              <Link to="/login">
+                <Button 
+                  variant={transparent && !scrolled ? "outline" : "ghost"} 
+                  className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button>Sign up</Button>
+              </Link>
             </div>
           ) : (
             <div className="flex gap-2">

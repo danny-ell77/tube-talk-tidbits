@@ -11,7 +11,7 @@ import FooterSection from '@/components/landing/FooterSection';
 const Landing = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans text-foreground">
-      <Header transparent />
+      <Header transparent hideUserInfo />
       
       <HeroSection />
       <FeaturesSection />

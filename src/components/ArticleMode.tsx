@@ -12,7 +12,7 @@ interface ArticleModeProps {
 }
 
 const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
-  const { title, type, content, videoUrl, timestamp, model, outputFormat, thumbnailUrl } = result;
+  const { title, type, content, videoUrl, timestamp, model, outputFormat, thumbnailUrl, creator } = result;
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
@@ -32,6 +32,9 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
       return <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />;
     }
   };
+  
+  // Use provided title or extract from URL
+  const displayTitle = title || `Video: ${videoUrl.split('v=')[1]?.split('&')[0]}`;
 
   return (
     <article className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
@@ -39,7 +42,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
       <div className="relative w-full h-64 md:h-80 overflow-hidden">
         <img 
           src={thumbnailUrl || `https://img.youtube.com/vi/${videoUrl.split('v=')[1]?.split('&')[0]}/maxresdefault.jpg`}
-          alt={title} 
+          alt={displayTitle} 
           className="w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
@@ -56,17 +59,25 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
 
       {/* Article Content */}
       <div className="p-6 md:p-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-4">{title}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-4">{displayTitle}</h1>
         
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-6">
-          <a 
-            href={videoUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="hover:underline flex items-center space-x-1"
-          >
-            <span>Source: YouTube</span>
-          </a>
+          <div className="flex items-center gap-2">
+            <a 
+              href={videoUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              Source: YouTube
+            </a>
+            {creator && (
+              <>
+                <span>•</span>
+                <span>by {creator}</span>
+              </>
+            )}
+          </div>
           <span>{timestamp}</span>
         </div>
         
