@@ -6,6 +6,7 @@ import SummaryCard from '@/components/SummaryCard';
 import LoadingState from '@/components/LoadingState';
 import FloatingNav from '@/components/FloatingNav';
 import ZenMode from '@/components/ZenMode';
+import ArticleMode from '@/components/ArticleMode';
 import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
@@ -17,6 +18,9 @@ interface DigestPageProps {
   showSaved?: boolean;
 }
 
+// Display modes for digest results
+type DisplayMode = "standard" | "zen" | "article";
+
 const Digest = ({ showSaved = false }: DigestPageProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +30,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   const [history, setHistory] = useState<DigestResult[]>([]);
   const [activeTab, setActiveTab] = useState<string>(showSaved ? "history" : "new");
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(user?.isPremium || false);
-  const [isZenMode, setIsZenMode] = useState<boolean>(false);
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("standard");
   
   useEffect(() => {
     // Handle case where result is passed via location state (from demo section)
@@ -57,7 +61,13 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     }
   }, [history]);
 
-  const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard") => {
+  const handleSubmit = async (
+    url: string, 
+    type: string, 
+    customPrompt?: string, 
+    model: string = "standard",
+    outputFormat: "html" | "markdown" = "html"
+  ) => {
     // Validate YouTube URL
     if (!isValidYoutubeUrl(url)) {
       toast.error("Invalid YouTube URL. Please enter a valid URL.");
@@ -66,7 +76,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
 
     setIsLoading(true);
     try {
-      const result = await generateDigest(url, type, customPrompt, model);
+      const result = await generateDigest(url, type, customPrompt, model, outputFormat);
       setCurrentResult(result);
       
       setHistory(prev => {
@@ -103,12 +113,15 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     toast.success("History cleared");
   };
 
-  const toggleZenMode = () => {
-    // Only toggle Zen Mode if viewing a current summary
+  const toggleDisplayMode = (mode: DisplayMode) => {
+    // Only toggle display mode if viewing a current summary
     if (activeTab === "current" && currentResult) {
-      setIsZenMode(prev => !prev);
-      if (!isZenMode) {
+      setDisplayMode(mode);
+      
+      if (mode === "zen") {
         toast.success("Focus mode activated. Enjoy focused reading.");
+      } else if (mode === "article") {
+        toast.success("Article mode activated. Content displayed as an article.");
       }
     }
   };
@@ -127,7 +140,19 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
           </div>
         );
       case "current":
-        return currentResult ? <SummaryCard {...currentResult} /> : null;
+        if (currentResult) {
+          // Choose the display mode
+          if (displayMode === "zen") {
+            // Zen mode is rendered as a modal overlay
+            return <SummaryCard {...currentResult} />;
+          } else if (displayMode === "article") {
+            return <ArticleMode result={currentResult} />;
+          } else {
+            // Standard mode
+            return <SummaryCard {...currentResult} />;
+          }
+        }
+        return null;
       case "history":
         return (
           <div className="space-y-4">
@@ -157,6 +182,38 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       default:
         return null;
     }
+  };
+
+  // Options for the display mode selector
+  const displayModeOptions = [
+    { id: "standard", label: "Standard" },
+    { id: "zen", label: "Focus Mode" },
+    { id: "article", label: "Article Mode" }
+  ];
+
+  // Display mode selector component
+  const DisplayModeSelector = () => {
+    if (activeTab !== "current" || !currentResult) return null;
+    
+    return (
+      <div className="mb-4">
+        <div className="inline-flex bg-gray-100 dark:bg-gray-800 p-1 rounded-md">
+          {displayModeOptions.map((mode) => (
+            <button
+              key={mode.id}
+              onClick={() => toggleDisplayMode(mode.id as DisplayMode)}
+              className={`px-3 py-1 text-sm rounded-md ${
+                displayMode === mode.id 
+                  ? "bg-white dark:bg-gray-700 shadow-sm" 
+                  : "text-gray-600 dark:text-gray-300"
+              }`}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -192,20 +249,23 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
               current: !currentResult,
               history: history.length === 0
             }}
-            onZenModeToggle={toggleZenMode}
-            isZenMode={isZenMode}
+            onZenModeToggle={() => toggleDisplayMode("zen")}
+            isZenMode={displayMode === "zen"}
           />
           
-          <div className="mt-8">
+          {/* Display Mode Selector */}
+          <DisplayModeSelector />
+          
+          <div className="mt-4">
             {renderContent()}
           </div>
         </div>
       </div>
       
-      {/* Updated ZenMode Component */}
+      {/* Zen Mode Component - Rendered as a modal overlay */}
       <ZenMode 
-        isActive={isZenMode} 
-        onClose={() => setIsZenMode(false)}
+        isActive={displayMode === "zen"} 
+        onClose={() => setDisplayMode("standard")}
         currentResult={currentResult}
       />
     </div>

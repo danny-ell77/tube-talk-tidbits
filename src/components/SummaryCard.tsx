@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
+import { formatType, formatContent } from '@/utils/formatUtils';
 
 interface SummaryCardProps {
   title: string;
@@ -15,6 +16,7 @@ interface SummaryCardProps {
   timestamp: string;
   model?: string;
   customPrompt?: string;
+  outputFormat?: "html" | "markdown";
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ 
@@ -24,50 +26,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   videoUrl, 
   timestamp,
   model,
-  customPrompt
+  customPrompt,
+  outputFormat = "html"
 }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
     toast.success("Summary copied to clipboard!");
-  };
-
-  const formatType = (type: string) => {
-    switch (type) {
-      case 'tldr':
-        return 'TLDR';
-      case 'key_insights':
-        return 'Key Insights';
-      case 'comprehensive':
-        return 'Comprehensive Summary';
-      case 'custom':
-        return 'Custom Summary';
-      default:
-        return type;
-    }
-  };
-
-  const formatContent = (content: string) => {
-    // If the content already contains HTML-like structures, just return it
-    if (content.includes('<h') || content.includes('<p') || content.includes('<ul')) {
-      return <div dangerouslySetInnerHTML={{ __html: content }} />;
-    }
-
-    // Otherwise, format the content based on the summary type
-    if (type === 'key_insights') {
-      const points = content.split('\n').filter(line => line.trim());
-      return (
-        <ul className="list-disc pl-5 space-y-2">
-          {points.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-      );
-    }
-    
-    // Format both TLDR and comprehensive summary with paragraphs
-    return content.split('\n\n').map((paragraph, index) => (
-      <p key={index} className="mb-4">{paragraph}</p>
-    ));
   };
 
   const getModelBadgeClass = () => {
@@ -80,6 +44,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const formattedContent = formatContent(content, type, outputFormat);
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
@@ -107,11 +73,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           </div>
         )}
         
-        {formatContent(content)}
+        <div dangerouslySetInnerHTML={formattedContent} />
+        
         <Separator className="my-4" />
         <div className="text-sm text-muted-foreground">
           <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{videoUrl}</a></p>
           <p>Generated: {timestamp}</p>
+          {outputFormat && <p>Format: {outputFormat.toUpperCase()}</p>}
         </div>
       </CardContent>
       <CardFooter className="bg-gray-50 rounded-b-lg flex justify-end gap-2">

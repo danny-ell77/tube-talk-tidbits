@@ -12,11 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  RadioGroup,
+  RadioGroupItem
+} from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import YouTubePreviewCard from './YouTubePreviewCard';
 import { isValidYoutubeUrl, extractVideoId } from '@/utils/youtubeUtils';
 
 interface YoutubeInputProps {
-  onSubmit: (url: string, type: string, customPrompt?: string, model?: string) => void;
+  onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => void;
   isLoading: boolean;
   isPremium?: boolean;
 }
@@ -26,6 +31,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
   const [summaryType, setSummaryType] = useState('tldr');
   const [customPrompt, setCustomPrompt] = useState('');
   const [model, setModel] = useState('standard');
+  const [outputFormat, setOutputFormat] = useState<"html" | "markdown">("html");
   const [showCustomPrompt, setShowCustomPrompt] = useState(false);
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
@@ -63,7 +69,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     const prompt = showCustomPrompt && customPrompt.trim() ? customPrompt : undefined;
     const selectedModel = isPremium ? model : 'standard';
     
-    onSubmit(url, summaryType, prompt, selectedModel);
+    onSubmit(url, summaryType, prompt, selectedModel, outputFormat);
   };
 
   return (
@@ -119,6 +125,25 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
             disabled={isLoading}
           />
         )}
+        
+        {/* Output Format Selection */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-md p-4 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm font-medium mb-3">Output Format</h3>
+          <RadioGroup 
+            value={outputFormat} 
+            onValueChange={(value) => setOutputFormat(value as "html" | "markdown")}
+            className="flex space-x-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="html" id="html" />
+              <Label htmlFor="html">HTML</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="markdown" id="markdown" />
+              <Label htmlFor="markdown">Markdown</Label>
+            </div>
+          </RadioGroup>
+        </div>
         
         {isPremium && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
