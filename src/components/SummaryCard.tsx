@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
 import { formatType, formatContent } from '@/utils/formatUtils';
-import { marked } from "marked"
+import { marked } from "marked";
 
 interface SummaryCardProps {
   title: string;
@@ -112,7 +111,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
               {typeof formattedContent.markdown === 'object' ? (
                 <p>{content}</p>
               ) : (
-                <div dangerouslySetInnerHTML={{ __html: marked(String(formattedContent.markdown)) }} />
+                <div dangerouslySetInnerHTML={{ __html: marked.parse(String(formattedContent.markdown)) }} />
               )}
             </div>
           ) : formattedContent.__html ? (

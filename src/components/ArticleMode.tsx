@@ -41,7 +41,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
     if (outputFormat === "markdown" && formattedContent.markdown) {
       return (
         <div className="prose dark:prose-invert max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: marked(formattedContent.markdown) }} />
+          <div dangerouslySetInnerHTML={{ __html: marked.parse(formattedContent.markdown) }} />
           <div ref={scrollRef} className="h-0" />
         </div>
       );
