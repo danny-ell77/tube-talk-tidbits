@@ -5,14 +5,14 @@ import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
 import { formatType, formatContent } from '@/utils/formatUtils';
-import ReactMarkdown from 'react-markdown';
+import { marked } from 'marked';
 
 interface ArticleModeProps {
   result: DigestResult;
 }
 
 const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
-  const { title, type, content, videoUrl, timestamp, model, outputFormat, thumbnailUrl, creator } = result;
+  const { title, type, content, videoUrl, timestamp, model, outputFormat = "markdown", thumbnailUrl, creator } = result;
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   
@@ -22,9 +22,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
       const isAtBottom = true; // Always scroll to bottom for better streaming experience
       
       if (isAtBottom) {
-        setTimeout(() => {
-          scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }, 10);
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
     }
   }, [content]); // This effect runs whenever content changes (streams in)
@@ -34,7 +32,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
     toast.success("Content copied to clipboard!");
   };
 
-  const formattedContent = formatContent(content, type, outputFormat);
+  const formattedContent = formatContent(content, type, "markdown");
 
   // Use provided title or extract from URL
   const displayTitle = title || `Video: ${videoUrl.split('v=')[1]?.split('&')[0]}`;
@@ -43,7 +41,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
     if (outputFormat === "markdown" && formattedContent.markdown) {
       return (
         <div className="prose dark:prose-invert max-w-none">
-          <ReactMarkdown>{formattedContent.markdown}</ReactMarkdown>
+          <div dangerouslySetInnerHTML={{ __html: marked(formattedContent.markdown) }} />
           <div ref={scrollRef} className="h-0" />
         </div>
       );
@@ -52,7 +50,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         <>
           <div 
             className="prose dark:prose-invert max-w-none" 
-            dangerouslySetInnerHTML={formattedContent.__html} 
+            dangerouslySetInnerHTML={formattedContent} 
           />
           <div ref={scrollRef} className="h-0" />
         </>

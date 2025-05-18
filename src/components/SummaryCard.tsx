@@ -7,7 +7,7 @@ import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
 import { formatType, formatContent } from '@/utils/formatUtils';
-import ReactMarkdown from 'react-markdown';
+import { marked } from "marked"
 
 interface SummaryCardProps {
   title: string;
@@ -29,7 +29,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   timestamp,
   model,
   customPrompt,
-  outputFormat = "html",
+  outputFormat = "markdown",
   creator
 }) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +66,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   }, [content]); // This effect runs whenever content changes (streams in)
 
   const formattedContent = formatContent(content, type, outputFormat);
+  // Debug the content type
+  console.log("Formatted Content:", formattedContent);
+  console.log("Markdown type:", formattedContent.markdown ? typeof formattedContent.markdown : 'no markdown');
 
   // Extract video title from URL if not provided
   const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
@@ -105,10 +108,17 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         >
           {formattedContent.markdown ? (
             <div className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown>{formattedContent.markdown}</ReactMarkdown>
+              {/* Convert to string to prevent React element objects from being passed directly */}
+              {typeof formattedContent.markdown === 'object' ? (
+                <p>{content}</p>
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: marked(String(formattedContent.markdown)) }} />
+              )}
             </div>
+          ) : formattedContent.__html ? (
+            <div dangerouslySetInnerHTML={{ __html: formattedContent.__html }} />
           ) : (
-            <div dangerouslySetInnerHTML={formattedContent.__html || { __html: '' }} />
+            <p>{content}</p>
           )}
         </div>
         <div ref={scrollRef} className="h-0" />

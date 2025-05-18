@@ -133,7 +133,7 @@ export const generateDigest = async (
           content += chunk;
 
           if (onUpdate) {
-            onUpdate({ ...result });
+            setTimeout(() => onUpdate({ ...result }), 1000);
           }
 
           readChunk();
