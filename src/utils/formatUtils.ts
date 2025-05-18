@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 
 /**
  * Format the summary type into a display-friendly string
@@ -23,14 +24,15 @@ export const formatType = (type: string): string => {
  * Format content based on format type and summary type
  */
 export const formatContent = (content: string, type: string, format: "html" | "markdown" = "html") => {
-  // If the content already contains HTML-like structures or it's explicitly HTML format, just return it
-  if (format === "html" && (content.includes('<h') || content.includes('<p') || content.includes('<ul'))) {
-    return { __html: content };
+  // If format is markdown and we want to keep it as markdown for the react-markdown component
+  if (format === "markdown") {
+    // Return as is for the ReactMarkdown component to render
+    return { markdown: content, __html: null };
   }
   
-  // For markdown format, wrap in pre tag but return as string
-  if (format === "markdown") {
-    return { __html: `<pre class="whitespace-pre-wrap font-sans">${content}</pre>` };
+  // If the content already contains HTML-like structures and it's explicitly HTML format, return it
+  if (format === "html" && (content.includes('<h') || content.includes('<p') || content.includes('<ul'))) {
+    return { __html: content, markdown: null };
   }
 
   // Otherwise, format the content based on the summary type
@@ -39,7 +41,8 @@ export const formatContent = (content: string, type: string, format: "html" | "m
     return { 
       __html: `<ul class="list-disc pl-5 space-y-2">
         ${points.map(point => `<li>${point}</li>`).join('')}
-      </ul>` 
+      </ul>`,
+      markdown: null
     };
   }
   
@@ -48,7 +51,8 @@ export const formatContent = (content: string, type: string, format: "html" | "m
     return {
       __html: `<article class="prose prose-lg dark:prose-invert max-w-none">
         ${content}
-      </article>`
+      </article>`,
+      markdown: null
     };
   }
   
@@ -56,6 +60,12 @@ export const formatContent = (content: string, type: string, format: "html" | "m
   return { 
     __html: content.split('\n\n')
       .map(paragraph => `<p class="mb-4">${paragraph}</p>`)
-      .join('') 
+      .join(''),
+    markdown: null
   };
+};
+
+// Utility function to check if content is empty
+export const isContentEmpty = (content: string): boolean => {
+  return !content || content.trim() === '';
 };

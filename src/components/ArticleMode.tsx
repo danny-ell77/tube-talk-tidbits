@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
-import { formatType } from '@/utils/formatUtils';
+import { formatType, formatContent } from '@/utils/formatUtils';
+import ReactMarkdown from 'react-markdown';
 
 interface ArticleModeProps {
   result: DigestResult;
@@ -18,10 +19,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
   useEffect(() => { 
     // Improved scroll behavior to always keep at the bottom as content streams in
     if (scrollRef.current && contentRef.current) {
-      const contentDiv = contentRef.current;
-      const isAtBottom = 
-        contentDiv.scrollHeight - contentDiv.clientHeight <= 
-        contentDiv.scrollTop + 50; // Within 50px of bottom
+      const isAtBottom = true; // Always scroll to bottom for better streaming experience
       
       if (isAtBottom) {
         setTimeout(() => {
@@ -36,34 +34,40 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
     toast.success("Content copied to clipboard!");
   };
 
-  const formatContent = (content: string, format: "html" | "markdown" = "html") => {
-    if (format === "markdown" || !content.includes('<')) {
-      // For markdown or plain text, wrap in pre tag for proper formatting
+  const formattedContent = formatContent(content, type, outputFormat);
+
+  // Use provided title or extract from URL
+  const displayTitle = title || `Video: ${videoUrl.split('v=')[1]?.split('&')[0]}`;
+
+  const renderContent = () => {
+    if (outputFormat === "markdown" && formattedContent.markdown) {
       return (
-        <div className="prose dark:prose-invert max-w-none" ref={contentRef}>
+        <div className="prose dark:prose-invert max-w-none">
+          <ReactMarkdown>{formattedContent.markdown}</ReactMarkdown>
+          <div ref={scrollRef} className="h-0" />
+        </div>
+      );
+    } else if (formattedContent.__html) {
+      return (
+        <>
+          <div 
+            className="prose dark:prose-invert max-w-none" 
+            dangerouslySetInnerHTML={formattedContent.__html} 
+          />
+          <div ref={scrollRef} className="h-0" />
+        </>
+      );
+    } else {
+      return (
+        <div className="prose dark:prose-invert max-w-none">
           <pre className="whitespace-pre-wrap font-sans text-base">
             {content}
             <div ref={scrollRef} className="h-0" />
           </pre>
         </div>
       );
-    } else {
-      // For HTML content, use dangerouslySetInnerHTML
-      return (
-        <>
-          <div 
-            ref={contentRef} 
-            className="prose dark:prose-invert max-w-none" 
-            dangerouslySetInnerHTML={{ __html: content }} 
-          />
-          <div ref={scrollRef} className="h-0" />
-        </>
-      );
     }
   };
-
-  // Use provided title or extract from URL
-  const displayTitle = title || `Video: ${videoUrl.split('v=')[1]?.split('&')[0]}`;
 
   return (
     <article className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
@@ -113,8 +117,8 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         <Separator className="mb-6" />
         
         {/* Content Area */}
-        <div className="article-content max-h-[600px] overflow-y-auto pr-2">
-          {formatContent(content, outputFormat)}
+        <div ref={contentRef} className="article-content max-h-[600px] overflow-y-auto pr-2">
+          {renderContent()}
         </div>
         
         <div className="mt-8 flex justify-end">

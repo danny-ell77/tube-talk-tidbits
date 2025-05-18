@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
 import { formatType, formatContent } from '@/utils/formatUtils';
+import ReactMarkdown from 'react-markdown';
 
 interface SummaryCardProps {
   title: string;
@@ -53,9 +55,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     // Improved scroll behavior to always keep at the bottom as content streams in
     if (scrollRef.current && contentRef.current) {
       const contentDiv = contentRef.current;
-      const isAtBottom = 
-        contentDiv.scrollHeight - contentDiv.clientHeight <= 
-        contentDiv.scrollTop + 50; // Within 50px of bottom
+      const isAtBottom = true; // Always scroll to bottom for better streaming experience
       
       if (isAtBottom) {
         setTimeout(() => {
@@ -101,9 +101,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         
         <div 
           ref={contentRef}
-          className="max-h-[500px] overflow-y-auto pr-2" 
-          dangerouslySetInnerHTML={formattedContent} 
-        />
+          className="max-h-[500px] overflow-y-auto pr-2"
+        >
+          {formattedContent.markdown ? (
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <ReactMarkdown>{formattedContent.markdown}</ReactMarkdown>
+            </div>
+          ) : (
+            <div dangerouslySetInnerHTML={formattedContent.__html || { __html: '' }} />
+          )}
+        </div>
         <div ref={scrollRef} className="h-0" />
         <Separator className="my-4" />
         <div className="text-sm text-muted-foreground">
