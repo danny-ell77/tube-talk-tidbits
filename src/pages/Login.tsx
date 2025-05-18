@@ -1,11 +1,22 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthForm from '@/components/auth/AuthForm';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Youtube } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect already logged in users to digest page
+  useEffect(() => {
+    if (user) {
+      navigate('/digest');
+    }
+  }, [user, navigate]);
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary px-4">
       <Card className="w-full max-w-md">

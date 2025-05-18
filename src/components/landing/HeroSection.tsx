@@ -1,9 +1,20 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/contexts/AuthContext';
 
 const HeroSection = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLoginClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (user) {
+      e.preventDefault();
+      navigate('/digest');
+    }
+  };
+
   return (
     <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-youtube to-red-700 text-white hero-curve">
       <div className="max-w-6xl mx-auto text-center pt-16 pb-12">
@@ -14,9 +25,9 @@ const HeroSection = () => {
           Extract key insights, comprehensive notes, and concise summaries from any YouTube video in seconds.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/register">
+          <Link to={user ? "/digest" : "/register"}>
             <Button className="bg-white text-youtube hover:bg-gray-100 font-semibold text-lg px-8 py-6">
-              Get Started for Free
+              {user ? "Go to Digest" : "Get Started for Free"}
             </Button>
           </Link>
           <Link to="/" onClick={(e) => {

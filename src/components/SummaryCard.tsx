@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   creator
 }) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
     toast.success("Summary copied to clipboard!");
@@ -49,13 +50,20 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      setTimeout(
-        () => scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-        , 100
-      );
+    // Improved scroll behavior to always keep at the bottom as content streams in
+    if (scrollRef.current && contentRef.current) {
+      const contentDiv = contentRef.current;
+      const isAtBottom = 
+        contentDiv.scrollHeight - contentDiv.clientHeight <= 
+        contentDiv.scrollTop + 50; // Within 50px of bottom
+      
+      if (isAtBottom) {
+        setTimeout(() => {
+          scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, 10);
+      }
     }
-  }, [content]);
+  }, [content]); // This effect runs whenever content changes (streams in)
 
   const formattedContent = formatContent(content, type, outputFormat);
 
@@ -91,7 +99,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           </div>
         )}
         
-        <div className="max-h-[500px] overflow-y-auto pr-2" dangerouslySetInnerHTML={formattedContent} />
+        <div 
+          ref={contentRef}
+          className="max-h-[500px] overflow-y-auto pr-2" 
+          dangerouslySetInnerHTML={formattedContent} 
+        />
         <div ref={scrollRef} className="h-0" />
         <Separator className="my-4" />
         <div className="text-sm text-muted-foreground">

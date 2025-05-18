@@ -51,6 +51,13 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
     navigate('/');
   };
 
+  const handleLoginClick = (e: React.MouseEvent) => {
+    if (user) {
+      e.preventDefault();
+      navigate('/digest');
+    }
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
@@ -73,7 +80,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
             </div>
           ) : hideUserInfo ? (
             <div className="flex gap-2">
-              <Link to="/login">
+              <Link to="/login" onClick={handleLoginClick}>
                 <Button 
                   variant={transparent && !scrolled ? "outline" : "ghost"} 
                   className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
@@ -81,13 +88,13 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
                   Log in
                 </Button>
               </Link>
-              <Link to="/register">
-                <Button>Sign up</Button>
+              <Link to={user ? "/digest" : "/register"}>
+                <Button>{user ? "Go to Digest" : "Sign up"}</Button>
               </Link>
             </div>
           ) : (
             <div className="flex gap-2">
-              <Link to="/login">
+              <Link to="/login" onClick={handleLoginClick}>
                 <Button 
                   variant={transparent && !scrolled ? "outline" : "ghost"} 
                   className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
@@ -95,8 +102,8 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
                   Log in
                 </Button>
               </Link>
-              <Link to="/register">
-                <Button>Sign up</Button>
+              <Link to={user ? "/digest" : "/register"}>
+                <Button>{user ? "Go to Digest" : "Sign up"}</Button>
               </Link>
             </div>
           )}

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { DigestResult } from '@/services/youtubeDigestService';
 import { Button } from '@/components/ui/button';
@@ -13,15 +12,24 @@ interface ArticleModeProps {
 
 const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
   const { title, type, content, videoUrl, timestamp, model, outputFormat, thumbnailUrl, creator } = result;
-  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  
   useEffect(() => { 
-    if (scrollRef.current) {
-      setTimeout(
-        () => scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-        , 100
-      );
+    // Improved scroll behavior to always keep at the bottom as content streams in
+    if (scrollRef.current && contentRef.current) {
+      const contentDiv = contentRef.current;
+      const isAtBottom = 
+        contentDiv.scrollHeight - contentDiv.clientHeight <= 
+        contentDiv.scrollTop + 50; // Within 50px of bottom
+      
+      if (isAtBottom) {
+        setTimeout(() => {
+          scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, 10);
+      }
     }
-  }, [content])
+  }, [content]); // This effect runs whenever content changes (streams in)
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
@@ -32,7 +40,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
     if (format === "markdown" || !content.includes('<')) {
       // For markdown or plain text, wrap in pre tag for proper formatting
       return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none" ref={contentRef}>
           <pre className="whitespace-pre-wrap font-sans text-base">
             {content}
             <div ref={scrollRef} className="h-0" />
@@ -43,7 +51,11 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
       // For HTML content, use dangerouslySetInnerHTML
       return (
         <>
-          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
+          <div 
+            ref={contentRef} 
+            className="prose dark:prose-invert max-w-none" 
+            dangerouslySetInnerHTML={{ __html: content }} 
+          />
           <div ref={scrollRef} className="h-0" />
         </>
       );
