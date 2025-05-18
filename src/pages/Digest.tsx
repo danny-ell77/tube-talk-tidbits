@@ -1,26 +1,22 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import YoutubeInput from '@/components/YoutubeInput';
-import SummaryCard from '@/components/SummaryCard';
-import LoadingState from '@/components/LoadingState';
-import FloatingNav from '@/components/FloatingNav';
-import ZenMode from '@/components/ZenMode';
-import ArticleMode from '@/components/ArticleMode';
-import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
+import ZenMode from '@/components/ZenMode';
+import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { useAuth } from '@/contexts/AuthContext';
 import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
 import '@/styles/zen-mode.css';
-import { set } from 'date-fns';
+
+// Import our new components
+import DirectoryTabs from '@/components/digest/DirectoryTabs';
+import DisplayModeSelector, { DisplayMode } from '@/components/digest/DisplayModeSelector';
+import DigestContent from '@/components/digest/DigestContent';
 
 interface DigestPageProps {
   showSaved?: boolean;
 }
-
-// Display modes for digest results
-type DisplayMode = "standard" | "zen" | "article";
 
 const Digest = ({ showSaved = false }: DigestPageProps) => {
   const location = useLocation();
@@ -152,96 +148,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     }
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "new":
-        return (
-          <div className="space-y-6">
-            <YoutubeInput 
-              onSubmit={handleSubmit} 
-              isLoading={isLoading} 
-              isPremium={isPremiumUser}
-            />
-            {isLoading && <LoadingState />}
-          </div>
-        );
-      case "current":
-        if (currentResult) {
-          // Choose the display mode
-          if (displayMode === "zen") {
-            // Zen mode is rendered as a modal overlay
-            return <SummaryCard {...currentResult} />;
-          } else if (displayMode === "article") {
-            return <ArticleMode result={currentResult} />;
-          } else {
-            // Standard mode
-            return <SummaryCard {...currentResult} />;
-          }
-        }
-        return null;
-      case "history":
-        return (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Previous Digests</h2>
-              {history.length > 0 && (
-                <button 
-                  onClick={handleClearHistory}
-                  className="text-sm text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  Clear History
-                </button>
-              )}
-            </div>
-            
-            {history.length > 0 ? (
-              history.map((item, index) => (
-                <SummaryCard key={index} {...item} />
-              ))
-            ) : (
-              <div className="text-center text-gray-500 dark:text-gray-400 p-12">
-                No digest history found. Create one to see results here.
-              </div>
-            )}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  // Options for the display mode selector
-  const displayModeOptions = [
-    { id: "standard", label: "Standard" },
-    { id: "zen", label: "Focus Mode" },
-    { id: "article", label: "Article Mode" }
-  ];
-
-  // Display mode selector component
-  const DisplayModeSelector = () => {
-    if (activeTab !== "current" || !currentResult) return null;
-    
-    return (
-      <div className="mb-4">
-        <div className="inline-flex bg-gray-100 dark:bg-gray-800 p-1 rounded-md">
-          {displayModeOptions.map((mode) => (
-            <button
-              key={mode.id}
-              onClick={() => toggleDisplayMode(mode.id as DisplayMode)}
-              className={`px-3 py-1 text-sm rounded-md ${
-                displayMode === mode.id 
-                  ? "bg-white dark:bg-gray-700 shadow-sm" 
-                  : "text-gray-600 dark:text-gray-300"
-              }`}
-            >
-              {mode.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header user={user} />
@@ -267,23 +173,35 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
             )}
           </div>
 
-          {/* Floating Navigation */}
-          <FloatingNav 
+          {/* Directory Tabs */}
+          <DirectoryTabs 
             activeTab={activeTab} 
-            onTabChange={setActiveTab} 
-            disabled={{
-              current: !currentResult,
-              history: history.length === 0
-            }}
+            setActiveTab={setActiveTab} 
+            currentResult={currentResult}
+            historyLength={history.length}
             onZenModeToggle={() => toggleDisplayMode("zen")}
             isZenMode={displayMode === "zen"}
           />
           
           {/* Display Mode Selector */}
-          <DisplayModeSelector />
+          <DisplayModeSelector 
+            activeTab={activeTab}
+            currentResult={currentResult}
+            displayMode={displayMode}
+            onDisplayModeChange={toggleDisplayMode}
+          />
           
           <div className="mt-4">
-            {renderContent()}
+            <DigestContent
+              activeTab={activeTab}
+              isLoading={isLoading}
+              currentResult={currentResult}
+              history={history}
+              displayMode={displayMode}
+              isPremiumUser={isPremiumUser}
+              onClearHistory={handleClearHistory}
+              onSubmit={handleSubmit}
+            />
           </div>
         </div>
       </div>
