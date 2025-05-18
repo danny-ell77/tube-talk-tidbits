@@ -19,6 +19,8 @@ import {
 import { Label } from "@/components/ui/label";
 import YouTubePreviewCard from './YouTubePreviewCard';
 import { isValidYoutubeUrl, extractVideoId } from '@/utils/youtubeUtils';
+import { getVideoData } from '@/services/youtubeDigestService';
+
 
 interface YoutubeInputProps {
   onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => void;
@@ -30,27 +32,41 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
   const [url, setUrl] = useState('');
   const [summaryType, setSummaryType] = useState('tldr');
   const [customPrompt, setCustomPrompt] = useState('');
+  const [videoInfo, setVideoInfo] = useState(null);
   const [model, setModel] = useState('standard');
   const [outputFormat, setOutputFormat] = useState<"html" | "markdown">("html");
   const [showCustomPrompt, setShowCustomPrompt] = useState(false);
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
 
-  // Demo video info (this would be fetched from YouTube API in a real app)
-  const demoVideoInfo = {
-    title: "How BAD is Test Driven Development? - The Standup #6",
-    channelName: "ThePrimeTime",
-    views: "103K views",
-    likes: "3.5K likes",
-    date: "May 13, 2025"
-  };
-
   useEffect(() => {
     // Validate URL and extract video ID whenever URL changes
     const id = extractVideoId(url);
     setIsValidUrl(!!id);
     setVideoId(id);
-  }, [url]);
+
+    // Reset video info when URL changes
+    setVideoInfo(null);
+
+    if (id) {
+      console.log("Fetching video data for:", url);
+      getVideoData(url)
+        .then((data) => {
+          if (data) {
+            setVideoInfo(data);
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching video data:", err);
+          toast({
+            title: "Error fetching video info",
+            description: "Could not load video information. You can still generate a digest.",
+            variant: "destructive"
+          });
+        });
+    }
+    
+  }, [url, toast]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +130,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
 
         {/* YouTube Preview Card */}
         {isValidUrl && videoId && (
-          <YouTubePreviewCard videoId={videoId} videoInfo={demoVideoInfo} />
+          <YouTubePreviewCard videoId={videoId} videoInfo={videoInfo} />
         )}
 
         {showCustomPrompt && (

@@ -24,13 +24,12 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
   const [position, setPosition] = useState({ x: 6, y: 20 });
   const navRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
   const lastMousePos = useRef({ x: 0, y: 0 });
   
   // Movement dampening factor (lower = less sensitive)
-  const SENSITIVITY = 0.7;
+  const SENSITIVITY = 0.9;
   // Minimum movement threshold in pixels to trigger an update
-  const MOVEMENT_THRESHOLD = 2;
+  const MOVEMENT_THRESHOLD = 0.5;
 
   const navItems = [
     { id: 'new', icon: Plus, label: 'New Digest', disabled: false },

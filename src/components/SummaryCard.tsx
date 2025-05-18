@@ -81,7 +81,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           </div>
         )}
         
-        <div dangerouslySetInnerHTML={formattedContent} />
+        <div className="max-h-[500px] overflow-y-auto pr-2" dangerouslySetInnerHTML={formattedContent} />
         
         <Separator className="my-4" />
         <div className="text-sm text-muted-foreground">

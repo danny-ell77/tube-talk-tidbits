@@ -20,7 +20,7 @@ const YouTubePreviewCard: React.FC<YouTubePreviewCardProps> = ({ videoId, videoI
     views: "0 views",
     likes: "0 likes",
     date: new Date().toLocaleDateString(),
-    ...videoInfo
+    ...(videoInfo || {})
   };
 
   return (

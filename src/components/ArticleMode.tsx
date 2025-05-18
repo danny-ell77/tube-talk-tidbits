@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DigestResult } from '@/services/youtubeDigestService';
 import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
@@ -13,6 +13,10 @@ interface ArticleModeProps {
 
 const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
   const { title, type, content, videoUrl, timestamp, model, outputFormat, thumbnailUrl, creator } = result;
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => { 
+    if (scrollRef.current) scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [content])
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
@@ -84,8 +88,9 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         <Separator className="mb-6" />
         
         {/* Content Area */}
-        <div className="article-content">
+        <div className="article-content max-h-[600px] overflow-y-auto pr-2">
           {formatContent(content, outputFormat)}
+          <div ref={scrollRef} id="scroll-tag"></div>
         </div>
         
         <div className="mt-8 flex justify-end">

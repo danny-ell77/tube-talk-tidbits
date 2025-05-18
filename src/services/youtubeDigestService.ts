@@ -1,6 +1,4 @@
-
-// Mock service for generating YouTube video digests
-import { isValidYoutubeUrl, extractVideoId } from '@/utils/youtubeUtils';
+// Service for connecting to YouTube video digest backend API
 
 export interface DigestResult {
   title: string;
@@ -8,77 +6,193 @@ export interface DigestResult {
   content: string;
   videoUrl: string;
   timestamp: string;
+  creator?: string;
   model?: string;
   customPrompt?: string;
   outputFormat?: "html" | "markdown";
   thumbnailUrl?: string;
-  creator?: string;  // Added this property to fix TypeScript error
 }
 
-// Function to generate a digest from a YouTube video
+// Extract YouTube video ID from URL
+const extractVideoId = (url: string): string => {
+  // Match YouTube URL patterns
+  const patterns = [
+    /(?:v=|\/)([0-9A-Za-z_-]{11}).*/,
+    /(?:embed\/)([0-9A-Za-z_-]{11})/,
+    /(?:shorts\/)([0-9A-Za-z_-]{11})/,
+    /^([0-9A-Za-z_-]{11})$/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+
+  // If no patterns match, just return the URL as-is
+  return url;
+};
+
+// Check if streaming is enabled via environment variable
+const isStreamingEnabled = () => {
+  // return import.meta.env.VITE_ENABLE_STREAMING === "true";
+  return true; // For testing purposes, always return true
+};
+
+// Function to get video thumbnail
+export const getYoutubeThumbnail = (videoId: string): string => {
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+};
+
+// Real implementation with support for streaming or regular requests
 export const generateDigest = async (
-  url: string,
+  youtubeUrl: string,
   type: string,
   customPrompt?: string,
   model: string = "standard",
-  outputFormat: "html" | "markdown" = "html"
+  outputFormat: "html" | "markdown" = "html",
+  onUpdate?: (partialResult: DigestResult) => void
 ): Promise<DigestResult> => {
-  // Validate URL
-  if (!isValidYoutubeUrl(url)) {
-    throw new Error("Invalid YouTube URL");
+  const videoId = extractVideoId(youtubeUrl);
+  const thumbnailUrl = getYoutubeThumbnail(videoId);
+
+  // Create request payload
+  const payload = {
+    video_id: videoId,
+    mode: type,
+    output_format: outputFormat,
+  };
+
+  // If custom prompt is provided, add it to payload
+  if (customPrompt) {
+    payload["prompt_template"] = customPrompt;
   }
-  
-  // In a real app, this would call a backend API to process the video
-  // For demo purposes, we're returning mock data after a delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const videoId = extractVideoId(url) || 'unknown';
-      const timestamp = new Date().toLocaleString();
-      
-      // Mock content generation based on summary type
-      let content;
-      let title;
-      
-      switch (type) {
-        case 'tldr':
-          title = "How to Build a Modern React App";
-          content = "This video demonstrates how to build a modern React application with TypeScript, Vite, and Tailwind CSS. The key takeaway is that using these tools together can significantly improve development speed and code quality. The presenter recommends this stack for both beginners and experienced developers.";
-          break;
-        case 'key_insights':
-          title = "The Future of JavaScript Frameworks";
-          content = "• React continues to dominate the frontend ecosystem but frameworks like Svelte and Solid are gaining traction\n• Server Components represent a paradigm shift in how we build React applications\n• TypeScript adoption has reached over 80% among professional JavaScript developers\n• Build tools like Vite and Turbopack are replacing webpack due to superior performance\n• AI-assisted coding tools will become standard in frontend development workflows by 2026";
-          break;
-        case 'comprehensive':
-          title = "Advanced State Management Techniques";
-          content = "<h2>Introduction to State Management</h2><p>The video begins with an overview of why state management is crucial in modern web applications. The speaker highlights common pain points such as prop drilling and state synchronization across components.</p><h2>React's Built-in Solutions</h2><p>Before diving into third-party libraries, the video covers React's native solutions including useState, useReducer, and Context API. The presenter demonstrates practical examples of when each approach is most appropriate.</p><h2>External State Management Libraries</h2><p>The video then compares Redux, Zustand, Jotai, and Recoil with code examples for each. There's a particular focus on the trade-offs between boilerplate code and flexibility.</p><h2>Server State vs. UI State</h2><p>An important distinction is made between server-derived state and UI-only state. The presenter recommends React Query or SWR for the former and simpler solutions for the latter.</p><h2>Performance Considerations</h2><p>The final section addresses performance optimization, including memoization techniques, selective rendering, and state normalization patterns.</p>";
-          break;
-        case 'article':
-          title = "Building Scalable Web Applications";
-          content = "<h2>Introduction</h2><p>In this comprehensive tutorial, we explore the architecture of scalable web applications. Starting with the fundamentals, this video walks through each layer of modern application development.</p><h2>Frontend Architecture</h2><p>The presentation begins with component design principles, emphasizing composition over inheritance. We see practical examples of how to structure React components for maximum reusability.</p><h2>State Management</h2><p>Next, the video explores various state management approaches, from Context API to external libraries. The speaker provides clear guidance on when to use each solution based on application complexity.</p><h2>Backend Integration</h2><p>The tutorial then moves to API design, covering REST vs GraphQL, with code examples demonstrating best practices for each approach. There's particular emphasis on type safety across the full stack.</p><h2>Deployment and Infrastructure</h2><p>Finally, the video covers modern deployment strategies, including containerization, serverless architectures, and edge computing. The presenter demonstrates a complete CI/CD pipeline using GitHub Actions.</p>";
-          break;
-        case 'custom':
-          title = "Custom Analysis Based On Your Prompt";
-          content = customPrompt 
-            ? `Analysis based on prompt: "${customPrompt}"\n\nThe video addresses several points related to your interests. First, it covers the fundamental concepts you asked about, providing clear examples. Second, the presenter offers practical advice that aligns with your specific questions. Finally, there are several code demonstrations that directly apply to the use cases you mentioned.`
-            : "This is a custom analysis of the video content based on your specific requirements.";
-          break;
-        default:
-          title = "YouTube Video Summary";
-          content = "This is a summary of the YouTube video content.";
-      }
-      
-      resolve({
-        title,
-        type,
-        content,
-        videoUrl: url,
-        timestamp,
-        model,
-        customPrompt,
-        outputFormat,
-        thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        creator: "ThePrimeTime" // Adding a mock creator name
-      });
-    }, 2000); // 2 second delay to simulate processing time
-  });
+
+  const videoData = await getVideoData(youtubeUrl);
+  const { title: videoTitle } = videoData;
+  const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];
+  const titleFromUrlFallback = `Video ${titleFromUrl} Summary`;
+  const title = videoTitle || titleFromUrlFallback;
+  // Extract title from YouTube URL or use default
+
+  let content = "";
+
+  if (isStreamingEnabled()) {
+    // Streaming implementation
+    console.log("Using streaming response");
+    const response = await fetch("http://localhost:8000/process/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Failed to process video");
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("Failed to get response reader");
+    }
+
+    // Create a result object that will be updated during streaming
+    const result: DigestResult = {
+      title,
+      type,
+      content: "",
+      creator: videoData.channelName,
+      videoUrl: youtubeUrl,
+      timestamp: new Date().toLocaleString(),
+      model,
+      customPrompt,
+      outputFormat,
+      thumbnailUrl,
+    };
+
+    return new Promise((resolve, reject) => {
+      const readChunk = async () => {
+        try {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            console.log("Streaming complete");
+            resolve(result);
+            return;
+          }
+
+          const chunk = new TextDecoder().decode(value);
+          result.content += chunk;
+          content += chunk;
+
+          if (onUpdate) {
+            onUpdate({ ...result });
+          }
+
+          readChunk();
+        } catch (error) {
+          console.error("Error reading chunk:", error);
+          reject(error);
+        }
+      };
+
+      readChunk();
+    });
+  } else {
+    // Non-streaming implementation (original code)
+    console.log("Using regular response");
+    const response = await fetch("http://localhost:8000/process/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Failed to process video");
+    }
+
+    const data = await response.json();
+    content = data.response;
+  }
+
+  // Return formatted digest result
+  return {
+    title,
+    type,
+    content,
+    videoUrl: youtubeUrl,
+    timestamp: new Date().toLocaleString(),
+    model,
+    customPrompt,
+    outputFormat,
+    thumbnailUrl,
+  };
+};
+
+export const getVideoData = async (youtubeUrl: string) => {
+  const videoId = extractVideoId(youtubeUrl);
+  const response = await fetch(
+    `http://localhost:8000/video-data/?video_id=${videoId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+
+  return {
+    title: data.title,
+    channelName: data.channel_title,
+    views: data.view_count,
+    likes: data.like_count,
+    date: data.published_at,
+  };
 };

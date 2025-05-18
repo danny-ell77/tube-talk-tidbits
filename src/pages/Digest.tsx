@@ -22,7 +22,6 @@ interface DigestPageProps {
 type DisplayMode = "standard" | "zen" | "article";
 
 const Digest = ({ showSaved = false }: DigestPageProps) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,9 +36,9 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     if (location.state && location.state.result) {
       setCurrentResult(location.state.result);
       setActiveTab("current");
+      location.state.result = null; // Clear state to prevent re-render
     }
     
-    // Load history from localStorage
     const savedHistory = localStorage.getItem('youtubeDigestHistory');
     if (savedHistory) {
       try {
@@ -49,7 +48,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       }
     }
     
-    // Update premium status if user is logged in
     if (user) {
       setIsPremiumUser(user.isPremium);
     }
@@ -75,8 +73,39 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     }
 
     setIsLoading(true);
+    setActiveTab("current");
+    
+    // Create initial result object to show loading state with streaming content
+    const initialResult = {
+      title: "Generating digest...",
+      type,
+      content: "",
+      videoUrl: url,
+      timestamp: new Date().toLocaleString(),
+      model,
+      customPrompt,
+      outputFormat
+    };
+    setCurrentResult(initialResult);
+    
     try {
-      const result = await generateDigest(url, type, customPrompt, model, outputFormat);
+      // Stream updates using the callback
+      const result = await generateDigest(
+        url, 
+        type, 
+        customPrompt, 
+        model, 
+        outputFormat, 
+        (updatedResult) => {
+          // Update UI in real-time as new content arrives
+          setCurrentResult(prev => ({
+            ...(prev || initialResult),
+            ...updatedResult
+          }));
+        }
+      );
+      
+      // Final update with complete result
       setCurrentResult(result);
       
       setHistory(prev => {
@@ -91,7 +120,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         return prev;
       });
       
-      setActiveTab("current");
       toast.success("Digest generated successfully!");
       
       // Update user credits if logged in
