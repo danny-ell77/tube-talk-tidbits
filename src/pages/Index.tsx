@@ -128,7 +128,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           <header className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <h1 className="text-3xl font-bold text-digest-blue">YouTube Digest</h1>
+              <h1 className="text-3xl font-bold text-digest-blue">Digestly</h1>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Transform lengthy YouTube videos into concise summaries, key insights, or comprehensive notes.

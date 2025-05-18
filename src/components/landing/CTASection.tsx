@@ -9,7 +9,7 @@ const CTASection = () => {
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to transform how you consume video content?</h2>
         <p className="text-xl mb-8 opacity-90">
-          Join thousands of students, professionals, and lifelong learners who use YouTube Digest to save time and extract valuable information.
+          Join thousands of students, professionals, and lifelong learners who use Digestly to save time and extract valuable information.
         </p>
         <Link to="/register">
           <Button size="lg" className="bg-white text-youtube hover:bg-gray-100">

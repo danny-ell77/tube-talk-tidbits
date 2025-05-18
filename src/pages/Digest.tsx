@@ -73,7 +73,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     }
 
     setIsLoading(true);
-    setActiveTab("current");
     
     // Create initial result object to show loading state with streaming content
     const initialResult = {
@@ -97,7 +96,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         model, 
         outputFormat, 
         (updatedResult) => {
-          // Update UI in real-time as new content arrives
+          setActiveTab("current");
           setCurrentResult(prev => ({
             ...(prev || initialResult),
             ...updatedResult
@@ -105,7 +104,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         }
       );
       
-      // Final update with complete result
       setCurrentResult(result);
       
       setHistory(prev => {

@@ -12,7 +12,7 @@ const FooterSection = () => {
           <div className="mb-8 md:mb-0">
             <div className="flex items-center gap-2 mb-4">
               <Youtube className="h-6 w-6 text-white" />
-              <h3 className="text-xl font-bold text-white">YouTube Digest</h3>
+              <h3 className="text-xl font-bold text-white">Digestly</h3>
             </div>
           </div>
           
@@ -47,7 +47,7 @@ const FooterSection = () => {
         </div>}
         
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm">© {new Date().getFullYear()} YouTube Digest. All rights reserved.</p>
+          <p className="text-sm">© {new Date().getFullYear()} Digestly. All rights reserved.</p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

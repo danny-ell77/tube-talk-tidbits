@@ -57,7 +57,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
         <Link to="/" className="flex items-center gap-2">
           <Youtube className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
           <span className={`font-bold text-lg ${textColor}`}>
-            YouTube Digest
+            Digestly
           </span>
         </Link>
 

@@ -48,7 +48,7 @@ const DemoSection = () => {
       <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl font-bold mb-4 text-center">See It In Action</h2>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto text-center">
-          Try the YouTube Digest tool with your own video or use one of our examples.
+          Try the Digestly tool with your own video or use one of our examples.
         </p>
         
         {/* Premium status toggle (for demo purposes) */}
