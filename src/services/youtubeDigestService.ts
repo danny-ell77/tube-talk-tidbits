@@ -13,6 +13,10 @@ export interface DigestResult {
   thumbnailUrl?: string;
 }
 
+const BASE_URL_LOCAL = "http://localhost:8000"; // Base URL for the backend API
+
+const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL for the backend API
+
 // Extract YouTube video ID from URL
 const extractVideoId = (url: string): string => {
   // Match YouTube URL patterns
@@ -51,7 +55,6 @@ export const generateDigest = async (
   type: string,
   customPrompt?: string,
   model: string = "standard",
-  outputFormat: "html" | "markdown" = "html",
   onUpdate?: (partialResult: DigestResult) => void
 ): Promise<DigestResult> => {
   const videoId = extractVideoId(youtubeUrl);
@@ -61,7 +64,6 @@ export const generateDigest = async (
   const payload = {
     video_id: videoId,
     mode: type,
-    output_format: outputFormat,
   };
 
   // If custom prompt is provided, add it to payload
@@ -81,11 +83,14 @@ export const generateDigest = async (
   if (isStreamingEnabled()) {
     // Streaming implementation
     console.log("Using streaming response");
-    const response = await fetch("http://localhost:8000/process/", {
+    const response = await fetch(`${BASE_URL_LOCAL}/process/stream/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1", // This header bypasses the warning
       },
+      credentials: "include",
+      mode: "cors",
       body: JSON.stringify(payload),
     });
 
@@ -109,7 +114,6 @@ export const generateDigest = async (
       timestamp: new Date().toLocaleString(),
       model,
       customPrompt,
-      outputFormat,
       thumbnailUrl,
     };
 
@@ -144,10 +148,11 @@ export const generateDigest = async (
   } else {
     // Non-streaming implementation (original code)
     console.log("Using regular response");
-    const response = await fetch("http://localhost:8000/process/", {
+    const response = await fetch(`${BASE_URL_LOCAL}/process/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1", // This header bypasses the warning
       },
       body: JSON.stringify(payload),
     });
@@ -170,7 +175,6 @@ export const generateDigest = async (
     timestamp: new Date().toLocaleString(),
     model,
     customPrompt,
-    outputFormat,
     thumbnailUrl,
   };
 };
@@ -178,11 +182,12 @@ export const generateDigest = async (
 export const getVideoData = async (youtubeUrl: string) => {
   const videoId = extractVideoId(youtubeUrl);
   const response = await fetch(
-    `http://localhost:8000/video-data/?video_id=${videoId}`,
+    `${BASE_URL_LOCAL}/video-data/?video_id=${videoId}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "1", // This header bypasses the warning
       },
     }
   );

@@ -13,6 +13,7 @@ import Header from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
 import '@/styles/zen-mode.css';
+import { set } from 'date-fns';
 
 interface DigestPageProps {
   showSaved?: boolean;
@@ -64,9 +65,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     type: string, 
     customPrompt?: string, 
     model: string = "standard",
-    outputFormat: "html" | "markdown" = "html"
   ) => {
-    // Validate YouTube URL
     if (!isValidYoutubeUrl(url)) {
       toast.error("Invalid YouTube URL. Please enter a valid URL.");
       return;
@@ -74,7 +73,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
 
     setIsLoading(true);
     
-    // Create initial result object to show loading state with streaming content
     const initialResult = {
       title: "Generating digest...",
       type,
@@ -83,7 +81,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       timestamp: new Date().toLocaleString(),
       model,
       customPrompt,
-      outputFormat
     };
     setCurrentResult(initialResult);
     
@@ -94,9 +91,13 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         type, 
         customPrompt, 
         model, 
-        outputFormat, 
         (updatedResult) => {
           setActiveTab("current");
+          if (type === "article") {
+            setDisplayMode("article");
+          } else {
+            setDisplayMode("standard");
+          }
           setCurrentResult(prev => ({
             ...(prev || initialResult),
             ...updatedResult
@@ -120,7 +121,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       
       toast.success("Digest generated successfully!");
       
-      // Update user credits if logged in
       if (user) {
         const updatedUser = { ...user, credits: Math.max(0, user.credits - 1) };
         localStorage.setItem('user', JSON.stringify(updatedUser));

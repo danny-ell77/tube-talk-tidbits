@@ -15,7 +15,12 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
   const { title, type, content, videoUrl, timestamp, model, outputFormat, thumbnailUrl, creator } = result;
   const scrollRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => { 
-    if (scrollRef.current) scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    if (scrollRef.current) {
+      setTimeout(
+        () => scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        , 100
+      );
+    }
   }, [content])
   
   const copyToClipboard = () => {
@@ -28,15 +33,23 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
       // For markdown or plain text, wrap in pre tag for proper formatting
       return (
         <div className="prose dark:prose-invert max-w-none">
-          <pre className="whitespace-pre-wrap font-sans text-base">{content}</pre>
+          <pre className="whitespace-pre-wrap font-sans text-base">
+            {content}
+            <div ref={scrollRef} className="h-0" />
+          </pre>
         </div>
       );
     } else {
       // For HTML content, use dangerouslySetInnerHTML
-      return <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />;
+      return (
+        <>
+          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
+          <div ref={scrollRef} className="h-0" />
+        </>
+      );
     }
   };
-  
+
   // Use provided title or extract from URL
   const displayTitle = title || `Video: ${videoUrl.split('v=')[1]?.split('&')[0]}`;
 
@@ -90,7 +103,6 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         {/* Content Area */}
         <div className="article-content max-h-[600px] overflow-y-auto pr-2">
           {formatContent(content, outputFormat)}
-          <div ref={scrollRef} id="scroll-tag"></div>
         </div>
         
         <div className="mt-8 flex justify-end">

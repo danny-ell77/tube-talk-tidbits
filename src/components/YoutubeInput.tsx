@@ -1,10 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Youtube } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,
@@ -12,14 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  RadioGroup,
-  RadioGroupItem
-} from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import YouTubePreviewCard from './YouTubePreviewCard';
-import { isValidYoutubeUrl, extractVideoId } from '@/utils/youtubeUtils';
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
 import { getVideoData } from '@/services/youtubeDigestService';
+import { extractVideoId } from '@/utils/youtubeUtils';
+import { Youtube } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import YouTubePreviewCard from './YouTubePreviewCard';
 
 
 interface YoutubeInputProps {
@@ -28,13 +23,20 @@ interface YoutubeInputProps {
   isPremium?: boolean;
 }
 
+enum SummaryType {
+  TLDR = "tldr",
+  KEY_INSIGHTS = "key_insights",
+  COMPREHENSIVE = "comprehensive",
+  ARTICLE = "article",
+  CUSTOM = "custom",
+}
+
 const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPremium = false }) => {
   const [url, setUrl] = useState('');
-  const [summaryType, setSummaryType] = useState('tldr');
+  const [summaryType, setSummaryType] = useState<SummaryType>(SummaryType.TLDR);
   const [customPrompt, setCustomPrompt] = useState('');
   const [videoInfo, setVideoInfo] = useState(null);
   const [model, setModel] = useState('standard');
-  const [outputFormat, setOutputFormat] = useState<"html" | "markdown">("html");
   const [showCustomPrompt, setShowCustomPrompt] = useState(false);
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
@@ -85,7 +87,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     const prompt = showCustomPrompt && customPrompt.trim() ? customPrompt : undefined;
     const selectedModel = isPremium ? model : 'standard';
     
-    onSubmit(url, summaryType, prompt, selectedModel, outputFormat);
+    onSubmit(url, summaryType, prompt, selectedModel);
   };
 
   return (
@@ -108,10 +110,10 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           
           <Select
             value={summaryType}
-            onValueChange={(value) => {
+            onValueChange={(value: SummaryType) => {
               setSummaryType(value);
               // Show custom prompt option when "custom" is selected
-              setShowCustomPrompt(value === "custom");
+              setShowCustomPrompt(value === SummaryType.CUSTOM);
             }}
             disabled={isLoading}
           >
@@ -143,7 +145,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           />
         )}
         
-        {/* Output Format Selection */}
+        {/* Output Format Selection
         <div className="bg-gray-50 dark:bg-gray-800 rounded-md p-4 border border-gray-200 dark:border-gray-700">
           <h3 className="text-sm font-medium mb-3">Output Format</h3>
           <RadioGroup 
@@ -160,7 +162,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
               <Label htmlFor="markdown">Markdown</Label>
             </div>
           </RadioGroup>
-        </div>
+        </div> */}
         
         {isPremium && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">

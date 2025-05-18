@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +31,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   outputFormat = "html",
   creator
 }) => {
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
     toast.success("Summary copied to clipboard!");
@@ -47,8 +48,17 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      setTimeout(
+        () => scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        , 100
+      );
+    }
+  }, [content]);
+
   const formattedContent = formatContent(content, type, outputFormat);
-  
+
   // Extract video title from URL if not provided
   const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
 
@@ -82,7 +92,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         )}
         
         <div className="max-h-[500px] overflow-y-auto pr-2" dangerouslySetInnerHTML={formattedContent} />
-        
+        <div ref={scrollRef} className="h-0" />
         <Separator className="my-4" />
         <div className="text-sm text-muted-foreground">
           <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{videoUrl}</a></p>
