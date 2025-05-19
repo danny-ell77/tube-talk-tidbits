@@ -40,8 +40,8 @@ const extractVideoId = (url: string): string => {
 
 // Check if streaming is enabled via environment variable
 const isStreamingEnabled = () => {
-  // return import.meta.env.VITE_ENABLE_STREAMING === "true";
-  return true; // For testing purposes, always return true
+  return import.meta.env.VITE_APP_ENABLE_STREAMING === "true";
+  // return true; // For testing purposes, always return true
 };
 
 // Function to get video thumbnail
@@ -64,6 +64,7 @@ export const generateDigest = async (
   const payload = {
     video_id: videoId,
     mode: type,
+    tags: [],
   };
 
   // If custom prompt is provided, add it to payload
@@ -72,11 +73,12 @@ export const generateDigest = async (
   }
 
   const videoData = await getVideoData(youtubeUrl);
-  const { title: videoTitle } = videoData;
+  const { title: videoTitle, tags } = videoData;
   const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];
   const titleFromUrlFallback = `Video ${titleFromUrl} Summary`;
   const title = videoTitle || titleFromUrlFallback;
   // Extract title from YouTube URL or use default
+  payload.tags = tags || [];
 
   let content = "";
 
@@ -109,7 +111,7 @@ export const generateDigest = async (
       title,
       type,
       content: "",
-      creator: videoData.channelName,
+      creator: "",
       videoUrl: youtubeUrl,
       timestamp: new Date().toLocaleString(),
       model,
@@ -195,6 +197,7 @@ export const getVideoData = async (youtubeUrl: string) => {
 
   return {
     title: data.title,
+    tags: data.tags,
     channelName: data.channel_title,
     views: data.view_count,
     likes: data.like_count,

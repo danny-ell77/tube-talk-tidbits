@@ -8,8 +8,6 @@ import { generateDigest, DigestResult } from '@/services/youtubeDigestService';
 import { useAuth } from '@/contexts/AuthContext';
 import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
 import '@/styles/zen-mode.css';
-
-// Import our new components
 import DirectoryTabs from '@/components/digest/DirectoryTabs';
 import DisplayModeSelector, { DisplayMode } from '@/components/digest/DisplayModeSelector';
 import DigestContent from '@/components/digest/DigestContent';
@@ -29,7 +27,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("standard");
   
   useEffect(() => {
-    // Handle case where result is passed via location state (from demo section)
     if (location.state && location.state.result) {
       setCurrentResult(location.state.result);
       setActiveTab("current");
@@ -173,7 +170,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
             )}
           </div>
 
-          {/* Directory Tabs */}
           <DirectoryTabs 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
@@ -183,7 +179,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
             isZenMode={displayMode === "zen"}
           />
           
-          {/* Display Mode Selector */}
           <DisplayModeSelector 
             activeTab={activeTab}
             currentResult={currentResult}
@@ -206,7 +201,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         </div>
       </div>
       
-      {/* Zen Mode Component - Rendered as a modal overlay */}
       <ZenMode 
         isActive={displayMode === "zen"} 
         onClose={() => setDisplayMode("standard")}
