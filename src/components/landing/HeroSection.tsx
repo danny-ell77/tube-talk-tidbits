@@ -16,7 +16,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-youtube to-red-700 text-white hero-curve">
+    <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-red-600 to-red-700 text-white hero-curve">
       <div className="max-w-6xl mx-auto text-center pt-16 pb-12">
         <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-white">
           Transform YouTube Videos into Digestible Summaries
@@ -26,7 +26,7 @@ const HeroSection = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to={user ? "/digest" : "/register"}>
-            <Button className="bg-white text-youtube hover:bg-gray-100 font-semibold text-lg px-8 py-6">
+            <Button className="bg-white text-red-600 hover:bg-gray-100 font-semibold text-lg px-8 py-6">
               {user ? "Go to Digest" : "Get Started for Free"}
             </Button>
           </Link>

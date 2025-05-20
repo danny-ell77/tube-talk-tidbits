@@ -5,6 +5,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
 @layer base {
   :root {
@@ -17,7 +18,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 0 100% 50%; /* YouTube Red */
+    --primary: 0 100% 50%; /* Red */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -58,7 +59,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 0 100% 50%; /* YouTube Red */
+    --primary: 0 100% 50%; /* Red */
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -108,16 +109,16 @@
 }
 
 .digest-bg-gradient {
-  background: linear-gradient(to bottom right, #FF0000, #CC0000);
+  background: linear-gradient(to bottom right, #e53e3e, #c53030);
 }
 
 /* CTA and Footer gradient */
 /* .cta-footer-gradient {
-  background: linear-gradient(to bottom, #FF0000, #f35454);
+  background: linear-gradient(to bottom, #e53e3e, #f56565);
 } */
 
 .summary-container h2 {
-  @apply text-xl font-semibold mt-4 mb-2 text-youtube dark:text-red-400;
+  @apply text-xl font-semibold mt-4 mb-2 text-red-600 dark:text-red-400;
 }
 
 .summary-container ul {

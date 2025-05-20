@@ -33,6 +33,10 @@ export default {
 					'ui-monospace',
 					'SFMono-Regular',
 					'monospace'
+				],
+				pacifico: [
+					'Pacifico',
+					'cursive'
 				]
 			},
 			colors: {

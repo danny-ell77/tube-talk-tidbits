@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserAvatar from './auth/UserAvatar';
-import { Youtube } from "lucide-react";
+import { Cookie } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -62,8 +62,8 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <Youtube className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
-          <span className={`font-bold text-lg ${textColor}`}>
+          <Cookie className={`h-6 w-6 ${scrolled ? 'text-red-600' : transparent ? 'text-white' : 'text-red-600'}`} />
+          <span className={`font-pacifico text-lg ${textColor}`}>
             Digestly
           </span>
         </Link>
