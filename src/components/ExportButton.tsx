@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { FileText, Download, File } from "lucide-react";
+import { FileText, Download, File, Cookie } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 
@@ -35,7 +35,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ content, title }) => {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
+          <Cookie className="cookie-btn-icon h-4 w-4" />
           Export
         </Button>
       </PopoverTrigger>
@@ -45,14 +45,14 @@ const ExportButton: React.FC<ExportButtonProps> = ({ content, title }) => {
             onClick={exportToMarkdown}
             className="flex items-center gap-2 p-3 hover:bg-gray-100 transition-colors w-full text-left"
           >
-            <FileText className="h-4 w-4" />
+            <Cookie className="h-4 w-4 cookie-btn-icon" />
             Markdown (.md)
           </button>
           <button 
             onClick={exportToPDF}
             className="flex items-center gap-2 p-3 hover:bg-gray-100 transition-colors w-full text-left"
           >
-            <File className="h-4 w-4" />
+            <Cookie className="h-4 w-4 cookie-btn-icon" />
             PDF (.pdf)
           </button>
         </div>

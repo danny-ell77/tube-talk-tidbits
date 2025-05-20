@@ -11,7 +11,7 @@ import AlternativeCTASection from '@/components/landing/AlternativeCTASection';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans text-foreground">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-foreground">
       <Header transparent hideUserInfo />
       
       <HeroSection />
