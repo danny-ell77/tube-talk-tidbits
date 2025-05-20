@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,10 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { getVideoData } from '@/services/youtubeDigestService';
 import { extractVideoId } from '@/utils/youtubeUtils';
-import { Youtube } from "lucide-react";
+import { Cookie } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 import YouTubePreviewCard from './YouTubePreviewCard';
-
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface YoutubeInputProps {
   onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => void;
@@ -40,6 +39,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
   const [showCustomPrompt, setShowCustomPrompt] = useState(false);
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Validate URL and extract video ID whenever URL changes
@@ -94,11 +94,11 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     <div className="w-full max-w-3xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center space-x-2">
-          <Youtube className="h-6 w-6 text-youtube" />
+          <Cookie className="h-6 w-6 text-red-600" />
           <h2 className="text-xl font-semibold">Enter YouTube URL</h2>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center space-x-2'}`}>
           <Input
             type="text"
             placeholder="https://www.youtube.com/watch?v=..."
@@ -117,7 +117,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
             }}
             disabled={isLoading}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className={isMobile ? "w-full" : "w-[180px]"}>
               <SelectValue placeholder="Summary Type" />
             </SelectTrigger>
             <SelectContent>
@@ -144,25 +144,6 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
             disabled={isLoading}
           />
         )}
-        
-        {/* Output Format Selection
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-md p-4 border border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm font-medium mb-3">Output Format</h3>
-          <RadioGroup 
-            value={outputFormat} 
-            onValueChange={(value) => setOutputFormat(value as "html" | "markdown")}
-            className="flex space-x-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="html" id="html" />
-              <Label htmlFor="html">HTML</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="markdown" id="markdown" />
-              <Label htmlFor="markdown">Markdown</Label>
-            </div>
-          </RadioGroup>
-        </div> */}
         
         {isPremium && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">

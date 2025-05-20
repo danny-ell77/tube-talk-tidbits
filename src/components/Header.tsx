@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <Cookie className={`h-6 w-6 ${scrolled ? 'text-red-600' : transparent ? 'text-white' : 'text-red-600'}`} />
-          <span className={`font-pacifico text-lg ${textColor}`}>
+          <span className={`font-pacifico text-2xl font-bold ${textColor}`}>
             Digestly
           </span>
         </Link>

@@ -23,8 +23,9 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [position, setPosition] = useState({ x: 6, y: 20 });
+  const [isDragging, setIsDragging] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
+  const dragRef = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
   
   // Movement dampening factor (lower = less sensitive)
@@ -43,7 +44,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging.current && navRef.current) {
+      if (dragRef.current && navRef.current) {
         // Calculate movement delta since last position
         const deltaX = e.clientX - lastMousePos.current.x;
         const deltaY = e.clientY - lastMousePos.current.y;
@@ -76,8 +77,9 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (isDragging.current && navRef.current && e.touches[0]) {
+      if (dragRef.current && navRef.current && e.touches[0]) {
         e.preventDefault(); // Prevent page scrolling while dragging
+        setIsDragging(true);
         
         const touch = e.touches[0];
         // Calculate movement delta since last position
@@ -107,14 +109,20 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
     };
 
     const handleMouseUp = () => {
-      isDragging.current = false;
+      dragRef.current = false;
+      setIsDragging(false);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
 
     const handleTouchEnd = () => {
-      isDragging.current = false;
+      dragRef.current = false;
+      setIsDragging(false);
       document.body.style.userSelect = '';
+      // Add a small delay before allowing clicks again
+      setTimeout(() => {
+        setIsDragging(false);
+      }, 100);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -132,7 +140,8 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     if (navRef.current) {
-      isDragging.current = true;
+      dragRef.current = true;
+      setIsDragging(true);
       
       if ('touches' in e) {
         // Touch event
@@ -160,25 +169,25 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
         top: `${position.y}rem`, 
         left: `${position.x}rem`,
       }}
-      onMouseEnter={() => setExpanded(true)}
+      onMouseEnter={() => !isDragging && setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
       <div className="py-3 sm:py-2"> {/* Added more padding on mobile */}
         {navItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => !item.disabled && onTabChange(item.id)}
-            disabled={item.disabled}
+            onClick={() => !isDragging && !item.disabled && onTabChange(item.id)}
+            disabled={item.disabled || isDragging}
             className={cn(
               "w-full flex items-center gap-3 px-3 py-2.5 sm:py-2 text-left", // Larger touch targets on mobile
-              activeTab === item.id ? "text-purple-600 dark:text-purple-400" : "text-gray-600 dark:text-gray-300",
-              item.disabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+              activeTab === item.id ? "text-red-600 dark:text-red-400" : "text-gray-600 dark:text-gray-300",
+              item.disabled || isDragging ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
               "focus:outline-none"
             )}
           >
             <item.icon className="h-5 w-5 flex-shrink-0" />
             <span className={cn(
-              "whitespace-nowrap transition-opacity duration-300",
+              "whitespace-nowrap transition-opacity duration-300 font-medium",
               expanded ? "opacity-100" : "opacity-0"
             )}>
               {item.label}
@@ -188,18 +197,18 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
         
         {/* Focus Mode Button */}
         <button
-          onClick={onZenModeToggle}
-          disabled={isZenModeDisabled}
+          onClick={() => !isDragging && !isZenModeDisabled && onZenModeToggle()}
+          disabled={isZenModeDisabled || isDragging}
           className={cn(
             "w-full flex items-center gap-3 px-3 py-2.5 sm:py-2 text-left", // Larger touch targets on mobile
             isZenMode ? "text-green-600 dark:text-green-400" : "text-gray-600 dark:text-gray-300",
-            isZenModeDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+            isZenModeDisabled || isDragging ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
             "focus:outline-none"
           )}
         >
           <Headphones className="h-5 w-5 flex-shrink-0" />
           <span className={cn(
-            "whitespace-nowrap transition-opacity duration-300",
+            "whitespace-nowrap transition-opacity duration-300 font-medium",
             expanded ? "opacity-100" : "opacity-0"
           )}>
             Focus Mode
@@ -210,7 +219,8 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
       {/* Larger semi-circular drag handle for better touch targets */}
       <div 
         className={cn(
-          "absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-b-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-opacity duration-200",
+          "absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-12 h-7 bg-gray-200 dark:bg-gray-700 rounded-b-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-opacity duration-200",
+          isDragging ? "bg-red-200 dark:bg-red-800" : "",
           expanded ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
         onMouseDown={handleDragStart}
