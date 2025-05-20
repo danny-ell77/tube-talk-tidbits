@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -85,7 +86,9 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     
     // Pass the custom prompt only if it's shown and not empty
     const prompt = showCustomPrompt && customPrompt.trim() ? customPrompt : undefined;
-    const selectedModel = isPremium ? model : 'standard';
+    // Premium features disabled, always use standard model
+    // const selectedModel = isPremium ? model : 'standard';
+    const selectedModel = 'standard';
     
     onSubmit(url, summaryType, prompt, selectedModel);
   };
@@ -145,7 +148,8 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           />
         )}
         
-        {isPremium && (
+        {/* Premium options temporarily disabled */}
+        {/* {isPremium && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
             <h3 className="font-medium text-amber-800 mb-2">Premium Options</h3>
             <Select
@@ -163,7 +167,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
               </SelectContent>
             </Select>
           </div>
-        )}
+        )} */}
         
         <Button 
           type="submit" 

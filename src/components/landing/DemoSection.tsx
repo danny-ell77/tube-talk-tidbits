@@ -10,14 +10,15 @@ import { isValidYoutubeUrl } from '@/utils/youtubeUtils';
 const DemoSection = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
+  // Premium features temporarily disabled
+  // const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
   
-  // Toggle premium status (for demo purposes)
-  const togglePremiumStatus = () => {
-    const newStatus = !isPremiumUser;
-    setIsPremiumUser(newStatus);
-    toast.success(newStatus ? "Premium features activated!" : "Premium features deactivated");
-  };
+  // Premium toggle disabled
+  // const togglePremiumStatus = () => {
+  //   const newStatus = !isPremiumUser;
+  //   setIsPremiumUser(newStatus);
+  //   toast.success(newStatus ? "Premium features activated!" : "Premium features deactivated");
+  // };
   
   // Handle the submission of YouTube URL for digest
   const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard") => {
@@ -51,8 +52,8 @@ const DemoSection = () => {
           Try the Digestly tool with your own video or use one of our examples.
         </p>
         
-        {/* Premium status toggle (for demo purposes) */}
-        <div className="flex justify-center mb-6">
+        {/* Premium status toggle (temporarily disabled) */}
+        {/* <div className="flex justify-center mb-6">
           <button 
             onClick={togglePremiumStatus}
             className={`text-sm px-4 py-1 rounded-full ${
@@ -63,14 +64,14 @@ const DemoSection = () => {
           >
             {isPremiumUser ? '✨ Premium Active' : 'Activate Premium Features'}
           </button>
-        </div>
+        </div> */}
         
         <div className="bg-gray-50 dark:bg-gray-800 p-8 rounded-xl shadow-lg">
           <div className="space-y-4">
             <YoutubeInput 
               onSubmit={handleSubmit} 
               isLoading={isLoading} 
-              isPremium={isPremiumUser}
+              // isPremium={isPremiumUser} // Premium feature disabled
             />
             {isLoading && <LoadingState />}
           </div>

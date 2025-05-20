@@ -2,14 +2,14 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Youtube } from "lucide-react";
+import { Cookie } from "lucide-react";
 
 const LoadingState: React.FC = () => {
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
       <div className="p-6 flex flex-col items-center justify-center space-y-4">
         <div className="flex items-center space-x-3">
-          <Youtube className="h-8 w-8 text-youtube animate-pulse" />
+          <Cookie className="h-8 w-8 text-red-600 animate-pulse" />
           <div className="text-xl font-semibold animate-pulse-slow">Processing your video...</div>
         </div>
         

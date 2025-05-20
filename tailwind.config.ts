@@ -28,6 +28,10 @@ export default {
 					'BlinkMacSystemFont',
 					'sans-serif'
 				],
+				inter: [
+				    'Inter',
+				    'sans-serif'
+				],
 				mono: [
 					'JetBrains Mono',
 					'ui-monospace',
