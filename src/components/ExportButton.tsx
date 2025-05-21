@@ -35,7 +35,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ content, title }) => {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
-          <Cookie className="cookie-btn-icon h-4 w-4" />
+          <Download className="h-4 w-4" />
           Export
         </Button>
       </PopoverTrigger>
@@ -45,14 +45,14 @@ const ExportButton: React.FC<ExportButtonProps> = ({ content, title }) => {
             onClick={exportToMarkdown}
             className="flex items-center gap-2 p-3 hover:bg-gray-100 transition-colors w-full text-left"
           >
-            <Cookie className="h-4 w-4 cookie-btn-icon" />
+            <FileText className="h-4 w-4" />
             Markdown (.md)
           </button>
           <button 
             onClick={exportToPDF}
             className="flex items-center gap-2 p-3 hover:bg-gray-100 transition-colors w-full text-left"
           >
-            <Cookie className="h-4 w-4 cookie-btn-icon" />
+            <File className="h-4 w-4" />
             PDF (.pdf)
           </button>
         </div>

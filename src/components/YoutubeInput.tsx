@@ -173,6 +173,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           type="submit" 
           className="w-full bg-digest-blue hover:bg-digest-blue-light transition-colors"
           disabled={isLoading || !isValidUrl}
+          showCookieIcon={isLoading}
         >
           {isLoading ? 'Generating Digest...' : 'Generate Digest'}
         </Button>

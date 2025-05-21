@@ -13,20 +13,7 @@ interface ArticleModeProps {
 
 const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
   const { title, type, content, videoUrl, timestamp, model, outputFormat = "markdown", thumbnailUrl, creator } = result;
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-  
-  useEffect(() => { 
-    // Improved scroll behavior to always keep at the bottom as content streams in
-    if (scrollRef.current && contentRef.current) {
-      const isAtBottom = true; // Always scroll to bottom for better streaming experience
-      
-      if (isAtBottom) {
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }
-    }
-  }, [content]); // This effect runs whenever content changes (streams in)
-  
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
     toast.success("Content copied to clipboard!");
@@ -42,7 +29,6 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
       return (
         <div className="prose dark:prose-invert max-w-none">
           <div dangerouslySetInnerHTML={{ __html: marked.parse(formattedContent.markdown) }} />
-          <div ref={scrollRef} className="h-0" />
         </div>
       );
     } else if (formattedContent.__html) {
@@ -52,7 +38,6 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
             className="prose dark:prose-invert max-w-none" 
             dangerouslySetInnerHTML={formattedContent} 
           />
-          <div ref={scrollRef} className="h-0" />
         </>
       );
     } else {
@@ -60,7 +45,6 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         <div className="prose dark:prose-invert max-w-none">
           <pre className="whitespace-pre-wrap font-sans text-base">
             {content}
-            <div ref={scrollRef} className="h-0" />
           </pre>
         </div>
       );
@@ -114,8 +98,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         
         <Separator className="mb-6" />
         
-        {/* Content Area */}
-        <div ref={contentRef} className="article-content max-h-[600px] overflow-y-auto pr-2">
+        <div className="article-content max-h-[600px] overflow-y-auto pr-2">
           {renderContent()}
         </div>
         

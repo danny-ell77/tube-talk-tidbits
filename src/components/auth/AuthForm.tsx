@@ -118,7 +118,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isLoading || authLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading || authLoading} showCookieIcon={isLoading}>
             {isLoading || authLoading ? "Processing..." : type === 'login' ? 'Sign In' : 'Sign Up'}
           </Button>
         </form>

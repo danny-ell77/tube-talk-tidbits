@@ -52,15 +52,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
   useEffect(() => {
     // Improved scroll behavior to always keep at the bottom as content streams in
-    if (scrollRef.current && contentRef.current) {
-      const contentDiv = contentRef.current;
-      const isAtBottom = true; // Always scroll to bottom for better streaming experience
-      
-      if (isAtBottom) {
-        setTimeout(() => {
-          scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }, 10);
-      }
+    if (scrollRef.current) {
+        scrollRef.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
     }
   }, [content]); // This effect runs whenever content changes (streams in)
 

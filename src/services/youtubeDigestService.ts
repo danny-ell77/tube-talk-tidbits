@@ -83,18 +83,18 @@ export const generateDigest = async (
   let content = "";
 
   if (isStreamingEnabled()) {
-    // Streaming implementation
+    // Streaming implementation with authentication
     console.log("Using streaming response");
-    const response = await fetch(`${BASE_URL_LOCAL}/process/stream/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "1", // This header bypasses the warning
-      },
-      credentials: "include",
-      mode: "cors",
-      body: JSON.stringify(payload),
-    });
+
+    const { authenticatedFetch } = await import("@/services/authService");
+
+    const response = await authenticatedFetch(
+      `${BASE_URL_LOCAL}/process/stream/`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -148,14 +148,14 @@ export const generateDigest = async (
       readChunk();
     });
   } else {
-    // Non-streaming implementation (original code)
+    // Non-streaming implementation with authentication
     console.log("Using regular response");
-    const response = await fetch(`${BASE_URL_LOCAL}/process/`, {
+
+    // Import here to avoid circular dependencies
+    const { authenticatedFetch } = await import("@/services/authService");
+
+    const response = await authenticatedFetch(`${BASE_URL_LOCAL}/process/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "1", // This header bypasses the warning
-      },
       body: JSON.stringify(payload),
     });
 
@@ -183,14 +183,14 @@ export const generateDigest = async (
 
 export const getVideoData = async (youtubeUrl: string) => {
   const videoId = extractVideoId(youtubeUrl);
-  const response = await fetch(
+
+  // Import here to avoid circular dependencies
+  const { authenticatedFetch } = await import("@/services/authService");
+
+  const response = await authenticatedFetch(
     `${BASE_URL_LOCAL}/video-data/?video_id=${videoId}`,
     {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "1", // This header bypasses the warning
-      },
     }
   );
   const data = await response.json();

@@ -114,6 +114,10 @@
   h3 {
     @apply text-xl md:text-2xl;
   }
+  
+  p {
+    @apply text-base;
+  }
 
   /* Pacifico font specific adjustments */
   .font-pacifico {
