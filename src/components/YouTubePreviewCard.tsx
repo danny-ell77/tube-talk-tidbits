@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Check, Eye, ThumbsUp, Calendar } from 'lucide-react';
+import { abbreviateNumber } from '@/utils/textUtils';
 
 interface YouTubePreviewCardProps {
   videoId: string;
@@ -28,7 +29,7 @@ const YouTubePreviewCard: React.FC<YouTubePreviewCardProps> = ({ videoId, videoI
       <div className="flex items-start gap-4">
         <Check className="text-green-600 dark:text-green-400 mt-1 flex-shrink-0" size={20} />
         <div className="flex-1">
-          <h3 className="font-medium text-green-800 dark:text-green-300">Video: {defaultInfo.title}</h3>
+          <h3 className="font-medium text-green-800 dark:text-green-300">{defaultInfo.title}</h3>
           <div className="flex items-center gap-4 mt-2">
             <div className="relative rounded-md overflow-hidden w-32 h-24 bg-black flex-shrink-0">
               <img 
@@ -50,15 +51,15 @@ const YouTubePreviewCard: React.FC<YouTubePreviewCardProps> = ({ videoId, videoI
               <div className="flex flex-wrap gap-3 mt-2 text-xs text-gray-500 dark:text-gray-400">
                 <span className="flex items-center gap-1">
                   <Eye size={14} />
-                  {defaultInfo.views}
+                  {abbreviateNumber(+defaultInfo.views)}
                 </span>
                 <span className="flex items-center gap-1">
                   <ThumbsUp size={14} />
-                  {defaultInfo.likes}
+                  {abbreviateNumber(+defaultInfo.likes)}
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar size={14} />
-                  {defaultInfo.date}
+                  {new Date(defaultInfo.date).toDateString()}
                 </span>
               </div>
             </div>

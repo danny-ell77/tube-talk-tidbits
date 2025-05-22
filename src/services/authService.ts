@@ -28,7 +28,7 @@ export const authenticatedFetch = async (
       ...headers,
       ...(options.headers || {}),
     },
-    credentials: "include",
+    // credentials: "include",
     mode: "cors",
   };
 

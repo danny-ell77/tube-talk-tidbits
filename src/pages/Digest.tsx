@@ -146,16 +146,12 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 mt-16">
       <Header user={user} />
       
       <div className="py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Transform lengthy YouTube videos into concise summaries, key insights, or comprehensive notes.
-            </p>
-            
             {user && (
               <div className="mt-4">
                 <div className="text-sm px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md inline-flex items-center gap-2">

@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
+import ExportPDF from './ExportPDF';
 import { formatType, formatContent } from '@/utils/formatUtils';
 import { marked } from "marked";
 
@@ -50,28 +51,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     }
   };
 
-  useEffect(() => {
-    // Improved scroll behavior to always keep at the bottom as content streams in
-    if (scrollRef.current) {
-        scrollRef.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
-    }
-  }, [content]); // This effect runs whenever content changes (streams in)
-
   const formattedContent = formatContent(content, type, outputFormat);
-  // Debug the content type
-  console.log("Formatted Content:", formattedContent);
-  console.log("Markdown type:", formattedContent.markdown ? typeof formattedContent.markdown : 'no markdown');
-
-  // Extract video title from URL if not provided
   const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
-      <CardHeader className="bg-digest-blue text-white rounded-t-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl">{displayTitle}</CardTitle>
-            <div className="flex items-center gap-2 mt-1">
+      <CardHeader className="bg-digest-blue text-white rounded-t-lg p-4 sm:p-6">
+        <div className="flex items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1 sm:space-y-2">
+            <CardTitle className="text-lg sm:text-xl line-clamp-2">{displayTitle}</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm opacity-80">{formatType(type)}</span>
               {creator && (
                 <span className="text-sm opacity-80">by {creator}</span>
@@ -83,26 +72,26 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
               )}
             </div>
           </div>
-          <FileText className="h-6 w-6" />
+          <FileText className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
         </div>
       </CardHeader>
-      <CardContent className="pt-6 pb-4 summary-container">
+
+      <CardContent className="p-4 sm:p-6">
         {customPrompt && (
-          <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
-            <p className="text-xs text-gray-500 mb-1">Custom Prompt:</p>
-            <p className="text-sm italic text-gray-700">{customPrompt}</p>
+          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Custom Prompt:</p>
+            <p className="text-sm italic text-gray-700 dark:text-gray-300">{customPrompt}</p>
           </div>
         )}
         
         <div 
           ref={contentRef}
-          className="max-h-[500px] overflow-y-auto pr-2"
+          className="max-h-[500px] overflow-y-auto pr-2 prose-sm sm:prose dark:prose-invert max-w-none"
         >
           {formattedContent.markdown ? (
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              {/* Convert to string to prevent React element objects from being passed directly */}
+            <div>
               {typeof formattedContent.markdown === 'object' ? (
-                <p>{content}</p>
+                <p className="text-sm sm:text-base">{content}</p>
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: marked.parse(String(formattedContent.markdown)) }} />
               )}
@@ -110,20 +99,33 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           ) : formattedContent.__html ? (
             <div dangerouslySetInnerHTML={{ __html: formattedContent.__html }} />
           ) : (
-            <p>{content}</p>
+            <p className="text-sm sm:text-base">{content}</p>
           )}
         </div>
         <div ref={scrollRef} className="h-0" />
         <Separator className="my-4" />
-        <div className="text-sm text-muted-foreground">
-          <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{videoUrl}</a></p>
-          <p>Generated: {timestamp}</p>
+        <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
+          <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">{videoUrl}</a></p>
+          <p>Digested: {timestamp}</p>
           {outputFormat && <p>Format: {outputFormat.toUpperCase()}</p>}
         </div>
       </CardContent>
-      <CardFooter className="bg-gray-50 rounded-b-lg flex justify-end gap-2">
-        <ExportButton content={content} title={displayTitle} />
-        <Button variant="outline" onClick={copyToClipboard} className="flex items-center gap-2">
+      
+      <CardFooter className="rounded-b-lg flex flex-col sm:flex-row justify-end gap-2 p-4 sm:p-6">
+        <ExportPDF 
+          content={content} 
+          title={displayTitle} 
+          videoUrl={videoUrl}
+          timestamp={timestamp}
+        />
+        <ExportButton content={content} title={displayTitle} videoUrl={videoUrl}
+          timestamp={timestamp}
+        />
+        <Button 
+          variant="outline" 
+          onClick={copyToClipboard} 
+          className="flex items-center justify-center gap-2 w-full sm:w-auto min-h-[44px] sm:min-h-0"
+        >
           <Copy className="h-4 w-4" />
           Copy
         </Button>

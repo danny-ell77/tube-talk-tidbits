@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Youtube } from "lucide-react";
+import { FileText, Brain, ScrollText } from "lucide-react";
 import FeatureCard from './FeatureCard';
 
 const FeaturesSection = () => {
@@ -16,17 +16,17 @@ const FeaturesSection = () => {
           <FeatureCard 
             title="TL;DR Summaries" 
             description="Get the key points from any video in a concise, easy-to-read format."
-            icon={<Youtube className="h-6 w-6 text-youtube" />}
+            icon={<FileText className="h-6 w-6 text-digest-blue transition-transform group-hover:scale-110" />}
           />
           <FeatureCard 
             title="Key Insights" 
             description="Extract the most important insights and data points from educational content."
-            icon={<Youtube className="h-6 w-6 text-youtube" />}
+            icon={<Brain className="h-6 w-6 text-digest-blue transition-transform group-hover:scale-110" />}
           />
           <FeatureCard 
             title="Comprehensive Notes" 
             description="Generate detailed, structured notes from lectures and long-form content."
-            icon={<Youtube className="h-6 w-6 text-youtube" />}
+            icon={<ScrollText className="h-6 w-6 text-digest-blue transition-transform group-hover:scale-110" />}
           />
         </div>
       </div>

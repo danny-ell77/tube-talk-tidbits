@@ -16,6 +16,13 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
 }) => {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest(".theme-toggle")) {
+      setIsOpen(false);
+    }
+  });
   
   // Icon based on current theme
   const ThemeIcon = theme === "dark" 
@@ -28,7 +35,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
     <div 
       className="relative"
       onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      // onMouseLeave={() => setIsOpen(false)}
     >
       <Button
         variant={variant}

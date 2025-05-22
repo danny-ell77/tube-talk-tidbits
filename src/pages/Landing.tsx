@@ -8,6 +8,7 @@ import DemoSection from '@/components/landing/DemoSection';
 import CTASection from '@/components/landing/CTASection';
 import FooterSection from '@/components/landing/FooterSection';
 import AlternativeCTASection from '@/components/landing/AlternativeCTASection';
+import PricingSection from '@/components/landing/PricingSection';
 
 const Landing = () => {
   return (

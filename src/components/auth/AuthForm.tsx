@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
@@ -21,6 +20,15 @@ import { useAuth } from '@/contexts/AuthContext';
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email."),
   password: z.string().min(6, "Password must be at least 6 characters."),
+  confirmPassword: z.string().optional(),
+}).refine((data) => {
+  if (data.confirmPassword !== undefined) {
+    return data.password === data.confirmPassword;
+  }
+  return true;
+}, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 type AuthFormData = z.infer<typeof authSchema>;
@@ -40,6 +48,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
     defaultValues: {
       email: "",
       password: "",
+      ...(type === 'register' ? { confirmPassword: "" } : {})
     },
   });
 
@@ -58,9 +67,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
       
       // Navigate to digest page on successful login
       // For signup, the user will need to verify their email first
-      if (type === 'login') {
-        navigate('/digest');
-      }
+      navigate('/digest');
     } catch (error) {
       // Error is already handled in auth context
       console.error('Authentication error:', error);
@@ -117,6 +124,37 @@ const AuthForm = ({ type }: AuthFormProps) => {
               </FormItem>
             )}
           />
+
+          {type === 'register' && (
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        {...field} 
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <Button type="submit" className="w-full" disabled={isLoading || authLoading} showCookieIcon={isLoading}>
             {isLoading || authLoading ? "Processing..." : type === 'login' ? 'Sign In' : 'Sign Up'}

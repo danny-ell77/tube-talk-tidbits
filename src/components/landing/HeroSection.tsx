@@ -21,7 +21,7 @@ const HeroSection = () => {
         <h1 className="text-5xl md:text-6xl mb-6 text-white dark:text-white text-white font-bold ignore-theme">
           Transform YouTube Videos into Digestible Summaries
         </h1>
-        <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white text-red-50 dark:text-white/90 font-medium">
+        <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white text-red-50 dark:text-white/90 font-medium font-pacifico">
           Extract key insights, comprehensive notes, and concise summaries from any YouTube video in seconds.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

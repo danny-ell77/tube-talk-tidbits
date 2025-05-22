@@ -4,13 +4,17 @@ import { Button } from "@/components/ui/button";
 import { FileText, Download, File, Cookie } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { jsPDF } from 'jspdf';
+import { marked } from "marked";
 
 interface ExportButtonProps {
   content: string;
   title: string;
+  videoUrl: string;
+  timestamp: string;
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ content, title }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ content, title, videoUrl, timestamp }) => {
   const exportToMarkdown = () => {
     const markdownContent = content;
     const blob = new Blob([markdownContent], { type: 'text/markdown' });
@@ -26,9 +30,39 @@ const ExportButton: React.FC<ExportButtonProps> = ({ content, title }) => {
   };
 
   const exportToPDF = () => {
-    // In a real app, we would use a library like jsPDF
-    // For now, we'll just show a toast
-    toast.info("PDF export is coming soon!");
+    try {
+      const doc = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+      });
+
+      // Set up the document
+      doc.setFontSize(24);
+      doc.setTextColor(30, 64, 175); // Digest blue color
+      const titleLines = doc.splitTextToSize(title, 180);
+      doc.text(titleLines, 15, 20);
+      
+      // Add content
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      const textLines = doc.splitTextToSize(content, 180);
+      doc.text(textLines, 15, 40);
+
+      // Add metadata
+      doc.setFontSize(10);
+      doc.setTextColor(107, 114, 128); // Gray color
+      doc.text(`Source: ${videoUrl}`, 15, doc.internal.pageSize.height - 20);
+      doc.text(`Generated: ${timestamp}`, 15, doc.internal.pageSize.height - 15);
+
+      // Save the PDF
+      const filename = `${title.substring(0, 50)}_summary.pdf`;
+      doc.save(filename);
+      toast.success('PDF downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF');
+    }
   };
 
   return (

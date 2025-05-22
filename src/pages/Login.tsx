@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthForm from '@/components/auth/AuthForm';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Youtube } from 'lucide-react';
+import { Cookie } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
@@ -22,7 +22,7 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 flex flex-col items-center">
           <div className="flex items-center gap-2 mb-2">
-            <Youtube className="h-6 w-6 text-youtube" />
+            <Cookie className="h-6 w-6 text-youtube" />
             <h2 className="text-2xl font-bold">Digestly</h2>
           </div>
           <CardTitle className="text-xl">Welcome back</CardTitle>

@@ -8,8 +8,10 @@ const AlternativeCTASection = () => {
   return (
     <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900" id="pricing">
       <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl font-bold mb-4">Tried it but Not sure yet? Here's the Deal</h2>
+        <h2 className="text-3xl font-bold mb-4">Tried it but not sure yet? Here's the Deal</h2>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">
+          Lets be real you don;t need another tab open in your browser.
+          <br />
           Start with a free trial, no credit card required. Get a taste of how Digestly can revolutionize your content consumption.
         </p>
         
