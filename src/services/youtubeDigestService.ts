@@ -27,7 +27,6 @@ const BASE_URL = BASE_URL_STAGING;
 
 // Import toast here since we'll use it for error notifications
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 // Handle unauthorized errors and redirect
 const handle401Error = () => {
@@ -44,10 +43,12 @@ const handle401Error = () => {
 // Extract YouTube video ID from URL
 const extractVideoId = (url: string): string => {
   // Match YouTube URL patterns
+  // Handle YouTube's shorthand .be patterns and standard video patterns
   const patterns = [
     /(?:v=|\/)([0-9A-Za-z_-]{11}).*/,
     /(?:embed\/)([0-9A-Za-z_-]{11})/,
     /(?:shorts\/)([0-9A-Za-z_-]{11})/,
+    /(?:youtu\.be\/)([0-9A-Za-z_-]{11})/,
     /^([0-9A-Za-z_-]{11})$/,
   ];
 
