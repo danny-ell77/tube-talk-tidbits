@@ -221,10 +221,10 @@ export const getVideoData = async (youtubeUrl: string) => {
   const videoId = extractVideoId(youtubeUrl);
 
   // Import here to avoid circular dependencies
-  const { authenticatedFetch } = await import("@/services/authService");
+  // const { authenticatedFetch } = await import("@/services/authService");
 
   try {
-    const response = await authenticatedFetch(
+    const response = await fetch(
       `${BASE_URL}/video-data/?video_id=${videoId}`,
       {
         method: "GET",
