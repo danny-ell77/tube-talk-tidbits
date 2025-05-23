@@ -22,7 +22,7 @@ const SEVALLA_BASE_URL_STAGING = "https://digestly-be-dp95u.kinsta.app";
 
 const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL for the backend API
 
-const BASE_URL_STAGING = SEVALLA_BASE_URL_STAGING; // Use the staging URL for production
+const BASE_URL_STAGING = RENDER_BASE_URL_STAGING; // Use the staging URL for production
 
 const BASE_URL = BASE_URL_STAGING;
 

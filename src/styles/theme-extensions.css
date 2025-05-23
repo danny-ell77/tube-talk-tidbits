@@ -2,8 +2,6 @@
 /* Global Typography Settings */
 :root {
   --body-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  --body-text-color: #4a4a6a;
-  --heading-text-color: #2d2d3a;
 }
 
 .dark {
@@ -17,31 +15,8 @@ body {
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.01em;
-  color: var(--body-text-color);
 }
 
-/* Apply typography to common text elements but exclude .font-pacifico */
-p:not(.font-pacifico), 
-li:not(.font-pacifico) {
-  color: var(--body-text-color);
-  font-size: 1rem; /* 16px */
-}
-
-span:not(.font-pacifico), 
-div:not(.font-pacifico) {
-  color: var(--body-text-color);
-}
-
-/* Heading typography */
-h1:not(.font-pacifico):not(.ignore-theme), 
-h2:not(.font-pacifico):not(.ignore-theme), 
-h3:not(.font-pacifico):not(.ignore-theme), 
-h4:not(.font-pacifico):not(.ignore-theme), 
-h5:not(.font-pacifico):not(.ignore-theme), 
-h6:not(.font-pacifico):not(.ignore-theme) {
-  font-weight: 600;
-  color: var(--heading-text-color);
-}
 
 /* Pulsing animation for cookie icon in buttons */
 @keyframes cookie-pulse {

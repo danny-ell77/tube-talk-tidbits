@@ -182,21 +182,21 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
       {!isLoading && <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
         <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Tips for Better Results:</h3>
         <ul className="text-sm space-y-2 text-blue-700 dark:text-blue-300">
-          <li className="flex items-center gap-2">
-            <span className="block w-1.5 h-1.5 rounded-full bg-blue-400" />
-            Choose videos under 30 minutes for optimal performance
+          <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
+            <span className="block w-1 h-1 rounded-full bg-blue-400" />
+            Choose videos under 30 minutes for optimal performance.
           </li>
-          <li className="flex items-center gap-2">
-            <span className="block w-1.5 h-1.5 rounded-full bg-blue-400" />
-            Select videos that have been on YouTube for at least a few hours to ensure captions are available
+          <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
+            <span className="block w-1 h-1 rounded-full bg-blue-400" />
+            Select videos that have been on YouTube for at least a few hours.
           </li>
-          <li className="flex items-center gap-2">
-            <span className="block w-1.5 h-1.5 rounded-full bg-blue-400" />
-            Prefer videos with clear audio quality for better transcription accuracy
+          <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
+            <span className="block w-1 h-1 rounded-full bg-blue-400" />
+            Prefer videos with clear audio quality for better accuracy.
           </li>
-          <li className="flex items-center gap-2">
-            <span className="block w-1.5 h-1.5 rounded-full bg-blue-400" />
-            Educational content and tutorials typically yield the most meaningful summaries
+          <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
+            <span className="block w-1 h-1 rounded-full bg-blue-400" />
+            Educational content and tutorials typically yield the most meaningful summaries.
           </li>
         </ul>
       </div>}
