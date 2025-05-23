@@ -11,6 +11,7 @@ export interface DigestResult {
   customPrompt?: string;
   outputFormat?: "html" | "markdown";
   thumbnailUrl?: string;
+  duration?: string;
 }
 
 const BASE_URL_LOCAL = "http://localhost:8000"; // Base URL for the backend API
@@ -38,6 +39,22 @@ const handle401Error = () => {
 
   // Redirect to login - using window.location since we can't use useNavigate in a non-component
   window.location.href = "/login";
+};
+
+const parseISODuration = (isoDuration: string): string => {
+  const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+  const [, hours = 0, minutes = 0, seconds = 0] = isoDuration
+    .match(regex)
+    .map(Number);
+  console.log(hours, minutes, seconds);
+  const pad = (n) => String(n).padStart(2, "0");
+  let value = "";
+  for (const a of [hours, minutes, seconds]) {
+    if (!Number.isNaN(a)) {
+      value += `${pad(a)}:`;
+    }
+  }
+  return value.slice(0, -1);
 };
 
 // Extract YouTube video ID from URL
@@ -99,7 +116,7 @@ export const generateDigest = async (
 
   try {
     const videoData = await getVideoData(youtubeUrl);
-    const { title: videoTitle, tags } = videoData;
+    const { title: videoTitle, tags, duration } = videoData;
     const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];
     const titleFromUrlFallback = `Video ${titleFromUrl} Summary`;
     const title = videoTitle || titleFromUrlFallback;
@@ -137,6 +154,7 @@ export const generateDigest = async (
       const result: DigestResult = {
         title,
         type,
+        duration,
         content: "",
         creator: "",
         videoUrl: youtubeUrl,
@@ -205,6 +223,7 @@ export const generateDigest = async (
       title,
       type,
       content,
+      duration,
       videoUrl: youtubeUrl,
       timestamp: new Date().toLocaleString(),
       model,
@@ -244,6 +263,7 @@ export const getVideoData = async (youtubeUrl: string) => {
 
     return {
       title: data.title,
+      duration: parseISODuration(data.duration),
       tags: data.tags,
       channelName: data.channel_title,
       views: data.view_count,

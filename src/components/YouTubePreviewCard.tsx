@@ -7,6 +7,7 @@ interface YouTubePreviewCardProps {
   videoId: string;
   videoInfo?: {
     title: string;
+    duration?: string;
     channelName: string;
     views?: string;
     likes?: string;
@@ -38,7 +39,7 @@ const YouTubePreviewCard: React.FC<YouTubePreviewCardProps> = ({ videoId, videoI
                 className="object-cover w-full h-full"
               />
               <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
-                44:46
+                {defaultInfo.duration}
               </div>
             </div>
             <div className="flex-1">
