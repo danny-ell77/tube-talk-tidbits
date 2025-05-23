@@ -56,10 +56,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
-      <CardHeader className="bg-digest-blue text-white rounded-t-lg p-4 sm:p-6">
+      <CardHeader className="bg-gray-100 dark:bg-gray-800 text-white rounded-t-lg p-4 sm:p-6">
         <div className="flex items-start sm:items-center justify-between gap-4">
           <div className="space-y-1 sm:space-y-2">
-            <CardTitle className="text-lg sm:text-xl line-clamp-2">{displayTitle}</CardTitle>
+            <CardTitle className="text-lg sm:text-xl line-clamp-2 font-semibold">{displayTitle}</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm opacity-80">{formatType(type)}</span>
               {creator && (

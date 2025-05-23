@@ -11,7 +11,7 @@ interface HistoryViewProps {
 const HistoryView: React.FC<HistoryViewProps> = ({ history, onClearHistory }) => {
   return (
     <div className="space-y-4 max-w-3xl mx-auto">
-      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4 space-y-3">
+      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4 space-y-3" style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 90, zIndex: 10 }}>
         <h2 className="text-base font-semibold">Previous Digests</h2>
         <div className="flex justify-between items-center">
           <button 
