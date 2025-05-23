@@ -32,16 +32,13 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
       : Sun;
 
   return (
-    <div 
-      className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      // onMouseLeave={() => setIsOpen(false)}
-    >
+    <div className="relative theme-toggle">
       <Button
         variant={variant}
         size={size}
         aria-label="Select a theme"
         className="relative"
+        onClick={() => setIsOpen(!isOpen)}
       >
         <ThemeIcon className="h-[1.2rem] w-[1.2rem]" />
         <span className="sr-only">Toggle theme</span>
