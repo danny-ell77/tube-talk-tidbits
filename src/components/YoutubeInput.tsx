@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { getVideoData } from '@/services/youtubeDigestService';
 import { extractVideoId } from '@/utils/youtubeUtils';
-import { Cookie } from "lucide-react";
+import { Cookie, Clipboard } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 import YouTubePreviewCard from './YouTubePreviewCard';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -93,6 +92,20 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     onSubmit(url, summaryType, prompt, selectedModel);
   };
 
+  const handlePaste = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      setUrl(clipboardText);
+    } catch (error) {
+      console.error("Failed to read clipboard contents:", error);
+      toast({
+        title: "Clipboard Error",
+        description: "Could not access clipboard. Please paste manually.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -102,14 +115,25 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
         </div>
         
         <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center space-x-2'}`}>
-          <Input
-            type="text"
-            placeholder="https://www.youtube.com/watch?v=..."
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="flex-1"
-            disabled={isLoading}
-          />
+          <div className="flex-1 relative">
+            <Input
+              type="text"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="pr-10 w-full"
+              disabled={isLoading}
+            />
+            <button
+              type="button"
+              onClick={handlePaste}
+              disabled={isLoading}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 dark:hover:text-gray-300 focus:outline-none disabled:opacity-50 transition-colors"
+              title="Paste from clipboard"
+            >
+              <Clipboard className="h-4 w-4" />
+            </button>
+          </div>
           
           <Select
             value={summaryType}
