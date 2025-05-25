@@ -55,8 +55,8 @@ const ResetPassword = () => {
         // If we have an active session with recovery mode, the token is valid
         // We specifically look for a recovery session type vs normal login
         const isRecoverySession = data.session?.user?.email_confirmed_at && 
-                                 data.session?.user?.aud === 'authenticated' &&
-                                 window.location.hash.includes('type=recovery');
+                                 data.session?.user?.aud === 'authenticated'
+                                //  window.location.hash.includes('type=recovery');
                                  
         setTokenValid(!!isRecoverySession);
       } catch (err) {
@@ -101,6 +101,7 @@ const ResetPassword = () => {
       setIsLoading(false);
     }
   };
+
   if (checking) {
     return (
       <Card className="w-full max-w-md">

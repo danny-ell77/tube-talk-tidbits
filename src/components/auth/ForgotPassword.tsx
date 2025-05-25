@@ -51,16 +51,20 @@ const ForgotPassword = () => {
 
   if (emailSent) {
     return (
-      <div className="w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-4">Check Your Email</h2>
+      <Card className="w-full max-w-md text-center">
+        <CardHeader className="space-y-1 flex flex-col items-center">
+          <CardTitle className="text-2xl font-bold mb-4">Check Your Email</CardTitle>
+          </CardHeader>
+        <CardContent className="space-y-4">
         <p className="mb-6">
           We've sent password reset instructions to your email address.
           Please check your inbox and follow the link to reset your password.
         </p>
         <Button asChild>
           <Link to="/login">Return to Login</Link>
-        </Button>
-      </div>
+          </Button>
+          </CardContent>
+      </Card>
     );
   }
 
@@ -94,9 +98,9 @@ const ForgotPassword = () => {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Sending..." : "Send Reset Instructions"}
         </Button>
-        {/* <Button variant="outline" asChild> */}
+        <Button variant="outline" asChild>
           <Link to="/login">Back to Login</Link>
-        {/* </Button> */}
+        </Button>
       </div>
         </form>
               </Form>
