@@ -33,17 +33,25 @@ const DirectoryTabs: React.FC<DirectoryTabsProps> = ({
     }
   };
 
-  if (isMobile) {
-    return <BottomTabBar {...commonNavProps} />;
-  } else {
-    return (
-      <FloatingNav 
-        {...commonNavProps}
-        onZenModeToggle={onZenModeToggle}
-        isZenMode={isZenMode}
-      />
-    );
-  }
+  // if (isMobile) {
+  //   return <BottomTabBar {...commonNavProps} />;
+  // } else {
+  //   return (
+  //     <FloatingNav
+  //       {...commonNavProps}
+  //       onZenModeToggle={onZenModeToggle}
+  //       isZenMode={isZenMode}
+  //     />
+  //   );
+  // }
+  
+  return (
+    <FloatingNav 
+      {...commonNavProps}
+      onZenModeToggle={onZenModeToggle}
+      isZenMode={isZenMode}
+    />
+  );
 };
 
 export default DirectoryTabs;
