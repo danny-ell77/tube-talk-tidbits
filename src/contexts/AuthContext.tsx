@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { sendPasswordResetEmail, updatePassword } from '@/services/authService';
 
 type UserData = {
   id: string;
@@ -18,6 +18,10 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updateUserPassword: (newPassword: string) => Promise<void>;
+  updateCredits: (newCredits: number) => void;
+  refreshUserData: () => Promise<void>;
   loading: boolean;
 };
 
@@ -46,24 +50,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  // Function to get user profile data including credits
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
+      }
+      
+      return profile;
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     // First set up the auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       setSession(session);
       
       if (session?.user) {
         // Use setTimeout to prevent potential deadlocks
-        setTimeout(() => {
-          // For this app, we'll create a mock user profile
-          // In a real app, we would fetch this from a profiles table
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            name: session.user.email?.split('@')[0] || 'User',
-            isPremium: Math.random() > 0.5, // Demo: random premium status
-            credits: Math.floor(Math.random() * 50) + 10, // Demo: random credits
-          });
+        setTimeout(async () => {
+          try {
+            const profile = await fetchUserProfile(session.user.id);
+            
+            setUser({
+              id: session.user.id,
+              email: session.user.email || '',
+              name: session.user.email?.split('@')[0] || 'User',
+              isPremium: profile?.isPremium || false,
+              credits: profile?.credits || 0,
+            });
+          } catch (error) {
+            console.error('Error setting up user profile:', error);
+            setUser(null);
+          }
         }, 0);
       } else {
         setUser(null);
@@ -81,13 +111,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(data.session);
         
         if (data.session?.user) {
-          // For this app, we'll create a mock user profile 
+          const profile = await fetchUserProfile(data.session.user.id);
+          
           setUser({
             id: data.session.user.id,
             email: data.session.user.email || '',
             name: data.session.user.email?.split('@')[0] || 'User',
-            isPremium: Math.random() > 0.5, // Demo: random premium status
-            credits: Math.floor(Math.random() * 50) + 10, // Demo: random credits
+            isPremium: profile?.isPremium || false,
+            credits: profile?.credits || 0,
           });
         } else {
           setUser(null);
@@ -191,8 +222,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Reset password method - sends reset email
+  const resetPassword = async (email: string) => {
+    try {
+      setLoading(true);
+      const { error } = await sendPasswordResetEmail(email);
+      
+      if (error) throw error;
+      
+      toast.success('Password reset instructions sent to your email');
+    } catch (error: any) {
+      console.error('Error resetting password:', error);
+      toast.error(error.message || 'Failed to send password reset email');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update password method - used after reset
+  const updateUserPassword = async (newPassword: string) => {
+    try {
+      setLoading(true);
+      const { error } = await updatePassword(newPassword);
+      
+      if (error) throw error;
+      
+      toast.success('Password updated successfully');
+    } catch (error: any) {
+      console.error('Error updating password:', error);
+      toast.error(error.message || 'Failed to update password');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Update credits in user state (called when credits are updated via API)
+  const updateCredits = (newCredits: number) => {
+    if (user) {
+      setUser({
+        ...user,
+        credits: newCredits
+      });
+    }
+  };
+
+  // Refresh user data including credits
+  const refreshUserData = async () => {
+    try {
+      if (!user?.id) return;
+      
+      const profile = await fetchUserProfile(user.id);
+      
+      if (profile) {
+        setUser({
+          ...user,
+          isPremium: profile.isPremium || false,
+          credits: profile.credits || 0,
+        });
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      signIn, 
+      signUp, 
+      signOut, 
+      resetPassword, 
+      updateUserPassword, 
+      updateCredits,
+      refreshUserData,
+      loading 
+    }}>
       {children}
     </AuthContext.Provider>
   );

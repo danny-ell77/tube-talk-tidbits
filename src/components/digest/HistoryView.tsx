@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import SummaryCard from '@/components/SummaryCard';
 import { DigestResult } from '@/services/youtubeDigestService';
 import { ArrowLeft } from 'lucide-react';
@@ -9,13 +10,15 @@ interface HistoryViewProps {
 }
 
 const HistoryView: React.FC<HistoryViewProps> = ({ history, onClearHistory }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-4 max-w-3xl mx-auto">
       <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4 space-y-3" style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', position: 'sticky', top: 73, zIndex: 10 }}>
         <h2 className="text-base font-semibold">Previous Digests</h2>
         <div className="flex justify-between items-center">
           <button 
-            onClick={() => window.history.back()} 
+            onClick={() => navigate('/digest')} 
             className="border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-sm inline-flex items-center gap-1.5"
           >
             <ArrowLeft className="w-4 h-4" />

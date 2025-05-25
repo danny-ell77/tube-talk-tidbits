@@ -14,6 +14,7 @@ interface HeaderProps {
 }
 
 const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
+  let basePath = "/"
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const isLoggedIn = !!user && !hideUserInfo;
@@ -32,6 +33,8 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [scrolled]);
+
+  basePath = user ? "/digest" : "/";
 
   // Apply header styling based on scroll position and transparent prop
   const headerBg = scrolled 
@@ -61,7 +64,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={basePath} className="flex items-center gap-2">
           <Cookie className={`h-6 w-6 ${scrolled ? 'text-red-600' : transparent ? 'text-white' : 'text-red-600'}`} />
           <span className={`font-pacifico text-xl font-semibold ${textColor}`}>
             Digestly

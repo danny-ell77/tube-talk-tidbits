@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
+import { Cookie } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 
 const authSchema = z.object({
@@ -101,7 +101,14 @@ const AuthForm = ({ type }: AuthFormProps) => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                  {type === 'login' && (
+                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                      Forgot password?
+                    </Link>
+                  )}
+                </div>
                 <FormControl>
                   <div className="relative">
                     <Input 
@@ -156,7 +163,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
             />
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading || authLoading} showCookieIcon={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading || authLoading}>
+            {isLoading && <Cookie className="cookie-btn-icon" />}
             {isLoading || authLoading ? "Processing..." : type === 'login' ? 'Sign In' : 'Sign Up'}
           </Button>
         </form>

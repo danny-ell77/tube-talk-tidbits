@@ -108,6 +108,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">{videoUrl}</a></p>
           <p>Digested: {timestamp}</p>
           {outputFormat && <p>Format: {outputFormat.toUpperCase()}</p>}
+          <p className="italic mt-2 text-amber-600 dark:text-amber-400">Disclaimer: AI-generated content may contain inaccuracies. Always verify important information with the original source.</p>
         </div>
       </CardContent>
       

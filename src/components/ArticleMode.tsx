@@ -100,6 +100,11 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         
         <div className="article-content max-h-[600px] overflow-y-auto pr-2">
           {renderContent()}
+          <div className="mt-6 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
+            <p className="text-sm text-amber-700 dark:text-amber-400 italic">
+              Disclaimer: AI-generated content may contain inaccuracies. Always verify important information with the original source.
+            </p>
+          </div>
         </div>
         
         <div className="mt-8 flex justify-end">
