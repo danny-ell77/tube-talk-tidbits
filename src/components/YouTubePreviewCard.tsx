@@ -2,7 +2,7 @@
 import React from 'react';
 import { Check, Eye, ThumbsUp, Calendar } from 'lucide-react';
 import { abbreviateNumber } from '@/utils/textUtils';
-
+import PreviewCardLoadingState from './YoutubePreviewCardLoadingState';
 interface YouTubePreviewCardProps {
   videoId: string;
   videoInfo?: {
@@ -24,6 +24,10 @@ const YouTubePreviewCard: React.FC<YouTubePreviewCardProps> = ({ videoId, videoI
     date: new Date().toLocaleDateString(),
     ...(videoInfo || {})
   };
+
+  if (!videoInfo) {
+    return <PreviewCardLoadingState />;
+  }
 
   return (
     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 my-4">
