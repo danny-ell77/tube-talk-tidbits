@@ -83,3 +83,17 @@ export const formatContent = (
 export const isContentEmpty = (content: string): boolean => {
   return !content || content.trim() === "";
 };
+
+export const applyHTMLStyles = (html: string): string => {
+  return html
+    .replace(/<h1>/g, '<h1 class="text-2xl font-bold mb-4">')
+    .replace(/<h2>/g, '<h2 class="text-xl font-semibold mb-3">')
+    .replace(/<h3>/g, '<h3 class="text-lg font-medium mb-2">')
+    .replace(/<p>/g, '<p class="mb-4">')
+    .replace(/<ul>/g, '<ul class="list-disc pl-5 space-y-2">')
+    .replace(/<ol>/g, '<ol class="list-decimal pl-5 space-y-2">')
+    .replace(
+      /<pre>/g,
+      '<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4 text-sm">'
+    );
+};

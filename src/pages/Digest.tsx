@@ -11,6 +11,7 @@ import '@/styles/zen-mode.css';
 import DirectoryTabs from '@/components/digest/DirectoryTabs';
 import DisplayModeSelector, { DisplayMode } from '@/components/digest/DisplayModeSelector';
 import DigestContent from '@/components/digest/DigestContent';
+import { Metadata } from '@/components/ui/metadata';
 
 interface DigestPageProps {
   showSaved?: boolean;
@@ -148,6 +149,11 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 mt-16">
       <Header user={user} />
+
+      <Metadata
+          title="Digestly - Your YouTube Digest Companion" 
+          description="Generate concise summaries and insights from YouTube videos effortlessly. Perfect for busy learners and content enthusiasts."
+      />
       
       <div className="py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">

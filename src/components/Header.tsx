@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import UserAvatar from './auth/UserAvatar';
-import { Cookie } from "lucide-react";
+import { Cookie, Menu, X } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -19,6 +18,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
   const navigate = useNavigate();
   const isLoggedIn = !!user && !hideUserInfo;
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,8 +61,12 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ${headerBg}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-4 md:px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to={basePath} className="flex items-center gap-2">
           <Cookie className={`h-6 w-6 ${scrolled ? 'text-red-600' : transparent ? 'text-white' : 'text-red-600'}`} />
@@ -71,7 +75,8 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-4">
           <ThemeToggle variant="ghost" />
           
           {isLoggedIn ? (
@@ -111,7 +116,55 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
             </div>
           )}
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle variant="ghost" size="sm" />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="p-1" 
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <X className={`h-6 w-6 ${textColor}`} />
+            ) : (
+              <Menu className={`h-6 w-6 ${textColor}`} />
+            )}
+          </Button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className={`md:hidden absolute top-full left-0 right-0 p-4 ${headerBg} shadow-md border-t border-gray-200 dark:border-gray-700`}>
+          {isLoggedIn ? (
+            <div className="flex flex-col gap-3">
+              <div className={`${textColor} flex items-center justify-between`}>
+                <span>{user.credits} credits</span>
+                <UserAvatar user={user} onLogout={handleLogout} />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Link to="/login" onClick={handleLoginClick} className="w-full">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-center"
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link to={user ? "/digest" : "/register"} className="w-full">
+                <Button className="w-full justify-center">
+                  {user ? "Go to Digest" : "Sign up"}
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 };

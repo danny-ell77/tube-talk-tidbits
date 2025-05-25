@@ -12,11 +12,24 @@ interface ExportButtonProps {
   title: string;
   videoUrl: string;
   timestamp: string;
+  creator?: string;
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ content, title, videoUrl, timestamp }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ content, title, videoUrl, timestamp, creator }) => {
   const exportToMarkdown = () => {
-    const markdownContent = content;
+    // Create formatted markdown with metadata and attribution
+    let markdownContent = `# ${title}\n\n`;
+    markdownContent += `${content}\n\n`;
+    markdownContent += `---\n\n`;
+    markdownContent += `Source: ${videoUrl}\n\n`;
+    
+    // Add creator attribution if available
+    if (creator) {
+      markdownContent += `**Creator: ${creator}**\n\n`;
+    }
+    
+    markdownContent += `Generated: ${timestamp}`;
+    
     const blob = new Blob([markdownContent], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -52,7 +65,16 @@ const ExportButton: React.FC<ExportButtonProps> = ({ content, title, videoUrl, t
       // Add metadata
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128); // Gray color
-      doc.text(`Source: ${videoUrl}`, 15, doc.internal.pageSize.height - 20);
+      doc.text(`Source: ${videoUrl}`, 15, doc.internal.pageSize.height - 25);
+      
+      // Add creator attribution if available
+      if (creator) {
+        doc.setFontSize(10);
+        doc.setTextColor(30, 64, 175); // Blue color for creator
+        doc.text(`Creator: ${creator}`, 15, doc.internal.pageSize.height - 20);
+      }
+      
+      doc.setTextColor(107, 114, 128); // Back to gray
       doc.text(`Generated: ${timestamp}`, 15, doc.internal.pageSize.height - 15);
 
       // Save the PDF

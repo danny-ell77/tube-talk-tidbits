@@ -6,7 +6,7 @@ import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
 import ExportPDF from './ExportPDF';
-import { formatType, formatContent } from '@/utils/formatUtils';
+import { formatType, formatContent, applyHTMLStyles } from '@/utils/formatUtils';
 import { marked } from "marked";
 
 interface SummaryCardProps {
@@ -63,7 +63,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm opacity-80">{formatType(type)}</span>
               {creator && (
-                <span className="text-sm opacity-80">by {creator}</span>
+                <span className="text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded-md flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                  {creator}
+                </span>
               )}
               {model && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${getModelBadgeClass()}`}>
@@ -93,11 +98,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
               {typeof formattedContent.markdown === 'object' ? (
                 <p className="text-sm sm:text-base">{content}</p>
               ) : (
-                <div dangerouslySetInnerHTML={{ __html: marked.parse(String(formattedContent.markdown)) }} />
+                <div dangerouslySetInnerHTML={{ __html: applyHTMLStyles(marked.parse(String(formattedContent.markdown)) as string) }} />
               )}
             </div>
           ) : formattedContent.__html ? (
-            <div dangerouslySetInnerHTML={{ __html: formattedContent.__html }} />
+            <div dangerouslySetInnerHTML={{ __html: applyHTMLStyles(formattedContent.__html) }} />
           ) : (
             <p className="text-sm sm:text-base">{content}</p>
           )}
@@ -106,6 +111,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         <Separator className="my-4" />
         <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
           <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">{videoUrl}</a></p>
+          {creator && (
+            <p className="font-medium">Creator: <span className="text-blue-600 dark:text-blue-400">{creator}</span></p>
+          )}
           <p>Digested: {timestamp}</p>
           {outputFormat && <p>Format: {outputFormat.toUpperCase()}</p>}
           <p className="italic mt-2 text-amber-600 dark:text-amber-400">Disclaimer: AI-generated content may contain inaccuracies. Always verify important information with the original source.</p>
@@ -118,9 +126,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           title={displayTitle} 
           videoUrl={videoUrl}
           timestamp={timestamp}
+          creator={creator}
         />
         <ExportButton content={content} title={displayTitle} videoUrl={videoUrl}
           timestamp={timestamp}
+          creator={creator}
         />
         <Button 
           variant="outline" 

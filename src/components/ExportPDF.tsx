@@ -10,9 +10,10 @@ interface ExportPDFProps {
   title: string;
   videoUrl: string;
   timestamp: string;
+  creator?: string;
 }
 
-const ExportPDF: React.FC<ExportPDFProps> = ({ content, title, videoUrl, timestamp }) => {
+const ExportPDF: React.FC<ExportPDFProps> = ({ content, title, videoUrl, timestamp, creator }) => {
   const exportToPDF = async () => {
     try {
       // Create a temporary div to hold the formatted content
@@ -20,10 +21,10 @@ const ExportPDF: React.FC<ExportPDFProps> = ({ content, title, videoUrl, timesta
       element.innerHTML = `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
           <h1 style="color: #1E40AF; margin-bottom: 20px;">${title}</h1>
-          <div style="margin-bottom: 20px; white-space: pre-wrap;">${marked(content)}</div>
-          <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
+          <div style="margin-bottom: 20px; white-space: pre-wrap;">${marked(content)}</div>          <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
           <div style="color: #6B7280; font-size: 12px;">
             <p>Source: ${videoUrl}</p>
+            ${creator ? `<p><strong>Creator: ${creator}</strong></p>` : ''}
             <p>Generated: ${timestamp}</p>
           </div>
         </div>

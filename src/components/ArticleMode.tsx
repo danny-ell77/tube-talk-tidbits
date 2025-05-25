@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
-import { formatType, formatContent } from '@/utils/formatUtils';
+import { formatType, formatContent, applyHTMLStyles } from '@/utils/formatUtils';
 import { marked } from 'marked';
 
 interface ArticleModeProps {
@@ -28,7 +28,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
     if (outputFormat === "markdown" && formattedContent.markdown) {
       return (
         <div className="prose dark:prose-invert max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: marked.parse(formattedContent.markdown) }} />
+          <div dangerouslySetInnerHTML={{ __html: applyHTMLStyles(marked.parse(formattedContent.markdown) as string) }} />
         </div>
       );
     } else if (formattedContent.__html) {
@@ -114,7 +114,7 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
             className="flex items-center gap-2"
           >
             <Copy className="h-4 w-4" />
-            Copy Content
+            Copy
           </Button>
         </div>
       </div>
