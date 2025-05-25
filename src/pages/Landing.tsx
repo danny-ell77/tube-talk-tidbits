@@ -9,6 +9,7 @@ import CTASection from '@/components/landing/CTASection';
 import FooterSection from '@/components/landing/FooterSection';
 import AlternativeCTASection from '@/components/landing/AlternativeCTASection';
 import PricingSection from '@/components/landing/PricingSection';
+import FAQSection from '@/components/landing/FAQSection';
 
 const Landing = () => {
   return (
@@ -20,6 +21,7 @@ const Landing = () => {
       <DemoSection />
       {/* <PricingSection /> */}
       <AlternativeCTASection />
+      <FAQSection />
       <CTASection />
       <FooterSection />
     </div>
