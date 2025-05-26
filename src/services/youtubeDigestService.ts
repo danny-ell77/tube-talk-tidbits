@@ -26,18 +26,11 @@ const BASE_URL_STAGING = RENDER_BASE_URL_STAGING; // Use the staging URL for pro
 
 const BASE_URL = BASE_URL_STAGING;
 
-// Import toast here since we'll use it for error notifications
 import { toast } from "sonner";
 
-// Handle unauthorized errors and redirect
 const handle401Error = () => {
-  // Remove user data to trigger re-auth
   localStorage.removeItem("user");
-
-  // Show toast notification
   toast.error("Session expired. Please log in again.");
-
-  // Redirect to login - using window.location since we can't use useNavigate in a non-component
   window.location.href = "/login";
 };
 
@@ -57,11 +50,8 @@ const parseISODuration = (isoDuration: string): string => {
   return value.slice(0, -1);
 };
 
-// Extract YouTube video ID from URL
 const extractVideoId = (url: string): string => {
-  // Match YouTube URL patterns
-  // Handle YouTube's shorthand .be patterns and standard video patterns
-  const patterns = [
+  const youtubeStandardVideoPatterns = [
     /(?:v=|\/)([0-9A-Za-z_-]{11}).*/,
     /(?:embed\/)([0-9A-Za-z_-]{11})/,
     /(?:shorts\/)([0-9A-Za-z_-]{11})/,
@@ -69,7 +59,7 @@ const extractVideoId = (url: string): string => {
     /^([0-9A-Za-z_-]{11})$/,
   ];
 
-  for (const pattern of patterns) {
+  for (const pattern of youtubeStandardVideoPatterns) {
     const match = url.match(pattern);
     if (match) {
       return match[1];
@@ -116,7 +106,7 @@ export const generateDigest = async (
 
   try {
     const videoData = await getVideoData(youtubeUrl);
-    const { title: videoTitle, tags, duration } = videoData;
+    const { title: videoTitle, tags, duration, creator } = videoData;
     const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];
     const titleFromUrlFallback = `Video ${titleFromUrl} Summary`;
     const title = videoTitle || titleFromUrlFallback;
@@ -156,7 +146,7 @@ export const generateDigest = async (
         type,
         duration,
         content: "",
-        creator: "",
+        creator, // Include the creator (channel_title) for attribution
         videoUrl: youtubeUrl,
         timestamp: new Date().toLocaleString(),
         model,
@@ -224,6 +214,7 @@ export const generateDigest = async (
       type,
       content,
       duration,
+      creator, // Include the creator (channel_title) for attribution
       videoUrl: youtubeUrl,
       timestamp: new Date().toLocaleString(),
       model,
@@ -266,6 +257,7 @@ export const getVideoData = async (youtubeUrl: string) => {
       duration: parseISODuration(data.duration),
       tags: data.tags,
       channelName: data.channel_title,
+      creator: data.channel_title, // Map channel_title to creator for attribution
       views: data.view_count,
       likes: data.like_count,
       date: data.published_at,

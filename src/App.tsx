@@ -12,30 +12,16 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { HelmetProvider } from 'react-helmet-async';
 
 const queryClient = new QueryClient();
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const user = localStorage.getItem('user');
-      setIsAuthenticated(!!user);
-    };
-
-    checkAuth();
-  }, []);
-
-  if (isAuthenticated === null) {
-    // Still checking authentication
-    return null;
-  }
-
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+  return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 const App = () => {

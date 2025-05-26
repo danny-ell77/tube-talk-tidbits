@@ -116,7 +116,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           )}
           <p>Digested: {timestamp}</p>
           {outputFormat && <p>Format: {outputFormat.toUpperCase()}</p>}
-          <p className="italic mt-2 text-amber-600 dark:text-amber-400">Disclaimer: AI-generated content may contain inaccuracies. Always verify important information with the original source.</p>
+          <p className="text-xs text-amber-600 dark:text-amber-400 italic">
+            AI-generated content may contain inaccuracies. Verify with original source.
+          </p>
         </div>
       </CardContent>
       

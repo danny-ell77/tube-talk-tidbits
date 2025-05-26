@@ -97,16 +97,14 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
         </div>
         
         <Separator className="mb-6" />
-        
         <div className="article-content max-h-[600px] overflow-y-auto pr-2">
           {renderContent()}
-          <div className="mt-6 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
-            <p className="text-sm text-amber-700 dark:text-amber-400 italic">
-              Disclaimer: AI-generated content may contain inaccuracies. Always verify important information with the original source.
+          <div className="mt-4 p-2 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900 rounded-md">
+            <p className="text-xs text-amber-600 dark:text-amber-400 italic">
+              AI-generated content may contain inaccuracies. Verify with original source.
             </p>
           </div>
         </div>
-        
         <div className="mt-8 flex justify-end">
           <Button 
             variant="outline" 
