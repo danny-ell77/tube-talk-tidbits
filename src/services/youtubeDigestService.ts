@@ -113,7 +113,6 @@ export const generateDigest = async (
     payload.tags = tags || [];
 
     let content = "";
-
     if (isStreamingEnabled()) {
       // Streaming implementation with authentication and error handling
       console.log("Using streaming response");
@@ -128,6 +127,12 @@ export const generateDigest = async (
       if (response.status === 401) {
         handle401Error();
         throw new Error("Unauthorized");
+      }
+
+      if (response.status === 403) {
+        const errorData = await response.json();
+        toast.error(errorData.detail || "Insufficient credits");
+        throw new Error(errorData.detail || "Insufficient credits");
       }
 
       if (!response.ok) {
@@ -197,6 +202,12 @@ export const generateDigest = async (
       if (response.status === 401) {
         handle401Error();
         throw new Error("Unauthorized");
+      }
+
+      if (response.status === 403) {
+        const errorData = await response.json();
+        toast.error(errorData.detail || "Insufficient credits");
+        throw new Error(errorData.detail || "Insufficient credits");
       }
 
       if (!response.ok) {

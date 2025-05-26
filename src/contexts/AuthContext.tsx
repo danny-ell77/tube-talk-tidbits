@@ -15,6 +15,7 @@ type UserData = {
 type AuthContextType = {
   session: Session | null;
   user: UserData;
+  setUser: React.Dispatch<React.SetStateAction<UserData>>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -50,13 +51,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  // Function to get user profile data including credits
   const fetchUserProfile = async (userId: string) => {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .single();
 
       if (error) {
@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               id: session.user.id,
               email: session.user.email || '',
               name: session.user.email?.split('@')[0] || 'User',
-              isPremium: profile?.isPremium || false,
+              isPremium: false,
               credits: profile?.credits || 0,
             });
           } catch (error) {
@@ -117,8 +117,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: data.session.user.id,
             email: data.session.user.email || '',
             name: data.session.user.email?.split('@')[0] || 'User',
-            isPremium: profile?.isPremium || false,
             credits: profile?.credits || 0,
+            isPremium: false,
           });
         } else {
           setUser(null);
@@ -222,7 +222,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Reset password method - sends reset email
   const resetPassword = async (email: string) => {
     try {
       setLoading(true);
@@ -278,7 +277,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profile) {
         setUser({
           ...user,
-          isPremium: profile.isPremium || false,
+          isPremium: false,
           credits: profile.credits || 0,
         });
       }
@@ -291,6 +290,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider value={{ 
       session, 
       user, 
+      setUser,
       signIn, 
       signUp, 
       signOut, 

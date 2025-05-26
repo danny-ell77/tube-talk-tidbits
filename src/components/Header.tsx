@@ -5,6 +5,7 @@ import UserAvatar from './auth/UserAvatar';
 import { Cookie, Menu, X } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
+import CreditsDisplay from './CreditsDisplay';
 
 interface HeaderProps {
   transparent?: boolean;
@@ -81,9 +82,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
           
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
-              <div className={textColor}>
-                {user.credits} credits
-              </div>
+              <CreditsDisplay />
               <UserAvatar user={user} onLogout={handleLogout} />
             </div>
           ) : hideUserInfo ? (
