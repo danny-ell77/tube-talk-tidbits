@@ -110,12 +110,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         <div ref={scrollRef} className="h-0" />
         <Separator className="my-4" />
         <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
-          <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">{videoUrl}</a></p>
           {creator && (
             <p className="font-medium">Creator: <span className="text-blue-600 dark:text-blue-400">{creator}</span></p>
           )}
           <p>Digested: {timestamp}</p>
           {outputFormat && <p>Format: {outputFormat.toUpperCase()}</p>}
+          <p>Source: <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">{videoUrl}</a></p>
           <p className="text-xs text-amber-600 dark:text-amber-400 italic">
             AI-generated content may contain inaccuracies. Verify with original source.
           </p>

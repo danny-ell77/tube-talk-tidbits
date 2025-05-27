@@ -16,7 +16,7 @@ interface DigestContentProps {
   displayMode: DisplayMode;
   isPremiumUser: boolean;
   onClearHistory: () => void;
-  onSubmit: (url: string, type: string, customPrompt?: string, model?: string) => Promise<void>;
+  onSubmit: (url: string, type: string, customPrompt?: string, model?: string) => Promise<[DigestResult | null, Error | null]>;
 }
 
 const DigestContent: React.FC<DigestContentProps> = ({

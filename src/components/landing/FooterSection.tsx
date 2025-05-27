@@ -3,12 +3,11 @@ import { Youtube, MessageCircle, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface TypeformEmbedProps {
-  typeformId: string;
+interface FormEmbedProps {
   onClose: () => void;
 }
 
-const TypeformEmbed: React.FC<TypeformEmbedProps> = ({ typeformId, onClose }) => {
+const FormEmbed: React.FC<FormEmbedProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-4xl h-[80vh] relative flex flex-col">
@@ -44,10 +43,6 @@ const TypeformEmbed: React.FC<TypeformEmbedProps> = ({ typeformId, onClose }) =>
 const FooterSection = () => {
   const [showContactForm, setShowContactForm] = useState(false);
   
-  // Replace with your actual Typeform ID
-  const TYPEFORM_ID = "fABhd9Se"; // e.g., "abc123def"
-  
-  console.log(import.meta.env);
   const isDetailedFooterActive = Boolean(parseInt(import.meta.env.VITE_FF__DETAILED_FOOTER_SECTION_ACTIVE, 10));
   
   const openContactForm = () => {
@@ -110,7 +105,6 @@ const FooterSection = () => {
                   </ul>
                 </div>
 
-                {/* Contact Us Section */}
                 <div>
                   <h4 className="text-white font-semibold mb-4">Get in Touch</h4>
                   <div className="space-y-3">
@@ -131,7 +125,6 @@ const FooterSection = () => {
             </div>
           )}
 
-          {/* Simple Contact Section for when detailed footer is disabled */}
           {!isDetailedFooterActive && (
             <div className="text-center mb-8">
               <h4 className="text-white font-semibold mb-4">Help us improve</h4>
@@ -163,10 +156,8 @@ const FooterSection = () => {
         </div>
       </footer>
 
-      {/* Typeform Modal */}
       {showContactForm && (
-        <TypeformEmbed
-          typeformId={TYPEFORM_ID}
+        <FormEmbed
           onClose={closeContactForm}
         />
       )}

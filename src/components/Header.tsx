@@ -17,7 +17,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
   let basePath = "/"
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const isLoggedIn = !!user && !hideUserInfo;
+  const isLoggedIn = !!user?.id && !hideUserInfo;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -56,7 +56,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
   };
 
   const handleLoginClick = (e: React.MouseEvent) => {
-    if (user) {
+    if (user?.id) {
       e.preventDefault();
       navigate('/digest');
     }

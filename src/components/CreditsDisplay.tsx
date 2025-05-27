@@ -54,7 +54,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
         subscription.unsubscribe();
       };
     }
-  }, [user?.id]);
+  }, [user?.id, user?.credits]);
 
   // Determine the badge variant based on credit amount
   const getBadgeVariant = () => {

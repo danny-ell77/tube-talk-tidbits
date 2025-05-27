@@ -21,11 +21,11 @@ const DemoSection = () => {
   // };
   
   // Handle the submission of YouTube URL for digest
-  const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard") => {
+  const handleSubmit = async (url: string, type: string, customPrompt?: string, model: string = "standard"): Promise<[DigestResult | null, Error | null]> => {
     // Validate URL before processing
     if (!isValidYoutubeUrl(url)) {
       toast.error("Invalid YouTube URL. Please enter a valid URL.");
-      return;
+      return [null, new Error("Invalid YouTube URL")];
     }
 
     setIsLoading(true);
@@ -36,9 +36,11 @@ const DemoSection = () => {
       navigate('/digest', { state: { result } });
       
       toast.success("Digest generated successfully!");
+      return [result, null];
     } catch (error) {
       console.error('Error generating digest:', error);
       toast.error("Failed to generate digest. Please try again.");
+      return [null, error];
     } finally {
       setIsLoading(false);
     }

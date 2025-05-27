@@ -3,13 +3,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { sendPasswordResetEmail, updatePassword } from '@/services/authService';
+import { getAnonymousId } from '@/lib/utils';
 
 type UserData = {
-  id: string;
+  /**
+   * @property {string | null} id - The unique identifier for the user. Its used as a base check to know if the user is authenticated.
+   */
+  id: string | null;
   email: string;
   name: string;
   isPremium: boolean;
   credits: number;
+  isAnonymous?: boolean;
+  /**
+   * @property {string | null} anonId -  For anonymous users, this will be the ID from localStorage
+   * This is optional and only applicable for anonymous users.
+   */
+  anonId?: string;
 } | null;
 
 type AuthContextType = {
@@ -23,8 +33,13 @@ type AuthContextType = {
   updateUserPassword: (newPassword: string) => Promise<void>;
   updateCredits: (newCredits: number) => void;
   refreshUserData: () => Promise<void>;
+  getOrCreateProfile: () => Promise<UserData>;
   loading: boolean;
+  showSignupModal: boolean;
+  setShowSignupModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+const START_CREDITS = 3; // Initial credits for anonymous users
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -32,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<UserData>(null);
   const [loading, setLoading] = useState(true);
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   // Clean up auth state for consistency
   const cleanupAuthState = () => {
@@ -56,7 +72,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', userId)
+        .or(
+          `user_id.eq.${userId},anon_user_id.eq.${userId}`
+        )
+        .setHeader('x-anon-user-id', userId)
         .single();
 
       if (error) {
@@ -259,7 +278,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Update credits in user state (called when credits are updated via API)
   const updateCredits = (newCredits: number) => {
-    if (user) {
+    if (user?.id) {
       setUser({
         ...user,
         credits: newCredits
@@ -286,6 +305,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const createProfile = async (): Promise<UserData> => {
+    const BASE_URL = 'https://sdmcnnyuiyzmazdakglz.supabase.co/functions/v1/clever-service';
+    let data;
+    try {
+      data = await fetch(BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY}`,
+          Apikey: `${import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY}`,
+          credentials: 'include',
+        },
+        body: JSON.stringify({
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+      });
+    } catch (error) {
+      console.error('Error creating anonymous user:', error);
+      throw error;
+    }
+    const { profile } = await data.json();
+
+    return {
+      id: null,
+      email: 'anonymous@user',
+      name: 'Guest User',
+      isPremium: false,
+      credits: START_CREDITS,
+      isAnonymous: true,
+      anonId: profile.anon_user_id,
+    };
+  }
+
+  // Get or create an anonymous user
+  const getOrCreateProfile = async (): Promise<UserData> => {
+    try {
+      setLoading(true);
+
+      if (user?.id) {
+        return user;
+      }
+      
+      const storedId = getAnonymousId();
+
+      let anonProfile = await fetchUserProfile(storedId);
+      
+      if (!anonProfile) {
+        const anonUser = await createProfile();
+        localStorage.setItem("anonymousId", anonUser.anonId);
+      }
+
+    } catch (error) {
+      console.error('Error in getOrCreateProfile:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       session, 
@@ -298,7 +376,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updateUserPassword, 
       updateCredits,
       refreshUserData,
-      loading 
+      getOrCreateProfile,
+      loading,
+      showSignupModal,
+      setShowSignupModal
     }}>
       {children}
     </AuthContext.Provider>

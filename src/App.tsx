@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,14 +15,50 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { HelmetProvider } from 'react-helmet-async';
+import ProfilePage from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
-// Protected route component
+// Protected route component - only allows logged-in users (not anonymous)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
 
-  return user ? <>{children}</> : <Navigate to="/login" replace />;
+  return (user && !user.isAnonymous) ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+// AppInitializer handles setup of anonymous users
+const AppInitializer = ({ children }: { children: React.ReactNode }) => {
+  const { user, getOrCreateProfile } = useAuth();
+  const [initialized, setInitialized] = useState(false);
+
+  
+  useEffect(() => {
+    console.log("AppInitializer: Checking user state", user);
+
+    if (initialized) return;
+
+    const initApp = async () => {
+      // If no user is logged in, get/create an anonymous user
+      if (!user) {
+        try {
+          await getOrCreateProfile();
+        } catch (error) {
+          console.error("Error initializing anonymous user:", error);
+        }
+      }
+      setInitialized(true);
+    };
+    
+    initApp();
+  }, [user?.id]);
+  
+  if (!initialized && !user) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+    </div>;
+  }
+  
+  return <>{children}</>;
 };
 
 const App = () => {
@@ -34,28 +71,38 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
-                  <Routes>
-                    {/* Public routes */}
-                    <Route path="/" element={<Landing />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/digest" element={<Digest />} /> {/* Public digest route */}
+                  <AppInitializer>
+                    <Routes>
+                      {/* Public routes */}
+                      <Route path="/" element={<Landing />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
+                      <Route path="/digest" element={<Digest />} /> {/* Public digest route */}
                     
-                    {/* Protected routes */}
-                    <Route 
-                      path="/digest/saved" 
+                      {/* Protected routes */}
+                      <Route 
+                        path="/digest/saved" 
                       element={
                         <ProtectedRoute>
                           <Digest showSaved={true} />
                         </ProtectedRoute>
                       } 
                     />
-                    
+                    <Route 
+                      path="/profile" 
+                      element={
+                        <ProtectedRoute>
+                          <ProfilePage />
+                        </ProtectedRoute>
+                      }
+                    />
+
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
+                  </AppInitializer>
                 </BrowserRouter>
               </TooltipProvider>
             </ThemeProvider>

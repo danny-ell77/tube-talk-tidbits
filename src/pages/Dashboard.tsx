@@ -67,7 +67,7 @@ const Dashboard = () => {
       toast.success("Digest generated successfully!");
       
       // Update user credits
-      if (user) {
+      if (user?.id) {
         const updatedUser = { ...user, credits: Math.max(0, user.credits - 1) };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);

@@ -43,7 +43,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       }
     }
     
-    if (user) {
+    if (user?.id) {
       setIsPremiumUser(user.isPremium);
     }
   }, [location.state, user]);
@@ -59,10 +59,10 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     type: string, 
     customPrompt?: string, 
     model: string = "standard",
-  ) => {
+  ): Promise<[DigestResult | null, Error | null]> => {
     if (!isValidYoutubeUrl(url)) {
       toast.error("Invalid YouTube URL. Please enter a valid URL.");
-      return;
+      return [null, new Error("Invalid YouTube URL")];
     }
 
     setIsLoading(true);
@@ -115,13 +115,15 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       
       toast.success("Digest generated successfully!");
       
-      if (user) {
+      if (user?.id) {
         const updatedUser = { ...user, credits: Math.max(0, user.credits - 1) };
         localStorage.setItem('user', JSON.stringify(updatedUser));
       }
+      return [result, null];
     } catch (error) {
       console.error('Error generating digest:', error);
       toast.error("Failed to generate digest. Please try again.");
+      return [null, error];
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +160,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       <div className="py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            {user && (
+            {user?.id && (
               <div className="mt-4">
                 <div className="text-sm px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md inline-flex items-center gap-2">
                   <span className="font-medium">Credits:</span> {user.credits}

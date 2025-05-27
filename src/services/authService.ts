@@ -1,4 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getAnonymousId, isAnonymousUser } from "@/lib/utils";
+
+const ANON_ID_FRAGMENT = "anon:";
 
 export const getAuthHeaders = async () => {
   const { data } = await supabase.auth.getSession();
@@ -6,11 +9,14 @@ export const getAuthHeaders = async () => {
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    // "ngrok-skip-browser-warning": "1", // This header bypasses the warning
   };
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
+  } else if (isAnonymousUser()) {
+    // If no auth token but we have an anonymous ID, use that
+    const anonymousId = getAnonymousId();
+    headers["Authorization"] = `Bearer ${ANON_ID_FRAGMENT}${anonymousId}`;
   }
 
   return headers;

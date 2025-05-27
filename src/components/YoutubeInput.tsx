@@ -9,15 +9,19 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { getVideoData } from '@/services/youtubeDigestService';
+import { DigestResult, getVideoData } from '@/services/youtubeDigestService';
 import { extractVideoId } from '@/utils/youtubeUtils';
 import { Cookie, Clipboard } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 import YouTubePreviewCard from './YouTubePreviewCard';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/contexts/AuthContext';
+import SignupModal from './auth/SignupModal';
+import PricingModal from './auth/PricingModal';
+import { ErrorCodes } from "@/types/errorCodes";
 
 interface YoutubeInputProps {
-  onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => void;
+  onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => Promise<[DigestResult | null, Error | null]>;
   isLoading: boolean;
   isPremium?: boolean;
 }
@@ -40,14 +44,14 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const { user, showSignupModal, setShowSignupModal } = useAuth();
+  const [showPricingModal, setShowPricingModal] = useState(false);
 
   useEffect(() => {
-    // Validate URL and extract video ID whenever URL changes
     const id = extractVideoId(url);
     setIsValidUrl(!!id);
     setVideoId(id);
 
-    // Reset video info when URL changes
     setVideoInfo(null);
 
     if (id) {
@@ -70,10 +74,9 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     
   }, [url, toast]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simple validation for YouTube URL
     if (!isValidUrl) {
       toast({
         title: "Invalid URL",
@@ -82,15 +85,29 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
       });
       return;
     }
-    
+
     // Pass the custom prompt only if it's shown and not empty
     const prompt = showCustomPrompt && customPrompt.trim() ? customPrompt : undefined;
     // Premium features disabled, always use standard model
     // const selectedModel = isPremium ? model : 'standard';
     const selectedModel = 'standard';
-    
-    onSubmit(url, summaryType, prompt, selectedModel);
-  };
+
+    if (user && user.credits <= 0) { 
+      setShowPricingModal(true);
+      return;
+    }
+
+    const [result, error] = await onSubmit(url, summaryType, prompt, selectedModel);
+    if (error.message === ErrorCodes.INSUFFICIENT_CREDITS) {
+      if (user) { // Redundant check, but ensures we have a user context
+        setShowPricingModal(true);
+      } else {
+        setShowSignupModal(true);
+      }  
+    }
+
+    console.error("Error submitting YouTube digest request:", error);
+  }
 
   const handlePaste = async () => {
     try {
@@ -224,6 +241,22 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           </li>
         </ul>
       </div>}
+
+      {/* Signup Modal */}
+      <SignupModal 
+        isOpen={showSignupModal} 
+        onClose={() => setShowSignupModal(false)} 
+        onSignupSuccess={() => {
+          setShowSignupModal(false);
+          // Optionally, you can trigger the submit action here if needed
+        }}
+      />
+
+      {/* Pricing Modal */}
+      <PricingModal 
+        isOpen={showPricingModal} 
+        onClose={() => setShowPricingModal(false)} 
+      />
     </div>
   );
 };

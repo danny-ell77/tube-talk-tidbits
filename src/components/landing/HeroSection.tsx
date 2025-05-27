@@ -9,7 +9,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
   
   const handleLoginClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (user) {
+    if (user?.id) {
       e.preventDefault();
       navigate('/digest');
     }

@@ -10,6 +10,7 @@ interface PricingCardProps {
   features: string[];
   isPopular?: boolean;
   buttonText?: string;
+  ctaAction?: () => void;
 }
 
 const PricingCard = ({ 
@@ -18,7 +19,8 @@ const PricingCard = ({
   credits,
   features,
   isPopular = false,
-  buttonText = "Get Started"
+  buttonText = "Get Started",
+  ctaAction
 }: PricingCardProps) => (
   <div className={cn(
     "bg-card rounded-xl shadow-sm border overflow-hidden",
@@ -47,7 +49,11 @@ const PricingCard = ({
         ))}
       </ul>
       <div className="mt-6">
-        <Button variant={isPopular ? "default" : "outline"} className="w-full">
+        <Button 
+          variant={isPopular ? "default" : "outline"} 
+          className="w-full"
+          onClick={ctaAction}
+        >
           {buttonText}
         </Button>
       </div>

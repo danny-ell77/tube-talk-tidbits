@@ -12,7 +12,7 @@ const Login = () => {
   
   // Redirect already logged in users to digest page
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       navigate('/digest');
     }
   }, [user, navigate]);
