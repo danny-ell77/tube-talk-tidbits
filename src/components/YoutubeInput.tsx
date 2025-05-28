@@ -43,8 +43,9 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
   const [showCustomPrompt, setShowCustomPrompt] = useState(false);
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
+  const [ showSignupModal, setShowSignupModal ] = useState(false);
   const isMobile = useIsMobile();
-  const { user, showSignupModal, setShowSignupModal } = useAuth();
+  const { user } = useAuth();
   const [showPricingModal, setShowPricingModal] = useState(false);
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { sendPasswordResetEmail, updatePassword } from '@/services/authService';
 import { getAnonymousId } from '@/lib/utils';
+import {Database} from "@/integrations/supabase/types";
 
 type UserData = {
   /**
@@ -22,6 +23,14 @@ type UserData = {
   anonId?: string;
 } | null;
 
+type UserProfile  = {
+  userId: string;
+  anonUserId: string;
+  credits: number;
+  referrer: UserData['id'] | null;
+  timezone: string;
+}
+
 type AuthContextType = {
   session: Session | null;
   user: UserData;
@@ -35,8 +44,6 @@ type AuthContextType = {
   refreshUserData: () => Promise<void>;
   getOrCreateProfile: () => Promise<UserData>;
   loading: boolean;
-  showSignupModal: boolean;
-  setShowSignupModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const START_CREDITS = 3; // Initial credits for anonymous users
@@ -47,7 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<UserData>(null);
   const [loading, setLoading] = useState(true);
-  const [showSignupModal, setShowSignupModal] = useState(false);
 
   // Clean up auth state for consistency
   const cleanupAuthState = () => {
@@ -161,10 +167,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      // Clean up existing state first
       cleanupAuthState();
       
-      // Try to sign out globally first to ensure clean state
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (err) {
@@ -189,16 +193,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      // Clean up existing state first
       cleanupAuthState();
       
-      const { error } = await supabase.auth.signUp({ 
+      const { data, error } = await supabase.auth.signUp({
         email, 
         password,
         options: {
           emailRedirectTo: window.location.origin,
         }
       });
+      await createProfile(data.user.id)
       
       if (error) throw error;
       
@@ -305,7 +309,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const createProfile = async (): Promise<UserData> => {
+  const createProfile = async (userId: string | null = null): Promise<UserProfile> => {
     const BASE_URL = 'https://sdmcnnyuiyzmazdakglz.supabase.co/functions/v1/clever-service';
     let data;
     try {
@@ -315,26 +319,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY}`,
           Apikey: `${import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY}`,
+          'X-Anon-User-Id': getAnonymousId() || '',
           credentials: 'include',
         },
         body: JSON.stringify({
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          user_id: userId,
         }),
       });
     } catch (error) {
-      console.error('Error creating anonymous user:', error);
+      console.error('Error creating user profile:', error);
       throw error;
     }
-    const { profile } = await data.json();
+    const { profile }: {profile:  Database['public']['Tables']['profiles']['Row'] | null} = await data.json();
 
     return {
-      id: null,
-      email: 'anonymous@user',
-      name: 'Guest User',
-      isPremium: false,
-      credits: START_CREDITS,
-      isAnonymous: true,
-      anonId: profile.anon_user_id,
+        userId: profile.user_id,
+        anonUserId: profile.anon_user_id,
+        credits: profile.credits,
+        referrer: profile.referrer,
+        timezone: profile.timezone,
     };
   }
 
@@ -353,7 +357,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (!anonProfile) {
         const anonUser = await createProfile();
-        localStorage.setItem("anonymousId", anonUser.anonId);
+        localStorage.setItem("anonymousId", anonUser.anonUserId);
       }
 
     } catch (error) {
@@ -378,8 +382,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       refreshUserData,
       getOrCreateProfile,
       loading,
-      showSignupModal,
-      setShowSignupModal
     }}>
       {children}
     </AuthContext.Provider>
