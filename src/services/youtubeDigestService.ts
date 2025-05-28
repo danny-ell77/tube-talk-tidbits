@@ -18,13 +18,15 @@ const BASE_URL_LOCAL = "http://localhost:8000"; // Base URL for the backend API
 
 const RENDER_BASE_URL_STAGING = "https://digestly-be.onrender.com";
 
-const SEVALLA_BASE_URL_STAGING = "https://digestly-be-dp95u.kinsta.app";
+// const SEVALLA_BASE_URL_STAGING = "https://digestly-be-dp95u.kinsta.app"; --> Retired
+
+const RAILWAY_BASE_URL_STAGING = "https://digestly-be-production.up.railway.app"
 
 const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL for the backend API
 
-const BASE_URL_STAGING = RENDER_BASE_URL_STAGING; // Use the staging URL for production
+const BASE_URL_STAGING = RAILWAY_BASE_URL_STAGING; // Use the staging URL for production
 
-const BASE_URL = BASE_URL_STAGING;
+export const BASE_URL = BASE_URL_STAGING;
 
 import { toast } from "sonner";
 
