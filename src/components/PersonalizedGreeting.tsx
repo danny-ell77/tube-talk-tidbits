@@ -48,7 +48,7 @@ const PersonalizedGreeting: React.FC = () => {
       className="mb-4 text-4xl font-serif text-center text-foreground"
       style={{ letterSpacing: "0.5px", fontFamily: "Georgia, 'Times New Roman', Times, serif" }}
     >
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 flex-wrap">
         <Cookie className="h-7 w-7 text-primary" />
         {randomMessage}
       </div>
