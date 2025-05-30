@@ -84,7 +84,7 @@ export const isContentEmpty = (content: string): boolean => {
   return !content || content.trim() === "";
 };
 
-export const applyHTMLStyles = (html: string): string => {
+export const applyStyles = (html: string): string => {
   return html
     .replace(/<h1>/g, '<h1 class="text-2xl font-bold mb-4">')
     .replace(/<h2>/g, '<h2 class="text-xl font-semibold mb-3">')
@@ -95,5 +95,17 @@ export const applyHTMLStyles = (html: string): string => {
     .replace(
       /<pre>/g,
       '<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4 text-sm">'
+    )
+    .replace(
+      /<table>/g,
+      '<table class="min-w-full border-collapse border border-gray-300 dark:border-gray-700">'
+    )
+    .replace(
+      /<th>/g,
+      '<th class="border border-gray-300 dark:border-gray-700 px-4 py-2 bg-gray-100 dark:bg-gray-800">'
+    )
+    .replace(
+      /<td>/g,
+      '<td class="border border-gray-300 dark:border-gray-700 px-4 py-2">'
     );
 };
