@@ -20,6 +20,7 @@ interface UserAvatarProps {
 
 const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
   const [showPricingModal, setShowPricingModal] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   if (!user) return null;
 
@@ -36,9 +37,14 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
     }
   };
 
+  const handleBuyCredits = () => {
+    setDropdownOpen(false); // Close dropdown first
+    setShowPricingModal(true);
+  };
+
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger className="focus:outline-none">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8 border border-border">
@@ -65,7 +71,7 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShowPricingModal(true)} className="flex items-center">
+          <DropdownMenuItem onClick={handleBuyCredits} className="flex items-center">
             <CircleDollarSign className="mr-2 h-4 w-4" />
             <span>Buy More Credits</span>
           </DropdownMenuItem>
