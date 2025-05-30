@@ -18,15 +18,14 @@ const BASE_URL_LOCAL = "http://localhost:5000"; // Base URL for the backend API
 
 const RENDER_BASE_URL_STAGING = "https://digestly-be.onrender.com";
 
-// const SEVALLA_BASE_URL_STAGING = "https://digestly-be-dp95u.kinsta.app"; --> Retired
-
-const RAILWAY_BASE_URL_STAGING = "https://digestly-be-production.up.railway.app"
+const RAILWAY_BASE_URL_STAGING =
+  "https://digestly-be-production.up.railway.app";
 
 const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL for the backend API
 
 const BASE_URL_STAGING = RAILWAY_BASE_URL_STAGING; // Use the staging URL for production
 
-export const BASE_URL = BASE_URL_LOCAL;
+export const BASE_URL = BASE_URL_STAGING;
 
 import { toast } from "sonner";
 
@@ -68,13 +67,14 @@ const extractVideoId = (url: string): string => {
     }
   }
 
-
   return url;
 };
 
 const isStreamingEnabled = (durationInSeconds: number) => {
-  return import.meta.env.VITE_APP_ENABLE_STREAMING === "true" && durationInSeconds < 2400;
-
+  return (
+    import.meta.env.VITE_APP_ENABLE_STREAMING === "true" &&
+    durationInSeconds < 2400
+  );
 };
 
 export const getYoutubeThumbnail = (videoId: string): string => {
@@ -105,9 +105,11 @@ export const generateDigest = async (
   try {
     const videoData = await getVideoData(youtubeUrl);
     const { title: videoTitle, tags, duration, creator } = videoData;
-    const durationInSeconds = duration ?
-      duration.split(":").map(x => parseInt(x || "0"))
-        .reduce((acc, curr, i) => acc + curr * [3600, 60, 1][i], 0)
+    const durationInSeconds = duration
+      ? duration
+          .split(":")
+          .map((x) => parseInt(x || "0"))
+          .reduce((acc, curr, i) => acc + curr * [3600, 60, 1][i], 0)
       : 0;
     console.log("durationInSeconds", durationInSeconds);
     const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];
