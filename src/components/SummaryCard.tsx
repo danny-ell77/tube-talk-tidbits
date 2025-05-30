@@ -6,7 +6,7 @@ import { FileText, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
 import ExportPDF from './ExportPDF';
-import { formatType, formatContent, applyHTMLStyles } from '@/utils/formatUtils';
+import { formatType, formatContent, applyStyles } from '@/utils/formatUtils';
 import { marked } from "marked";
 
 interface SummaryCardProps {
@@ -63,16 +63,15 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm opacity-80">{formatType(type)}</span>
               {creator && (
-                <span className="text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded-md flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                  {creator}
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
+                  Created by <span className="font-medium text-blue-700 dark:text-blue-300 ml-1">{creator}</span>
                 </span>
               )}
               {model && (
-                <span className={`text-xs px-2 py-0.5 rounded-full ${getModelBadgeClass()}`}>
-                  {model.charAt(0).toUpperCase() + model.slice(1)} Model
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-6M6 20V10M18 20v-4" /></svg>
+                  Digested by <span className="font-medium text-gray-700 dark:text-gray-200 ml-1">{model}</span>
                 </span>
               )}
             </div>
@@ -81,7 +80,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="p-10 -mr-6 sm:p-6">
         {customPrompt && (
           <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Custom Prompt:</p>
@@ -91,21 +90,21 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         
         <div 
           ref={contentRef}
-          className="max-h-[500px] overflow-y-auto pr-2 prose-sm sm:prose dark:prose-invert max-w-none"
+          className="max-h-[500px] overflow-y-auto prose-sm sm:prose dark:prose-invert max-w-none"
         >
-          {formattedContent.markdown ? (
-            <div>
-              {typeof formattedContent.markdown === 'object' ? (
-                <p className="text-sm sm:text-base">{content}</p>
-              ) : (
-                <div dangerouslySetInnerHTML={{ __html: applyHTMLStyles(marked.parse(String(formattedContent.markdown)) as string) }} />
-              )}
-            </div>
-          ) : formattedContent.__html ? (
-            <div dangerouslySetInnerHTML={{ __html: applyHTMLStyles(formattedContent.__html) }} />
-          ) : (
-            <p className="text-sm sm:text-base">{content}</p>
-          )}
+          <div className="pr-6">
+            {formattedContent.markdown ? (
+              <div>
+                {(
+                  <div dangerouslySetInnerHTML={{ __html: applyStyles(marked.parse(String(formattedContent.markdown)) as string) }} />
+                )}
+              </div>
+            ) : formattedContent.__html ? (
+              <div dangerouslySetInnerHTML={{ __html: applyStyles(formattedContent.__html) }} />
+            ) : (
+              <p className="text-sm sm:text-base">{content}</p>
+            )}
+          </div>
         </div>
         <div ref={scrollRef} className="h-0" />
         <Separator className="my-4" />
