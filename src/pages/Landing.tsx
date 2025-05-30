@@ -10,6 +10,7 @@ import FooterSection from '@/components/landing/FooterSection';
 import AlternativeCTASection from '@/components/landing/AlternativeCTASection';
 import PricingSection from '@/components/landing/PricingSection';
 import FAQSection from '@/components/landing/FAQSection';
+import PartnershipSection from '@/components/landing/PartnershipSection';
 
 const Landing = () => {
   return (
@@ -19,8 +20,9 @@ const Landing = () => {
       <HeroSection />
       <FeaturesSection />
       <DemoSection />
-      {/* <PricingSection /> */}
+      <PricingSection />
       <AlternativeCTASection />
+      <PartnershipSection />
       <FAQSection />
       <CTASection />
       <FooterSection />

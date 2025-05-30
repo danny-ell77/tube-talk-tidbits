@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,35 +28,26 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // AppInitializer handles setup of anonymous users
 const AppInitializer = ({ children }: { children: React.ReactNode }) => {
-  const { user, getOrCreateProfile } = useAuth();
+  const { user, loading, getOrCreateProfile } = useAuth();
   const [initialized, setInitialized] = useState(false);
 
-  
-  useEffect(() => {
-    console.log("AppInitializer: Checking user state", user);
-
+  const initApp = useCallback(async () => {
     if (initialized) return;
 
-    const initApp = async () => {
-      // If no user is logged in, get/create an anonymous user
-      if (!user) {
-        try {
-          await getOrCreateProfile();
-        } catch (error) {
-          console.error("Error initializing anonymous user:", error);
-        }
+    // If no user is logged in, get/create an anonymous user
+    if (!user && !loading) {
+      try {
+        await getOrCreateProfile(null);
+      } catch (error) {
+        console.error("Error initializing anonymous user:", error);
       }
-      setInitialized(true);
-    };
-    
-    initApp();
-  }, [user?.id]);
+    }
+    setInitialized(true);
+  }, [user, loading, initialized, getOrCreateProfile]);
   
-  if (!initialized && !user) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
-    </div>;
-  }
+  useEffect(() => {
+    initApp();
+  }, [initApp]);
   
   return <>{children}</>;
 };

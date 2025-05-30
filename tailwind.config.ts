@@ -1,5 +1,5 @@
-
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -22,15 +22,15 @@ export default {
 			fontFamily: {
 				sans: [
 					'Inter',
-					'ui-sans-serif', 
-					'system-ui', 
-					'-apple-system', 
+					'ui-sans-serif',
+					'system-ui',
+					'-apple-system',
 					'BlinkMacSystemFont',
 					'sans-serif'
 				],
 				inter: [
-				    'Inter',
-				    'sans-serif'
+					'Inter',
+					'sans-serif'
 				],
 				mono: [
 					'JetBrains Mono',
@@ -88,8 +88,10 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				youtube: {
-					DEFAULT: '#FF0000',
-					hover: '#FF3333'
+					DEFAULT: '#CC0000',
+					hover: '#E60000',
+					light: '#FF1A1A',
+					dark: '#990000'
 				},
 				digest: {
 					blue: {
@@ -132,5 +134,7 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		animate
+	],
 } satisfies Config;
