@@ -31,23 +31,37 @@ const AppInitializer = ({ children }: { children: React.ReactNode }) => {
   const { user, loading, getOrCreateProfile } = useAuth();
   const [initialized, setInitialized] = useState(false);
 
-  const initApp = useCallback(async () => {
-    if (initialized) return;
+  // const initApp = useCallback(async () => {
+  //   if (initialized) return;
 
-    // If no user is logged in, get/create an anonymous user
-    if (!user && !loading) {
-      try {
-        await getOrCreateProfile(null);
-      } catch (error) {
-        console.error("Error initializing anonymous user:", error);
-      }
-    }
-    setInitialized(true);
-  }, [user, loading, initialized, getOrCreateProfile]);
+  //   // If no user is logged in, get/create an anonymous user
+  //   if (!user && !loading) {
+  //     try {
+  //       await getOrCreateProfile(null);
+  //     } catch (error) {
+  //       console.error("Error initializing anonymous user:", error);
+  //     }
+  //   }
+  //   setInitialized(true);
+  // }, [user, loading, initialized, getOrCreateProfile]);
   
   useEffect(() => {
+    debugger;
+    const initApp = async () => {
+      if (initialized) return;
+
+      // If no user is logged in, get/create an anonymous user
+      if (!user) {
+        try {
+          await getOrCreateProfile(null);
+        } catch (error) {
+          console.error("Error initializing anonymous user:", error);
+        }
+      }
+      setInitialized(true);
+    };
     initApp();
-  }, [initApp]);
+  }, [user, loading, initialized, getOrCreateProfile]);
   
   return <>{children}</>;
 };
@@ -62,7 +76,7 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
-                  <AppInitializer>
+                  {/* <AppInitializer> */}
                     <Routes>
                       {/* Public routes */}
                       <Route path="/" element={<Landing />} />
@@ -93,7 +107,7 @@ const App = () => {
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
-                  </AppInitializer>
+                  {/* </AppInitializer> */}
                 </BrowserRouter>
               </TooltipProvider>
             </ThemeProvider>

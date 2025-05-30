@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(data.session);
         
         if (data.session?.user) {
-          const profile = await fetchUserProfile(data.session.user.id);
+          const profile = await getOrCreateProfile(data.session.user.id);
           
           setUser({
             id: data.session.user.id,
@@ -152,10 +152,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         } else {
           setUser(null);
+          getOrCreateProfile(null);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
         setUser(null);
+        getOrCreateProfile(null);
       } finally {
         setLoading(false);
       }
@@ -207,7 +209,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           emailRedirectTo: window.location.origin,
         }
       });
-      
+
+      if (error) throw error;
       toast.success('Registration successful! Please check your email to confirm your account.');
     } catch (error) {
       console.error('Error signing up:', error.message);
@@ -312,7 +315,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }),
       });
       const anonUser = await data.json();
-      localStorage.setItem("anonymousId",  anonUser.anon_user_id);
+      localStorage.setItem("anonymousId",  anonUser.profile.anon_user_id);
 
       return {
         userId: anonUser.user_id,
@@ -328,15 +331,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   // Get or create an anonymous user
-  const getOrCreateProfile = async (userId: string): Promise<UserProfile | null> => {
+  const getOrCreateProfile = async (userId: string | null): Promise<UserProfile | null> => {
     console.log('Getting or creating user profile...');
     try {
       // setLoading(true);
 
       const storedId = getAnonymousId();
+      if (!userId && !storedId) {
+        // If no userId and no stored anonymous ID, create a new anon profile
+        return await createProfile(null);
+      }
 
       let profile = await fetchUserProfile(userId || storedId);
       
+      // Maybe the IDs are wrong, so we attempt creating a new profile
       if (!profile) {
         profile = await createProfile(userId);
       }

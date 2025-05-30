@@ -29,16 +29,13 @@ export const formatContent = (
   type: string,
   format: "html" | "markdown" = "html"
 ) => {
-  // If format is markdown and we want to keep it as markdown for the react-markdown component
   if (format === "markdown") {
-    // Ensure content is a string for ReactMarkdown component
     return {
       markdown: typeof content === "string" ? content : String(content),
       __html: null,
     };
   }
 
-  // If the content already contains HTML-like structures and it's explicitly HTML format, return it
   if (
     format === "html" &&
     (content.includes("<h") ||
@@ -48,7 +45,6 @@ export const formatContent = (
     return { __html: content, markdown: null };
   }
 
-  // Otherwise, format the content based on the summary type
   if (type === "key_insights") {
     const points = content.split("\n").filter((line) => line.trim());
     return {
@@ -59,7 +55,6 @@ export const formatContent = (
     };
   }
 
-  // Article format with enhanced styling
   if (type === "article") {
     return {
       __html: `<article class="prose prose-lg dark:prose-invert max-w-none">
@@ -69,7 +64,6 @@ export const formatContent = (
     };
   }
 
-  // Format both TLDR and comprehensive summary with paragraphs
   return {
     __html: content
       .split("\n\n")
@@ -79,7 +73,6 @@ export const formatContent = (
   };
 };
 
-// Utility function to check if content is empty
 export const isContentEmpty = (content: string): boolean => {
   return !content || content.trim() === "";
 };

@@ -38,7 +38,7 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
   };
 
   const handleBuyCredits = () => {
-    setDropdownOpen(false); // Close dropdown first
+    setDropdownOpen(false);
     setShowPricingModal(true);
   };
 
