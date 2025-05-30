@@ -14,7 +14,7 @@ export interface DigestResult {
   duration?: string;
 }
 
-const BASE_URL_LOCAL = "http://localhost:8000"; // Base URL for the backend API
+const BASE_URL_LOCAL = "http://localhost:5000"; // Base URL for the backend API
 
 const RENDER_BASE_URL_STAGING = "https://digestly-be.onrender.com";
 
@@ -26,7 +26,7 @@ const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL 
 
 const BASE_URL_STAGING = RAILWAY_BASE_URL_STAGING; // Use the staging URL for production
 
-export const BASE_URL = BASE_URL_STAGING;
+export const BASE_URL = BASE_URL_LOCAL;
 
 import { toast } from "sonner";
 
@@ -68,22 +68,19 @@ const extractVideoId = (url: string): string => {
     }
   }
 
-  // If no patterns match, just return the URL as-is
+
   return url;
 };
 
-// Check if streaming is enabled via environment variable
-const isStreamingEnabled = () => {
-  return import.meta.env.VITE_APP_ENABLE_STREAMING === "true";
-  // return true; // For testing purposes, always return true
+const isStreamingEnabled = (durationInSeconds: number) => {
+  return import.meta.env.VITE_APP_ENABLE_STREAMING === "true" && durationInSeconds < 2400;
+
 };
 
-// Function to get video thumbnail
 export const getYoutubeThumbnail = (videoId: string): string => {
   return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 };
 
-// Real implementation with support for streaming or regular requests
 export const generateDigest = async (
   youtubeUrl: string,
   type: string,
@@ -94,14 +91,13 @@ export const generateDigest = async (
   const videoId = extractVideoId(youtubeUrl);
   const thumbnailUrl = getYoutubeThumbnail(videoId);
 
-  // Create request payload
   const payload = {
     video_id: videoId,
     mode: type,
     tags: [],
+    duration: 0,
   };
 
-  // If custom prompt is provided, add it to payload
   if (customPrompt) {
     payload["prompt_template"] = customPrompt;
   }
@@ -109,14 +105,20 @@ export const generateDigest = async (
   try {
     const videoData = await getVideoData(youtubeUrl);
     const { title: videoTitle, tags, duration, creator } = videoData;
+    const durationInSeconds = duration ?
+      duration.split(":").map(x => parseInt(x || "0"))
+        .reduce((acc, curr, i) => acc + curr * [3600, 60, 1][i], 0)
+      : 0;
+    console.log("durationInSeconds", durationInSeconds);
     const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];
     const titleFromUrlFallback = `Video ${titleFromUrl} Summary`;
     const title = videoTitle || titleFromUrlFallback;
+
     payload.tags = tags || [];
+    payload.duration = durationInSeconds;
 
     let content = "";
-    if (isStreamingEnabled()) {
-      // Streaming implementation with authentication and error handling
+    if (isStreamingEnabled(durationInSeconds)) {
       console.log("Using streaming response");
 
       const { authenticatedFetch } = await import("@/services/authService");
@@ -147,7 +149,6 @@ export const generateDigest = async (
         throw new Error("Failed to get response reader");
       }
 
-      // Create a result object that will be updated during streaming
       const result: DigestResult = {
         title,
         type,
@@ -190,15 +191,16 @@ export const generateDigest = async (
         readChunk();
       });
     } else {
-      // Non-streaming implementation with authentication
       console.log("Using regular response");
 
       // Import here to avoid circular dependencies
       const { authenticatedFetch } = await import("@/services/authService");
 
+      console.log("payload", payload, durationInSeconds);
+
       const response = await authenticatedFetch(`${BASE_URL}/process/`, {
         method: "POST",
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, duration: durationInSeconds }),
       });
 
       if (response.status === 401) {
@@ -221,13 +223,12 @@ export const generateDigest = async (
       content = data.response;
     }
 
-    // Return formatted digest result
     return {
       title,
       type,
       content,
       duration,
-      creator, // Include the creator (channel_title) for attribution
+      creator,
       videoUrl: youtubeUrl,
       timestamp: new Date().toLocaleString(),
       model,
@@ -235,7 +236,7 @@ export const generateDigest = async (
       thumbnailUrl,
     };
   } catch (error) {
-    console.error("Error generating digest:", error);
+    console.error("Error generating digest:", JSON.stringify(error));
     throw error;
   }
 };

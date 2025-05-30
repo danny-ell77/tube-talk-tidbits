@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import UserAvatar from './auth/UserAvatar';
 import { Cookie, Menu, X } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import CreditsDisplay from './CreditsDisplay';
+import { UserData } from '@/contexts/AuthContext';
 
 interface HeaderProps {
   transparent?: boolean;
-  user?: any; // For backward compatibility
+  user?: UserData;
   hideUserInfo?: boolean;
 }
 
 const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
   let basePath = "/"
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const isLoggedIn = !!user?.id && !hideUserInfo;
   const [scrolled, setScrolled] = useState(false);
@@ -70,7 +72,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-4 md:px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to={basePath} className="flex items-center gap-2">
-          <Cookie className={`h-6 w-6 ${scrolled ? 'text-red-600' : transparent ? 'text-white' : 'text-red-600'}`} />
+          <Cookie className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
           <span className={`font-pacifico text-xl font-semibold ${textColor}`}>
             Digestly
           </span>
@@ -80,7 +82,12 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
         <div className="hidden md:flex items-center gap-4">
           <ThemeToggle variant="ghost" />
           
-          {isLoggedIn ? (
+          {loading ? (
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
+          ) : isLoggedIn ? (
             <div className="flex items-center gap-3">
               <CreditsDisplay />
               <UserAvatar user={user} onLogout={handleLogout} />
@@ -116,7 +123,6 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
           )}
         </div>
 
-        {/* Mobile Menu Toggle */}
         <div className="flex md:hidden items-center gap-2">
           <ThemeToggle variant="ghost" size="sm" />
           <Button 
@@ -138,10 +144,15 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className={`md:hidden absolute top-full left-0 right-0 p-4 ${headerBg} shadow-md border-t border-gray-200 dark:border-gray-700`}>
-          {isLoggedIn ? (
+          {loading ? (
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
+          ) : isLoggedIn ? (
             <div className="flex flex-col gap-3">
               <div className={`${textColor} flex items-center justify-between`}>
-                <span>{user.credits} credits</span>
+                <CreditsDisplay />
                 <UserAvatar user={user} onLogout={handleLogout} />
               </div>
             </div>

@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { CircleDollarSign } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import {supabase} from '@/integrations/supabase/client';
-import { cn } from '@/lib/utils';  // Import the cn utility if available
+import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 
 interface CreditsDisplayProps {
   showIcon?: boolean;
@@ -18,12 +18,10 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
   size = 'default',
   className = '',
 }) => {
-  const { user, refreshUserData, setUser } = useAuth();
+  const { user, setUser } = useAuth();
+
 
   useEffect(() => {
-    refreshUserData();
-
-    // Only set up subscription if user exists and has an ID
     if (user?.id) {
       const subscription = supabase
         .channel(`profile-${user.id}`)
@@ -36,15 +34,15 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
           },
           (payload) => {
             if (payload.eventType === 'DELETE') {
-              setUser((prevUser) => ({
+              setUser((prevUser) => prevUser ? {
                 ...prevUser,
                 credits: 0,
-              }));
+              } : null);
             } else {
-              setUser((prevUser) => ({
+              setUser((prevUser) => prevUser ? {
                 ...prevUser,
                 credits: payload.new.credits,
-              }));
+              } : null);
             }
           }
         )
@@ -54,28 +52,52 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
         subscription.unsubscribe();
       };
     }
-  }, [user?.id, user?.credits]);
+  }, [user?.id]);
 
-  // Determine the badge variant based on credit amount
-  const getBadgeVariant = () => {
+  // Get custom styling based on credit amount using YouTube's color spectrum
+  const getCreditsStyle = () => {
     const creditAmount = user?.credits || 0;
+    
     if (creditAmount <= 0) {
-      return 'outline'; // Changed from 'destructive' to 'outline' for less intense styling
-    } else if (creditAmount < 5) {
-      return 'secondary';
+      return {
+        variant: 'outline' as const,
+        customClasses: 'border-red-600 text-red-600 bg-transparent dark:border-red-400 dark:text-red-200 dark:bg-red-950/60'
+      };
+    } else if (creditAmount <= 2) {
+      return {
+        variant: 'secondary' as const,
+        customClasses: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 dark:hover:bg-yellow-800'
+      };
+    } else if (creditAmount <= 5) {
+      return {
+        variant: 'secondary' as const,
+        customClasses: 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-200 dark:hover:bg-orange-800'
+      };
+    } else if (creditAmount <= 10) {
+      return {
+        variant: 'secondary' as const,
+        customClasses: 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800'
+      };
+    } else {
+      return {
+        variant: 'secondary' as const,
+        customClasses: 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800'
+      };
     }
-    return variant;
   };
 
-  // Add a custom class for no credits that's less intense than destructive
-  const customClass = user?.credits <= 0 ? 'text-red-500/70' : '';
+  const creditsStyle = getCreditsStyle();
 
   return (
     <Badge 
-      variant={getBadgeVariant()} 
-      className={cn(`font-semibold ${className}`, customClass)}
+      variant={creditsStyle.variant}
+      className={cn(
+        "font-medium transition-colors",
+        creditsStyle.customClasses,
+        className
+      )}
     >
-      {showIcon && <CircleDollarSign className="w-3 h-3 mr-1" />}
+      {showIcon && <CircleDollarSign className="w-3 h-3 mr-1.5" />}
       {user?.credits ?? 0} credits
     </Badge>
   );

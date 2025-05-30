@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
@@ -27,11 +26,21 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(user?.isPremium || false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("standard");
   
+  const initialResult = useMemo(() => ({
+    title: "Generating digest...",
+    type: "",
+    content: "",
+    videoUrl: "",
+    timestamp: new Date().toLocaleString(),
+    model: "standard",
+    customPrompt: "",
+  }), []);
+
   useEffect(() => {
     if (location.state && location.state.result) {
       setCurrentResult(location.state.result);
       setActiveTab("current");
-      location.state.result = null; // Clear state to prevent re-render
+      location.state.result = null;
     }
     
     const savedHistory = localStorage.getItem('youtubeDigestHistory');
@@ -54,7 +63,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     }
   }, [history]);
 
-  const handleSubmit = async (
+  const handleSubmit = useCallback(async (
     url: string, 
     type: string, 
     customPrompt?: string, 
@@ -67,19 +76,16 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
 
     setIsLoading(true);
     
-    const initialResult = {
-      title: "Generating digest...",
+    const result = {
+      ...initialResult,
       type,
-      content: "",
       videoUrl: url,
-      timestamp: new Date().toLocaleString(),
       model,
       customPrompt,
     };
-    setCurrentResult(initialResult);
+    setCurrentResult(result);
     
     try {
-      // Stream updates using the callback
       const result = await generateDigest(
         url, 
         type, 
@@ -99,6 +105,12 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         }
       );
       
+      setActiveTab("current");
+      if (type === "article") {
+        setDisplayMode("article");
+      } else {
+        setDisplayMode("standard");
+      }
       setCurrentResult(result);
       
       setHistory(prev => {
@@ -108,7 +120,7 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
                  item.customPrompt === customPrompt
         );
         if (!exists) {
-          return [result, ...prev].slice(0, 10); // Keep only latest 10 items
+          return [result, ...prev].slice(0, 10);
         }
         return prev;
       });
@@ -127,16 +139,15 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [initialResult, user?.id]);
 
-  const handleClearHistory = () => {
+  const handleClearHistory = useCallback(() => {
     setHistory([]);
     localStorage.removeItem('youtubeDigestHistory');
     toast.success("History cleared");
-  };
+  }, [setHistory]);
 
-  const toggleDisplayMode = (mode: DisplayMode) => {
-    // Only toggle display mode if viewing a current summary
+  const toggleDisplayMode = useCallback((mode: DisplayMode) => {
     if (activeTab === "current" && currentResult) {
       setDisplayMode(mode);
       
@@ -146,7 +157,8 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
         toast.success("Article mode activated. Content displayed as an article.");
       }
     }
-  };
+  }, [activeTab, currentResult]);
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 mt-16">
@@ -159,21 +171,6 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
       
       <div className="py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            {user?.id && (
-              <div className="mt-4">
-                <div className="text-sm px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md inline-flex items-center gap-2">
-                  <span className="font-medium">Credits:</span> {user.credits}
-                  {user.isPremium && (
-                    <span className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100 text-xs px-2 py-0.5 rounded-full">
-                      Premium
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
           <DirectoryTabs 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
@@ -198,8 +195,8 @@ const Digest = ({ showSaved = false }: DigestPageProps) => {
               history={history}
               displayMode={displayMode}
               isPremiumUser={isPremiumUser}
-              onClearHistory={handleClearHistory}
               onSubmit={handleSubmit}
+              onClearHistory={handleClearHistory}
             />
           </div>
         </div>

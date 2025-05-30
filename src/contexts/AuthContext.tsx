@@ -6,7 +6,7 @@ import { sendPasswordResetEmail, updatePassword } from '@/services/authService';
 import { getAnonymousId } from '@/lib/utils';
 import {Database} from "@/integrations/supabase/types";
 
-type UserData = {
+export type UserData = {
   /**
    * @property {string | null} id - The unique identifier for the user. Its used as a base check to know if the user is authenticated.
    */
@@ -23,7 +23,7 @@ type UserData = {
   anonId?: string;
 } | null;
 
-type UserProfile  = {
+type UserProfile = {
   userId: string;
   anonUserId: string;
   credits: number;
@@ -41,12 +41,10 @@ type AuthContextType = {
   resetPassword: (email: string) => Promise<void>;
   updateUserPassword: (newPassword: string) => Promise<void>;
   updateCredits: (newCredits: number) => void;
-  refreshUserData: () => Promise<void>;
-  getOrCreateProfile: () => Promise<UserData>;
+  getOrCreateProfile: (userId: string | null) => Promise<UserProfile | null>;
   loading: boolean;
 };
 
-const START_CREDITS = 3; // Initial credits for anonymous users
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -73,27 +71,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .or(
-          `user_id.eq.${userId},anon_user_id.eq.${userId}`
-        )
-        .setHeader('x-anon-user-id', userId)
-        .single();
+  const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .or(
+        `user_id.eq.${userId},anon_user_id.eq.${userId}`
+      )
+      .single();
 
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        return null;
-      }
-      
-      return profile;
-    } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
+    if (error) {
+      console.error('Error fetching user profile:', error);
       return null;
     }
+    
+    return {
+      userId: profile.user_id,
+      anonUserId: profile.anon_user_id,
+      credits: profile.credits,
+      referrer: profile.referrer,
+      timezone: profile.timezone,
+    };
   };
 
   useEffect(() => {
@@ -101,13 +99,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       setSession(session);
+
+      
       
       if (session?.user) {
-        // Use setTimeout to prevent potential deadlocks
         setTimeout(async () => {
+          let profile: UserProfile | null = null;
           try {
-            const profile = await fetchUserProfile(session.user.id);
-            
+            if (event === 'SIGNED_IN') {
+              profile = await getOrCreateProfile(session.user.id);
+              localStorage.removeItem('anonymousId');
+            } else if (event === 'SIGNED_OUT') {
+              profile = await createProfile(null);
+            }
+
             setUser({
               id: session.user.id,
               email: session.user.email || '',
@@ -180,7 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       
       toast.success('Logged in successfully!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error signing in:', error);
       toast.error(error.message || 'Failed to sign in');
       throw error;
@@ -202,13 +207,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           emailRedirectTo: window.location.origin,
         }
       });
-      await createProfile(data.user.id)
-      
-      if (error) throw error;
       
       toast.success('Registration successful! Please check your email to confirm your account.');
-    } catch (error: any) {
-      console.error('Error signing up:', error);
+    } catch (error) {
+      console.error('Error signing up:', error.message);
       toast.error(error.message || 'Failed to sign up');
       throw error;
     } finally {
@@ -233,7 +235,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       
       toast.success('Logged out successfully');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error signing out:', error);
       toast.error(error.message || 'Failed to sign out');
       
@@ -253,7 +255,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       
       toast.success('Password reset instructions sent to your email');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error resetting password:', error);
       toast.error(error.message || 'Failed to send password reset email');
       throw error;
@@ -271,7 +273,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       
       toast.success('Password updated successfully');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating password:', error);
       toast.error(error.message || 'Failed to update password');
       throw error;
@@ -290,26 +292,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Refresh user data including credits
-  const refreshUserData = async () => {
-    try {
-      if (!user?.id) return;
-      
-      const profile = await fetchUserProfile(user.id);
-      
-      if (profile) {
-        setUser({
-          ...user,
-          isPremium: false,
-          credits: profile.credits || 0,
-        });
-      }
-    } catch (error) {
-      console.error('Error refreshing user data:', error);
-    }
-  };
 
-  const createProfile = async (userId: string | null = null): Promise<UserProfile> => {
+  const createProfile = async (userId: string | null = null): Promise<UserProfile | null> => {
     const BASE_URL = 'https://sdmcnnyuiyzmazdakglz.supabase.co/functions/v1/clever-service';
     let data;
     try {
@@ -319,52 +303,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY}`,
           Apikey: `${import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY}`,
-          'X-Anon-User-Id': getAnonymousId() || '',
           credentials: 'include',
         },
         body: JSON.stringify({
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          user_id: userId,
+          userId,
+          anonUserId: getAnonymousId(),
         }),
       });
+      const anonUser = await data.json();
+      localStorage.setItem("anonymousId",  anonUser.anon_user_id);
+
+      return {
+        userId: anonUser.user_id,
+        anonUserId: anonUser.anon_user_id,
+        credits: anonUser.credits,
+        referrer: anonUser.referrer,
+        timezone: anonUser.timezone,
+      };
     } catch (error) {
       console.error('Error creating user profile:', error);
-      throw error;
+      return null;
     }
-    const { profile }: {profile:  Database['public']['Tables']['profiles']['Row'] | null} = await data.json();
-
-    return {
-        userId: profile.user_id,
-        anonUserId: profile.anon_user_id,
-        credits: profile.credits,
-        referrer: profile.referrer,
-        timezone: profile.timezone,
-    };
   }
 
   // Get or create an anonymous user
-  const getOrCreateProfile = async (): Promise<UserData> => {
+  const getOrCreateProfile = async (userId: string): Promise<UserProfile | null> => {
+    console.log('Getting or creating user profile...');
     try {
-      setLoading(true);
+      // setLoading(true);
 
-      if (user?.id) {
-        return user;
-      }
-      
       const storedId = getAnonymousId();
 
-      let anonProfile = await fetchUserProfile(storedId);
+      let profile = await fetchUserProfile(userId || storedId);
       
-      if (!anonProfile) {
-        const anonUser = await createProfile();
-        localStorage.setItem("anonymousId", anonUser.anonUserId);
+      if (!profile) {
+        profile = await createProfile(userId);
       }
+
+      return profile;
 
     } catch (error) {
       console.error('Error in getOrCreateProfile:', error);
       throw error;
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -379,7 +362,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resetPassword, 
       updateUserPassword, 
       updateCredits,
-      refreshUserData,
       getOrCreateProfile,
       loading,
     }}>

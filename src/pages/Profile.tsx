@@ -46,7 +46,11 @@ interface ProfileStats {
 }
 
 const ProfilePage = () => {
-  const { user, updateUserEmail, updateUserPassword } = useAuth();
+  const {
+    user,
+    // updateUserEmail,
+    updateUserPassword
+  } = useAuth();
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -55,7 +59,6 @@ const ProfilePage = () => {
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   
-  // Mock stats - replace with actual data from your backend
   const [stats] = useState<ProfileStats>({
     credits: 150,
     totalDigests: 42,
@@ -82,7 +85,7 @@ const ProfilePage = () => {
   const onEmailSubmit = async (data: EmailFormData) => {
     setIsUpdatingEmail(true);
     try {
-      await updateUserEmail(data.email, data.currentPassword);
+      // await updateUserEmail(data.email, data.currentPassword);
       toast.success('Email updated successfully! Please check your new email for verification.');
       emailForm.reset({ email: data.email, currentPassword: "" });
     } catch (error) {

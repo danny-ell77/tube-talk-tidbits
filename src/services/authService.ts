@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getAnonymousId, isAnonymousUser } from "@/lib/utils";
+import { toast } from "sonner";
 
 const ANON_ID_FRAGMENT = "anon:";
 
@@ -16,6 +17,11 @@ export const getAuthHeaders = async () => {
   } else if (isAnonymousUser()) {
     // If no auth token but we have an anonymous ID, use that
     const anonymousId = getAnonymousId();
+    if (!anonymousId) {
+      // Not great, but we need to force a reload to get the anonymous ID
+      window.location.reload();
+      toast.error("Please try again");
+    }
     headers["Authorization"] = `Bearer ${ANON_ID_FRAGMENT}${anonymousId}`;
   }
 

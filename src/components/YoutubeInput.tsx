@@ -19,7 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import SignupModal from './auth/SignupModal';
 import PricingModal from './auth/PricingModal';
 import { ErrorCodes } from "@/types/errorCodes";
-
+import PersonalizedGreeting from './PersonalizedGreeting';
 interface YoutubeInputProps {
   onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => Promise<[DigestResult | null, Error | null]>;
   isLoading: boolean;
@@ -126,17 +126,17 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
 
   return (
     <div className="w-full max-w-3xl mx-auto">
+      {user && <PersonalizedGreeting />}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Cookie className="h-6 w-6 text-red-600" />
+        {/* <div className="flex items-center space-x-2">
           <h2 className="text-xl font-semibold">Enter YouTube URL</h2>
-        </div>
+        </div> */}
         
         <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center space-x-2'}`}>
           <div className="flex-1 relative">
             <Input
               type="text"
-              placeholder="https://www.youtube.com/watch?v=..."
+              placeholder="Paste a YouTube URL (e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ)"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="pr-10 w-full"
@@ -224,10 +224,6 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
       {!isLoading && <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
         <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Tips for Better Results:</h3>
         <ul className="text-sm space-y-2 text-blue-700 dark:text-blue-300">
-          <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
-            <span className="block w-1 h-1 rounded-full bg-blue-400" />
-            Choose videos under 30 minutes for optimal performance.
-          </li>
           <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
             <span className="block w-1 h-1 rounded-full bg-blue-400" />
             Select videos that have been on YouTube for at least a few hours.

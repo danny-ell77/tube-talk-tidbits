@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DigestResult } from '@/services/youtubeDigestService';
 import YoutubeInput from '@/components/YoutubeInput';
 import SummaryCard from '@/components/SummaryCard';
@@ -29,34 +28,38 @@ const DigestContent: React.FC<DigestContentProps> = ({
   onClearHistory,
   onSubmit
 }) => {
-  switch (activeTab) {
-    case "new":
-      return (
-        <div className="space-y-6">
-          <YoutubeInput 
-            onSubmit={onSubmit} 
-            isLoading={isLoading} 
-            isPremium={isPremiumUser}
-          />
-          {isLoading && <LoadingState />}
-        </div>
-      );
-    case "current":
-      if (currentResult) {
-        // Choose the display mode
-        if (displayMode === "article") {
-          return <ArticleMode result={currentResult} />;
-        } else {
-          // Standard mode (zen mode is handled at parent level)
-          return <SummaryCard {...currentResult} />;
+  const content = useMemo(() => {
+    switch (activeTab) {
+      case "new":
+        return (
+          <div className="space-y-6">
+            <YoutubeInput 
+              onSubmit={onSubmit} 
+              isLoading={isLoading} 
+              isPremium={isPremiumUser}
+            />
+            {isLoading && <LoadingState />}
+          </div>
+        );
+      case "current":
+        if (currentResult) {
+          // Choose the display mode
+          if (displayMode === "article") {
+            return <ArticleMode result={currentResult} />;
+          } else {
+            // Standard mode (zen mode is handled at parent level)
+            return <SummaryCard {...currentResult} />;
+          }
         }
-      }
-      return null;
-    case "history":
-      return <HistoryView history={history} onClearHistory={onClearHistory} />;
-    default:
-      return null;
-  }
+        return null;
+      case "history":
+        return <HistoryView history={history} onClearHistory={onClearHistory} />;
+      default:
+        return null;
+    }
+  }, [activeTab, isLoading, currentResult, displayMode, isPremiumUser, history, onClearHistory, onSubmit]);
+
+  return content;
 };
 
 export default DigestContent;
