@@ -40,7 +40,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
         .from('pricing_plans')
         .select('*')
         .eq('region', userRegion)
-        .order('plan_price', { ascending: true });
+        .order('amount', { ascending: true });
 
       if (error) {
         console.error('Error fetching pricing plans:', error);
@@ -63,7 +63,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
-      toast.error('Failed to load pricing plans');
+      // toast.error('Failed to load pricing plans');
     } finally {
       setIsLoading(false);
     }
