@@ -23,7 +23,7 @@ const Login = () => {
         <CardHeader className="space-y-1 flex flex-col items-center">
           <div className="flex items-center gap-2 mb-2">
             <Cookie className="h-6 w-6 text-youtube" />
-            <h2 className="text-2xl font-bold">Digestly</h2>
+            <h2 className="text-2xl font-bold cursor-pointer" onClick={() => navigate('/')}>Digestly</h2>
           </div>
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
