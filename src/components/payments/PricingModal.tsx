@@ -51,10 +51,11 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
         const transformedPlans: PricingPlan[] = data.map((plan: Tables<'pricing_plans'>) => ({
           id: plan.id,
           planName: plan.plan_name,
-          planPrice: plan.plan_price,
+          amount: plan.amount,
           credits: plan.credits,
           currency: plan.currency,
           region: plan.region,
+          isPopular: plan.recommended,
           features: plan.features ? (plan.features as string).split(',').map(f => f.trim()) : [],
           subunitMultiplier: plan.subunit_multiplier
         }));
@@ -76,7 +77,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
     
     setProcessing(plan.id);
       const multiplier = plan.subunitMultiplier || 100;
-      const amount = convertToSmallestUnit(plan.planPrice, plan.currency, multiplier);
+      const amount = convertToSmallestUnit(plan.amount, plan.currency, multiplier);
       
       try {
         onClose();
@@ -94,7 +95,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
             if (response.status === "success") {
               setPaymentDetails({
                 planName: plan.planName,
-                amount: plan.planPrice,
+                amount: plan.amount,
                 reference: response.reference,
                 expectedCredits: (user.credits || 0) + plan.credits
               });
@@ -124,10 +125,10 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
   };
   const pricingCardData = pricingPlans.map((plan) => ({
     title: plan.planName,
-    price: `${currencySymbol}${plan.planPrice.toLocaleString()}`,
+    price: `${currencySymbol}${plan.amount.toLocaleString()}`,
     credits: plan.credits,
     features: plan.features,
-    isPopular: plan.planName.toLowerCase() === 'pro', // Make Pro plan popular by default
+    isPopular: plan.isPopular,
     buttonText: processing === plan.id ? "Processing..." : "Subscribe",
     ctaAction: () => handleSubscribe(plan),
     isLoading: processing === plan.id

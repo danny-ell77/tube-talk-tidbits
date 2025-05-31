@@ -50,39 +50,39 @@ export type Database = {
       }
       pricing_plans: {
         Row: {
+          amount: number
           created_at: string | null
           credits: number
           currency: string
           features: Json | null
           id: string
           plan_name: string
-          plan_price: number
           recommended: boolean
           region: string
           subunit_multiplier: number | null
           updated_at: string | null
         }
         Insert: {
+          amount: number
           created_at?: string | null
           credits: number
           currency: string
           features?: Json | null
           id?: string
           plan_name: string
-          plan_price: number
           recommended?: boolean
           region: string
           subunit_multiplier?: number | null
           updated_at?: string | null
         }
         Update: {
+          amount?: number
           created_at?: string | null
           credits?: number
           currency?: string
           features?: Json | null
           id?: string
           plan_name?: string
-          plan_price?: number
           recommended?: boolean
           region?: string
           subunit_multiplier?: number | null
