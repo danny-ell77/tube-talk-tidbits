@@ -16,7 +16,6 @@ const PricingSection = () => {
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [showSignupModal, setShowSignupModal] = useState(false);
   
-  // Handle subscription with Paystack
   const handleSubscribe = (planName: string) => {
     if (!user?.email) {
       // If user is not logged in, show signup modal
@@ -24,7 +23,6 @@ const PricingSection = () => {
       return;
     }
     
-    // For free plan, just navigate to app
     if (planName === 'Free') {
       return;
     }

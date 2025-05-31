@@ -41,6 +41,7 @@ type AuthContextType = {
   resetPassword: (email: string) => Promise<void>;
   updateUserPassword: (newPassword: string) => Promise<void>;
   updateCredits: (newCredits: number) => void;
+  refreshUserData: () => Promise<void>;
   getOrCreateProfile: (userId: string | null) => Promise<UserProfile | null>;
   loading: boolean;
 };
@@ -295,7 +296,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-
+    // Refresh user data including credits
+    const refreshUserData = async () => {
+      try {
+        if (!user?.id) return;
+        
+        const profile = await fetchUserProfile(user.id);
+        
+        if (profile) {
+          setUser({
+            ...user,
+            isPremium: false,
+            credits: profile.credits || 0,
+          });
+        }
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
+    };
+  
   const createProfile = async (userId: string | null = null): Promise<UserProfile | null> => {
     const BASE_URL = 'https://sdmcnnyuiyzmazdakglz.supabase.co/functions/v1/clever-service';
     let data;
@@ -370,6 +389,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resetPassword, 
       updateUserPassword, 
       updateCredits,
+      refreshUserData,
       getOrCreateProfile,
       loading,
     }}>

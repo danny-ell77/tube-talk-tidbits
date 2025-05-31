@@ -17,7 +17,7 @@ import YouTubePreviewCard from './YouTubePreviewCard';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/AuthContext';
 import SignupModal from './auth/SignupModal';
-import PricingModal from './auth/PricingModal';
+import PricingModal from './payments/PricingModal';
 import { ErrorCodes } from "@/types/errorCodes";
 import PersonalizedGreeting from './PersonalizedGreeting';
 interface YoutubeInputProps {
@@ -128,10 +128,6 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     <div className="w-full max-w-3xl mx-auto">
       {user && <PersonalizedGreeting />}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* <div className="flex items-center space-x-2">
-          <h2 className="text-xl font-semibold">Enter YouTube URL</h2>
-        </div> */}
-        
         <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center space-x-2'}`}>
           <div className="flex-1 relative">
             <Input
@@ -157,7 +153,6 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
             value={summaryType}
             onValueChange={(value: SummaryType) => {
               setSummaryType(value);
-              // Show custom prompt option when "custom" is selected
               setShowCustomPrompt(value === SummaryType.CUSTOM);
             }}
             disabled={isLoading}
@@ -175,7 +170,6 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
           </Select>
         </div>
 
-        {/* YouTube Preview Card */}
         {isValidUrl && videoId && (
           <YouTubePreviewCard videoId={videoId} videoInfo={videoInfo} />
         )}
@@ -239,17 +233,14 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
         </ul>
       </div>}
 
-      {/* Signup Modal */}
       <SignupModal 
         isOpen={showSignupModal} 
         onClose={() => setShowSignupModal(false)} 
         onSignupSuccess={() => {
           setShowSignupModal(false);
-          // Optionally, you can trigger the submit action here if needed
         }}
       />
 
-      {/* Pricing Modal */}
       <PricingModal 
         isOpen={showPricingModal} 
         onClose={() => setShowPricingModal(false)} 

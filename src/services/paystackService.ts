@@ -1,9 +1,7 @@
-// Paystack Payment Integration Service
 import PaystackPop from "@paystack/inline-js";
 import { toast } from "sonner";
 
-// Get Paystack public key from environment variable
-const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_174dec6c4d2e6e2a725720eb9fd8f0ad33510bb4';
+const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_APP_PAYSTACK_PUBLIC_KEY;
 
 if (!PAYSTACK_PUBLIC_KEY) {
   console.error("Paystack public key is not defined in environment variables");
@@ -49,19 +47,16 @@ export const initializePayment = (config: PaystackConfig) => {
       throw new Error("Paystack public key is not configured");
     }
 
-    // Generate a unique reference if not provided
     if (!config.reference) {
       config.reference = `DIGESTLY_${Date.now()}_${Math.floor(
         Math.random() * 1000000
       )}`;
     }
 
-    // Default currency to USD if not specified
     if (!config.currency) {
       config.currency = "USD";
     }
 
-    // Create an instance of the Paystack popup
     const handler = PaystackPop.setup({
       key: PAYSTACK_PUBLIC_KEY,
       email: config.email,
@@ -80,9 +75,7 @@ export const initializePayment = (config: PaystackConfig) => {
         ],
       },
       callback: (response: PaystackResponse) => {
-        // Verify the payment status
         if (response.status === "success") {
-          // Call the provided callback if exists
           if (config.callback && typeof config.callback === "function") {
             config.callback(response);
           }
@@ -92,7 +85,6 @@ export const initializePayment = (config: PaystackConfig) => {
         }
       },
       onClose: () => {
-        // Call the provided onClose if exists
         if (config.onClose && typeof config.onClose === "function") {
           config.onClose();
         } else {
@@ -101,44 +93,26 @@ export const initializePayment = (config: PaystackConfig) => {
       },
     });
 
-    // Open the Paystack popup
     handler.openIframe();
 
     return { reference: config.reference };
   } catch (error) {
     console.error("Error initializing Paystack payment:", error);
-    toast.error(error instanceof Error ? error.message : "Payment initialization failed. Please try again.");
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Payment initialization failed. Please try again."
+    );
     throw error;
   }
 };
 
-// Function to verify payment status on your server
-export const verifyPayment = async (reference: string) => {
-  try {
-    const response = await fetch(`/api/verify-payment/${reference}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Payment verification failed");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error verifying payment:", error);
-    toast.error("Failed to verify payment. Please contact support.");
-    throw error;
-  }
-};
-
-// Helper function to convert dollars to the smallest currency unit (kobo/cents)
-export const convertToSmallestUnit = (amount: number, currency = "USD") => {
-  // For USD, NGN, etc. multiply by 100 to convert dollars/naira to cents/kobo
-  return Math.round(amount * 100);
+export const convertToSmallestUnit = (
+  amount: number,
+  currency = "USD",
+  multiplier = 100
+) => {
+  return Math.round(amount * multiplier);
 };
 
 // Plan types with their corresponding prices and Paystack plan codes

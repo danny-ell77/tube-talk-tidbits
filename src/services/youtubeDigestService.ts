@@ -73,7 +73,7 @@ const extractVideoId = (url: string): string => {
 const isStreamingEnabled = (durationInSeconds: number) => {
   return (
     import.meta.env.VITE_APP_ENABLE_STREAMING === "true" &&
-    durationInSeconds >= 2400
+    durationInSeconds <= 2400
   );
 };
 
@@ -109,7 +109,11 @@ export const generateDigest = async (
       ? duration
           .split(":")
           .map((x) => parseInt(x || "0"))
-          .reduce((acc, curr, i) => acc + curr * [3600, 60, 1][i], 0)
+          .reverse()
+          .reduce((acc, curr, i) => {
+            const multiplier = [1, 60, 3600][i] || 0;
+            return acc + curr * multiplier;
+          }, 0)
       : 0;
     console.log("durationInSeconds", durationInSeconds);
     const titleFromUrl = youtubeUrl.split("v=")[1]?.split("&")[0];

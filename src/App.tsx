@@ -95,14 +95,14 @@ const App = () => {
                         </ProtectedRoute>
                       } 
                     />
-                    <Route 
+                    {/* <Route 
                       path="/profile" 
                       element={
                         <ProtectedRoute>
                           <ProfilePage />
                         </ProtectedRoute>
                       }
-                    />
+                    /> */}
 
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />

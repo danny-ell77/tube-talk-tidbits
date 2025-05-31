@@ -44,10 +44,9 @@ const CardContent = ({
         <h3 className="text-xl font-bold text-foreground">{title}</h3>
         <div className="flex items-baseline mt-2 sm:mt-0">
           {price.match(/^(\D+)/) && (
-            <span className="text-xl sm:text-2xl font-normal mr-1 align-top">{price.match(/^(\D+)/)[1]}</span>
+            <span className="text-xl sm:text-2xl font-normal mr-1 align-top italic">{price.match(/^(\D+)/)[1]}</span>
           )}
           <span className="text-2xl sm:text-3xl font-extrabold text-foreground">{price.replace(/^(\D+)/, '')}</span>
-          {price !== "Free" && <span className="text-muted-foreground ml-1">/mo</span>}
         </div>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">

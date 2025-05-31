@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User, Settings, LogOut, CircleDollarSign } from "lucide-react";
 import { UserData } from '@/contexts/AuthContext';
-import PricingModal from './PricingModal';
+import PricingModal from '../payments/PricingModal';
 interface UserAvatarProps {
   user: UserData;
   onLogout?: () => void;
@@ -65,12 +65,12 @@ const UserAvatar = ({ user, onLogout }: UserAvatarProps) => {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link to="/profile" className="flex items-center">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem onClick={handleBuyCredits} className="flex items-center">
             <CircleDollarSign className="mr-2 h-4 w-4" />
             <span>Buy More Credits</span>

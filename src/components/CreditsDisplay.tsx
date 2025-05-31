@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { CircleDollarSign } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,11 +18,17 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
   size = 'default',
   className = '',
 }) => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, refreshUserData } = useAuth();
 
+  const refresh = useCallback(() => {
+    if (user?.id) {
+      refreshUserData();
+    }
+  }, [user?.id, refreshUserData]);
 
   useEffect(() => {
     if (user?.id) {
+      refresh();
       const subscription = supabase
         .channel(`profile-${user.id}`)
         .on('postgres_changes',

@@ -48,6 +48,48 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_plans: {
+        Row: {
+          created_at: string | null
+          credits: number
+          currency: string
+          features: Json | null
+          id: string
+          plan_name: string
+          plan_price: number
+          recommended: boolean
+          region: string
+          subunit_multiplier: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credits: number
+          currency: string
+          features?: Json | null
+          id?: string
+          plan_name: string
+          plan_price: number
+          recommended?: boolean
+          region: string
+          subunit_multiplier?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credits?: number
+          currency?: string
+          features?: Json | null
+          id?: string
+          plan_name?: string
+          plan_price?: number
+          recommended?: boolean
+          region?: string
+          subunit_multiplier?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           anon_user_id: string
