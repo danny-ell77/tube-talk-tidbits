@@ -115,7 +115,7 @@ export const convertToSmallestUnit = (
   return Math.round(amount * multiplier);
 };
 
-// Deprecated: Currently used for Pricing section on the landing page.
+// Plan types with their corresponding prices and Paystack plan codes
 export const SUBSCRIPTION_PLANS = {
   Basic: {
     price: 0, // Free

@@ -32,7 +32,7 @@ const AlternativeCTASection = () => {
                 </li>
                 <li className="flex items-center">
                   <div className="h-4 w-4 rounded-full bg-green-500 mr-2"></div>
-                  <span>Export to PDF</span>
+                  <span>Export to Markdown</span>
                 </li>
               </ul>
             </div>

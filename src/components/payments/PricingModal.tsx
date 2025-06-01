@@ -21,8 +21,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
   const { user, updateCredits } = useAuth();
   const [processing, setProcessing] = useState<string | null>(null);
   const [showVerifyingModal, setShowVerifyingModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
   const [region, setRegion] = useState<Region>('INTL');
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -104,6 +103,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
             }
           },
           onClose: () => {
+            console.log('Payment window closed');
             setProcessing(null);
           }
         });
