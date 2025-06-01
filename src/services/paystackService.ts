@@ -115,7 +115,6 @@ export const convertToSmallestUnit = (
   return Math.round(amount * multiplier);
 };
 
-// Plan types with their corresponding prices and Paystack plan codes
 export const SUBSCRIPTION_PLANS = {
   Basic: {
     price: 0, // Free

@@ -28,9 +28,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
   const dragRef = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
   
-  // Movement dampening factor (lower = less sensitive)
   const SENSITIVITY = 0.9;
-  // Minimum movement threshold in pixels to trigger an update
   const MOVEMENT_THRESHOLD = 0.5;
 
   const navItems = [
@@ -39,34 +37,27 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
     { id: 'history', icon: History, label: 'History', disabled: disabled.history },
   ];
 
-  // Check if zen mode should be disabled (when not viewing a summary)
   const isZenModeDisabled = activeTab !== 'current' || disabled.current;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (dragRef.current && navRef.current) {
-        // Calculate movement delta since last position
         const deltaX = e.clientX - lastMousePos.current.x;
         const deltaY = e.clientY - lastMousePos.current.y;
         
-        // Update last mouse position
         lastMousePos.current = { x: e.clientX, y: e.clientY };
         
-        // Check if movement exceeds threshold
         if (Math.abs(deltaX) < MOVEMENT_THRESHOLD && Math.abs(deltaY) < MOVEMENT_THRESHOLD) {
           return; // Skip small movements
         }
         
-        // Apply sensitivity factor to make movement less responsive
         const dampedDeltaX = deltaX * SENSITIVITY;
         const dampedDeltaY = deltaY * SENSITIVITY;
         
-        // Update position based on dampened movement
-        const newX = position.x + dampedDeltaX / 16; // Convert pixels to rem (assuming 1rem = 16px)
+        const newX = position.x + dampedDeltaX / 16; 
         const newY = position.y + dampedDeltaY / 16;
         
-        // Ensure nav stays within viewport
-        const maxX = (window.innerWidth - (expanded ? 192 : 48)) / 16; // Width in rem
+        const maxX = (window.innerWidth - (expanded ? 192 : 48)) / 16; 
         const maxY = (window.innerHeight - 200) / 16; // Approximate height in rem
         
         setPosition({
@@ -82,22 +73,17 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
         setIsDragging(true);
         
         const touch = e.touches[0];
-        // Calculate movement delta since last position
         const deltaX = touch.clientX - lastMousePos.current.x;
         const deltaY = touch.clientY - lastMousePos.current.y;
         
-        // Update last touch position
         lastMousePos.current = { x: touch.clientX, y: touch.clientY };
         
-        // Apply sensitivity factor to make movement less responsive
         const dampedDeltaX = deltaX * SENSITIVITY;
         const dampedDeltaY = deltaY * SENSITIVITY;
         
-        // Update position based on dampened movement
         const newX = position.x + dampedDeltaX / 16;
         const newY = position.y + dampedDeltaY / 16;
         
-        // Ensure nav stays within viewport
         const maxX = (window.innerWidth - (expanded ? 192 : 48)) / 16;
         const maxY = (window.innerHeight - 200) / 16;
         
@@ -119,7 +105,6 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
       dragRef.current = false;
       setIsDragging(false);
       document.body.style.userSelect = '';
-      // Add a small delay before allowing clicks again
       setTimeout(() => {
         setIsDragging(false);
       }, 100);
@@ -144,11 +129,9 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
       setIsDragging(true);
       
       if ('touches' in e) {
-        // Touch event
         const touch = e.touches[0];
         lastMousePos.current = { x: touch.clientX, y: touch.clientY };
       } else {
-        // Mouse event
         lastMousePos.current = { x: e.clientX, y: e.clientY };
       }
       

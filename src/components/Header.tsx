@@ -70,40 +70,39 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-4 md:px-6 transition-all duration-300 ${headerBg}`}>
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to={basePath} className="flex items-center gap-2">
-          <Cookie className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
-          <span className={`font-pacifico text-xl font-semibold ${textColor}`}>
-            Digestly
-          </span>
-        </Link>
+    <div className="container mx-auto flex justify-between items-center">
+      <Link to={basePath} className="flex items-center gap-2">
+        <Cookie className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
+        <span className={`font-pacifico text-xl font-semibold ${textColor}`}>
+          Digestly
+        </span>
+      </Link>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-4">
-          <ThemeToggle variant="ghost" />
-          
-          {loading ? (
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-6 w-20" />
-              <Skeleton className="h-8 w-8 rounded-full" />
-            </div>
-          ) : isLoggedIn ? (
-            <div className="flex items-center gap-3">
-              <CreditsDisplay />
-              <UserAvatar user={user} onLogout={handleLogout} />
-            </div>
-          ) : hideUserInfo ? (
-            <div className="flex gap-2">
-              <Link to="/login" onClick={handleLoginClick}>
-                <Button 
-                  variant={transparent && !scrolled ? "outline" : "ghost"} 
-                  className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
-                >
-                  Log in
-                </Button>
-              </Link>
-              <Link to={user ? "/digest" : "/register"}>
-                <Button>{user ? "Go to Digest" : "Sign up"}</Button>
+      <div className="hidden md:flex items-center gap-4">
+        <ThemeToggle variant="ghost" />
+        
+        {loading ? (
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+        ) : isLoggedIn ? (
+          <div className="flex items-center gap-3">
+            <CreditsDisplay />
+            <UserAvatar user={user} onLogout={handleLogout} />
+          </div>
+        ) : hideUserInfo ? (
+          <div className="flex gap-2">
+            <Link to="/login" onClick={handleLoginClick}>
+              <Button 
+                variant={transparent && !scrolled ? "outline" : "ghost"} 
+                className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
+              >
+                Log in
+              </Button>
+            </Link>
+            <Link to={user ? "/digest" : "/register"}>
+              <Button>{user ? "Go to Digest" : "Sign up"}</Button>
               </Link>
             </div>
           ) : (
