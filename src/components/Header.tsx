@@ -72,7 +72,7 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
     <header className={`fixed top-0 left-0 right-0 z-50 py-4 px-4 md:px-6 transition-all duration-300 ${headerBg}`}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to={basePath} className="flex items-center gap-2">
-          <Cookie className={`h-6 w-6 ${scrolled ? 'text-youtube' : transparent ? 'text-white' : 'text-youtube'}`} />
+          <Cookie className={`h-6 w-6 ${scrolled ? 'text-red-600/90' : transparent ? 'text-white' : 'text-red-600/90'}`} />
           <span className={`font-pacifico text-xl font-semibold ${textColor}`}>
             Digestly
           </span>
@@ -97,13 +97,13 @@ const Header = ({ transparent = false, hideUserInfo = false }: HeaderProps) => {
               <Link to="/login" onClick={handleLoginClick}>
                 <Button 
                   variant={transparent && !scrolled ? "outline" : "ghost"} 
-                  className={transparent && !scrolled ? "text-secondary-forground border-white hover:bg-white/20" : ""}
+                  className={transparent && !scrolled ? "text-secondary-forground border-white/80 hover:bg-white/10" : ""}
                 >
                   Log in
                 </Button>
               </Link>
               <Link to={user ? "/digest" : "/register"}>
-                <Button>{user ? "Go to Digest" : "Sign up"}</Button>
+                <Button className="bg-red-600/90 hover:bg-red-600">{user ? "Go to Digest" : "Sign up"}</Button>
               </Link>
             </div>
           ) : (
