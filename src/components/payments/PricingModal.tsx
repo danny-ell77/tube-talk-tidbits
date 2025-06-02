@@ -44,7 +44,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
 
       if (error) {
         console.error('Error fetching pricing plans:', error);
-        toast.error('Failed to load pricing plans');
+        // toast.error('Failed to load pricing plans');
         return;
       }
       if (data) {

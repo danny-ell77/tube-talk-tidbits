@@ -1,12 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { DigestResult } from '@/services/youtubeDigestService';
 import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
-import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
-import { formatType, formatContent, applyStyles } from '@/utils/formatUtils';
+import { DigestResult, extractVideoId } from '@/services/youtubeDigestService';
+import { applyStyles, formatContent, formatType } from '@/utils/formatUtils';
+import { Copy } from 'lucide-react';
 import { marked } from 'marked';
-import { extractVideoId } from '@/utils/youtubeUtils';
+import React from 'react';
+import { toast } from 'sonner';
 
 interface ArticleModeProps {
   result: DigestResult;

@@ -167,7 +167,7 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
         {isValidUrl && videoId && <div className={'w-full space-y-3'}>
           <div className="text-center">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Select your digestion style
+              How do you want to digest this video?
             </label>
           </div>
           <div className="relative">

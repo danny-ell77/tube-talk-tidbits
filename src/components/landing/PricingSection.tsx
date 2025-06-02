@@ -74,7 +74,7 @@ const PricingSection = () => {
             <span>Buy more anytime after free limits</span>
           </div>
           <div className="bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-full text-sm text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800">
-            <span className="font-medium">🔄 No subscriptions</span>
+            <span className="font-medium">No subscriptions</span>
             <span className="mx-2">•</span>
             <span>Pay only for what you use!</span>
           </div>
@@ -83,7 +83,6 @@ const PricingSection = () => {
         {/* Additional clarity text */}
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-16 max-w-2xl mx-auto">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-amber-600 dark:text-amber-400 text-lg">💰</span>
             <h3 className="font-semibold text-amber-800 dark:text-amber-200">Flexible Pay-Per-Use Model</h3>
           </div>
           <p className="text-amber-700 dark:text-amber-300 text-sm">

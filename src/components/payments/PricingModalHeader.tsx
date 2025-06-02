@@ -12,8 +12,8 @@ interface PricingModalHeaderProps {
 }
 
 const PricingModalHeader: React.FC<PricingModalHeaderProps> = ({
-  title = "Upgrade Your Account",
-  description = "You're out of credits! Choose a plan to continue generating digests."
+  title = "Buy more credits!",
+  description = "Choose a plan to continue generating digests."
 }) => {
   return (
     <DialogHeader className="px-2 sm:px-6">
