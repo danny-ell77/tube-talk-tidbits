@@ -43,7 +43,8 @@ const HeroSection = () => {
           </Link>
         </div>
         
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 m-8 max-w-2xl mx-auto relative" id="free-summaries-section">
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 m-8 max-w-2xl mx-auto relative border-4 border-dashed border-yellow-600 spinning-border" 
+             id="free-summaries-section">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
             Get 2 Free Summaries Now!
           </h2>
@@ -51,7 +52,7 @@ const HeroSection = () => {
             Sign up to unlock 5 free summaries and more features
           </p>
           
-          <div className="absolute -top-6 right-10 hidden lg:block -rotate-45">
+          <div className="absolute -top-6 right-10 hidden lg:block" style={{ transform: 'rotate(-65deg)' }}>
             <img 
               src="/images/arrow.png" 
               alt="Arrow pointing to Try Demo" 
@@ -69,6 +70,20 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .spinning-border {
+          animation: spin-border 2s linear infinite;
+        }
+        
+        @keyframes spin-border {
+          0% { border-image: repeating-linear-gradient(0deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          25% { border-image: repeating-linear-gradient(90deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          50% { border-image: repeating-linear-gradient(180deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          75% { border-image: repeating-linear-gradient(270deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          100% { border-image: repeating-linear-gradient(360deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+        }
+      `}</style>
     </section>
   );
 };

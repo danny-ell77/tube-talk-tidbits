@@ -2,12 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Copy } from "lucide-react";
+import { FileText, Copy, Clock, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import ExportButton from './ExportButton';
 import ExportPDF from './ExportPDF';
-import { formatType, formatContent, applyStyles } from '@/utils/formatUtils';
+import { formatType, formatContent, applyStyles, contentHasTimestamps } from '@/utils/formatUtils';
 import { marked } from "marked";
+import { extractVideoId } from '@/utils/youtubeUtils';
 
 interface SummaryCardProps {
   title: string;
@@ -53,6 +54,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
   const formattedContent = formatContent(content, type, outputFormat);
   const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
+  const hasTimestamps = contentHasTimestamps(content);
+  const videoId = extractVideoId(videoUrl);
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
@@ -62,6 +65,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <CardTitle className="text-lg sm:text-xl text-white line-clamp-2 font-semibold">{displayTitle}</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm opacity-80">{formatType(type)}</span>
+              {hasTimestamps && (
+                <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Timestamps Available
+                </span>
+              )}
               {creator && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
@@ -88,6 +97,18 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           </div>
         )}
         
+        {hasTimestamps && (
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900 rounded-md border border-red-200 dark:border-red-700">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <p className="text-xs text-red-600 dark:text-red-400 font-medium">Interactive Timestamps</p>
+            </div>
+            <p className="text-xs text-red-700 dark:text-red-300">
+              Click on timestamp links (⏰ 1m23s 🔗) to jump to specific moments in the YouTube video.
+            </p>
+          </div>
+        )}
+        
         <div 
           ref={contentRef}
           className="max-h-[500px] overflow-y-auto prose-sm sm:prose dark:prose-invert max-w-none"
@@ -96,11 +117,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             {formattedContent.markdown ? (
               <div>
                 {(
-                  <div dangerouslySetInnerHTML={{ __html: applyStyles(marked.parse(String(formattedContent.markdown)) as string) }} />
+                  <div dangerouslySetInnerHTML={{ __html: applyStyles(videoId, marked.parse(String(formattedContent.markdown)) as string) }} />
                 )}
               </div>
             ) : formattedContent.__html ? (
-              <div dangerouslySetInnerHTML={{ __html: applyStyles(formattedContent.__html) }} />
+              <div dangerouslySetInnerHTML={{ __html: applyStyles(videoId, formattedContent.__html) }} />
             ) : (
               <p className="text-sm sm:text-base">{content}</p>
             )}

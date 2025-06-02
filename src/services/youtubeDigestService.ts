@@ -25,7 +25,7 @@ const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL 
 
 const BASE_URL_STAGING = RAILWAY_BASE_URL_STAGING; // Use the staging URL for production
 
-export const BASE_URL = BASE_URL_STAGING;
+export const BASE_URL = BASE_URL_LOCAL;
 
 import { toast } from "sonner";
 
@@ -51,7 +51,7 @@ const parseISODuration = (isoDuration: string): string => {
   return value.slice(0, -1);
 };
 
-const extractVideoId = (url: string): string => {
+export const extractVideoId = (url: string): string => {
   const youtubeStandardVideoPatterns = [
     /(?:v=|\/)([0-9A-Za-z_-]{11}).*/,
     /(?:embed\/)([0-9A-Za-z_-]{11})/,
@@ -73,7 +73,7 @@ const extractVideoId = (url: string): string => {
 const isStreamingEnabled = (durationInSeconds: number) => {
   return (
     import.meta.env.VITE_APP_ENABLE_STREAMING === "true" &&
-    durationInSeconds <= 2400
+    durationInSeconds >= 2400
   );
 };
 
