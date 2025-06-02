@@ -46,7 +46,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   const formattedContent = formatContent(content, type, outputFormat);
   const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
   const hasTimestamps = contentHasTimestamps(content);
-  const videoId = extractVideoId(videoUrl);
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-lg">
