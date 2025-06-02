@@ -26,7 +26,7 @@ const HeroSection = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to={user ? "/digest" : "/register"}>
-            <Button className="bg-white text-red-600 hover:bg-gray-100 font-semibold text-lg px-8 py-6">
+          <Button className="bg-white text-red-600 hover:bg-gray-100 font-semibold text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-1 hover:scale-105 active:translate-y-1 active:shadow-md" onClick={handleLoginClick}>
               {user ? "Go to Digest" : "Get Started for Free"}
             </Button>
           </Link>
@@ -34,7 +34,11 @@ const HeroSection = () => {
             e.preventDefault();
             document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
           }}>
-            <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-semibold text-lg px-8 py-6">
+            <Button 
+              id="try-demo-btn"
+              variant="outline" 
+              className="relative bg-transparent border-2 border-white text-white font-semibold text-lg px-8 py-6 shadow-[0_6px_0_0_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(255,255,255,0.3)] hover:-translate-y-1 transition-all duration-200 hover:scale-105 active:translate-y-1 active:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]"
+            >
               Try Demo
             </Button>
           </Link>
