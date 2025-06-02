@@ -228,14 +228,3 @@
 :root.dark {
   --curve-color: rgb(17, 24, 39); /* dark mode default */
 }
-
-button, a, input, [role="button"] {
-  transition: all 0.2s ease-in-out;
-}
-
-* {
-  transition: 
-    background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out,
-    opacity 0.2s ease-in-out;
-}

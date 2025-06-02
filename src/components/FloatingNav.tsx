@@ -28,7 +28,9 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
   const dragRef = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
   
+  // Movement dampening factor (lower = less sensitive)
   const SENSITIVITY = 0.9;
+  // Minimum movement threshold in pixels to trigger an update
   const MOVEMENT_THRESHOLD = 0.5;
 
   const navItems = [
@@ -37,27 +39,33 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
     { id: 'history', icon: History, label: 'History', disabled: disabled.history },
   ];
 
+  // Check if zen mode should be disabled (when not viewing a summary)
   const isZenModeDisabled = activeTab !== 'current' || disabled.current;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (dragRef.current && navRef.current) {
+        // Calculate movement delta since last position
         const deltaX = e.clientX - lastMousePos.current.x;
         const deltaY = e.clientY - lastMousePos.current.y;
         
+        // Update last mouse position
         lastMousePos.current = { x: e.clientX, y: e.clientY };
         
+        // Check if movement exceeds threshold
         if (Math.abs(deltaX) < MOVEMENT_THRESHOLD && Math.abs(deltaY) < MOVEMENT_THRESHOLD) {
           return; // Skip small movements
         }
         
+        // Apply sensitivity factor to make movement less responsive
         const dampedDeltaX = deltaX * SENSITIVITY;
         const dampedDeltaY = deltaY * SENSITIVITY;
         
+        // Update position based on dampened movement
         const newX = position.x + dampedDeltaX / 16; // Convert pixels to rem (assuming 1rem = 16px)
         const newY = position.y + dampedDeltaY / 16;
         
-        
+        // Ensure nav stays within viewport
         const maxX = (window.innerWidth - (expanded ? 192 : 48)) / 16; // Width in rem
         const maxY = (window.innerHeight - 200) / 16; // Approximate height in rem
         
@@ -74,17 +82,22 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
         setIsDragging(true);
         
         const touch = e.touches[0];
+        // Calculate movement delta since last position
         const deltaX = touch.clientX - lastMousePos.current.x;
         const deltaY = touch.clientY - lastMousePos.current.y;
         
+        // Update last touch position
         lastMousePos.current = { x: touch.clientX, y: touch.clientY };
         
+        // Apply sensitivity factor to make movement less responsive
         const dampedDeltaX = deltaX * SENSITIVITY;
         const dampedDeltaY = deltaY * SENSITIVITY;
         
+        // Update position based on dampened movement
         const newX = position.x + dampedDeltaX / 16;
         const newY = position.y + dampedDeltaY / 16;
         
+        // Ensure nav stays within viewport
         const maxX = (window.innerWidth - (expanded ? 192 : 48)) / 16;
         const maxY = (window.innerHeight - 200) / 16;
         
@@ -131,15 +144,17 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
       setIsDragging(true);
       
       if ('touches' in e) {
+        // Touch event
         const touch = e.touches[0];
         lastMousePos.current = { x: touch.clientX, y: touch.clientY };
       } else {
+        // Mouse event
         lastMousePos.current = { x: e.clientX, y: e.clientY };
       }
       
       document.body.style.cursor = 'grabbing';
       document.body.style.userSelect = 'none';
-      e.preventDefault(); 
+      e.preventDefault(); // Prevent text selection during drag
     }
   };
 
@@ -157,7 +172,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
       onMouseEnter={() => !isDragging && setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
-      <div className="py-3 sm:py-2">
+      <div className="py-3 sm:py-2"> {/* Added more padding on mobile */}
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -180,6 +195,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
           </button>
         ))}
         
+        {/* Focus Mode Button */}
         <button
           onClick={() => !isDragging && !isZenModeDisabled && onZenModeToggle()}
           disabled={isZenModeDisabled || isDragging}
@@ -200,6 +216,7 @@ const FloatingNav: React.FC<FloatingNavProps> = ({
         </button>
       </div>
 
+      {/* Larger semi-circular drag handle for better touch targets */}
       <div 
         className={cn(
           "absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-12 h-7 bg-gray-200 dark:bg-gray-700 rounded-b-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-opacity duration-200",

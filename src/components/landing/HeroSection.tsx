@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ const HeroSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const handleLoginClick = (e) => {
+  const handleLoginClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (user?.id) {
       e.preventDefault();
       navigate('/digest');
@@ -17,56 +18,70 @@ const HeroSection = () => {
   return (
     <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-red-600 to-red-700 dark:text-white text-red-900 hero-curve">
       <div className="max-w-6xl mx-auto text-center pt-16 pb-12">
-        <h1 className="text-5xl md:text-6xl mb-6 text-white dark:text-white text-white font-bold ignore-theme">
-          Digest Any YouTube Video Instantly!
+        <h1 className="text-5xl md:text-6xl mb-6 text-white dark:text-white font-bold ignore-theme">
+          Transform YouTube Videos into Digestible Summaries
         </h1>
-        <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white text-red-50 dark:text-white/90 font-medium font-pacifico">
-          Learn 10x more in the same amount of time. Perfect for research, staying current, or exploring new topics efficiently.
+        <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white font-medium font-pacifico">
+          Extract key insights, comprehensive notes, and concise summaries from any YouTube video in seconds.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center relative" id="hero-buttons">
-          <Link to={user ? "/digest" : "/register"}>
-            <Button className="bg-white text-red-600 hover:bg-gray-100 font-semibold text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-1 hover:scale-105 active:translate-y-1 active:shadow-md" onClick={handleLoginClick}>
-              {user ? "Go to Digest" : "Get Started for Free"}
-            </Button>
-          </Link>
-          <Link to="/" onClick={(e) => {
-            e.preventDefault();
-            document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
-          }}>
-            <Button 
-              id="try-demo-btn"
-              variant="outline" 
-              className="relative bg-transparent border-2 border-white text-white font-semibold text-lg px-8 py-6 shadow-[0_6px_0_0_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(255,255,255,0.3)] hover:-translate-y-1 transition-all duration-200 hover:scale-105 active:translate-y-1 active:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]"
-            >
-              Try Demo
-            </Button>
-          </Link>
-        </div>
         
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 m-8 max-w-2xl mx-auto relative border-4 border-dashed border-yellow-600 spinning-border" 
-             id="free-summaries-section">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            Get 2 Free Summaries Now!
-          </h2>
-          <p className="text-lg text-white/90">
-            Sign up to unlock 5 free summaries and more features
-          </p>
-          
-          <div className="absolute -top-6 right-10 hidden lg:block" style={{ transform: 'rotate(-65deg)' }}>
-            <img 
-              src="/images/arrow.png" 
-              alt="Arrow pointing to Try Demo" 
-              className="w-24 h-20 opacity-90 animate-bounce" 
-              style={{ 
-                animationDuration: '2s', 
-                animationIterationCount: 'infinite',
-                filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.3))'
-              }}
-            />
+        {/* Buttons with curly arrow connector */}
+        <div className="relative flex flex-col sm:flex-row gap-8 justify-center items-center">
+          <div className="relative">
+            <Link to={user ? "/digest" : "/register"}>
+              <Button className="bg-white text-red-600 hover:bg-gray-100 font-semibold text-lg px-8 py-6 transition-all duration-200 hover:scale-105 hover:-translate-y-1 shadow-[0_8px_0_0_#dc2626] hover:shadow-[0_12px_0_0_#dc2626] active:translate-y-1 active:shadow-[0_4px_0_0_#dc2626]">
+                {user ? "Go to Digest" : "Get 2 Free Summaries Now!"}
+              </Button>
+            </Link>
           </div>
           
-          <div className="absolute -top-8 right-4 lg:hidden">
-            <div className="text-yellow-400 text-2xl animate-pulse">↗</div>
+          {/* Curly Arrow SVG */}
+          <div className="hidden sm:block relative">
+            <svg 
+              width="120" 
+              height="80" 
+              viewBox="0 0 120 80" 
+              className="text-yellow-400 animate-pulse"
+              style={{ filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.3))' }}
+            >
+              <path
+                d="M10 40 Q30 10, 60 25 T110 40"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+                strokeDasharray="5,3"
+                className="animate-[draw_2s_ease-in-out_infinite]"
+              />
+              {/* Arrow head */}
+              <path
+                d="M105 35 L110 40 L105 45 L110 40"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* Decorative curl at start */}
+              <circle
+                cx="10"
+                cy="40"
+                r="3"
+                fill="currentColor"
+                className="animate-pulse"
+              />
+            </svg>
+          </div>
+          
+          <div className="relative">
+            <Link to="/" onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
+            }}>
+              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-semibold text-lg px-8 py-6 transition-all duration-200 hover:scale-105 hover:-translate-y-1 shadow-[0_8px_0_0_rgba(255,255,255,0.2)] hover:shadow-[0_12px_0_0_rgba(255,255,255,0.3)] active:translate-y-1 active:shadow-[0_4px_0_0_rgba(255,255,255,0.2)]">
+                Try Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
