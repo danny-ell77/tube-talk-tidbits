@@ -18,11 +18,11 @@ const HeroSection = () => {
   return (
     <section className="relative pt-20 pb-32 px-4 bg-gradient-to-br from-red-600 to-red-700 dark:text-white text-red-900 hero-curve">
       <div className="max-w-6xl mx-auto text-center pt-16 pb-12">
-        <h1 className="text-5xl md:text-6xl mb-6 text-white dark:text-white text-white font-bold ignore-theme">
-          Transform YouTube Videos into Digestible Summaries
+      <h1 className="text-5xl md:text-6xl mb-6 text-white dark:text-white text-white font-bold ignore-theme">
+          Digest Any YouTube Video Instantly!
         </h1>
         <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white text-red-50 dark:text-white/90 font-medium font-pacifico">
-          Extract key insights, comprehensive notes, and concise summaries from any YouTube video in seconds.
+          Learn 10x more in the same amount of time. Perfect for research, staying current, or exploring new topics efficiently.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to={user ? "/digest" : "/register"}>
