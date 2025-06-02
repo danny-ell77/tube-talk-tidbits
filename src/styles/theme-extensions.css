@@ -17,6 +17,7 @@ body {
   letter-spacing: 0.01em;
 }
 
+
 /* Pulsing animation for cookie icon in buttons */
 @keyframes cookie-pulse {
   0% {
@@ -40,20 +41,4 @@ body {
 
 button:disabled .cookie-btn-icon {
   animation-duration: 0.8s;
-}
-
-/* Curly arrow animation */
-@keyframes draw {
-  0% {
-    stroke-dashoffset: 100;
-    opacity: 0.6;
-  }
-  50% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  100% {
-    stroke-dashoffset: -100;
-    opacity: 0.6;
-  }
 }
