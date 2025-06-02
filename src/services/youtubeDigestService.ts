@@ -25,7 +25,9 @@ const BASE_URL_PROXY = "https://18c1-102-89-83-49.ngrok-free.app"; // Proxy URL 
 
 const BASE_URL_STAGING = RAILWAY_BASE_URL_STAGING; // Use the staging URL for production
 
-export const BASE_URL = BASE_URL_LOCAL;
+export const BASE_URL = import.meta.env.PROD
+  ? BASE_URL_STAGING
+  : BASE_URL_LOCAL;
 
 import { toast } from "sonner";
 
