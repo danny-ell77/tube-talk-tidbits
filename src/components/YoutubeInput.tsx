@@ -1,25 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { DigestResult, getVideoData } from '@/services/youtubeDigestService';
-import { extractVideoId } from '@/utils/youtubeUtils';
-import { Cookie, Clipboard } from "lucide-react";
-import React, { useEffect, useState } from 'react';
-import YouTubePreviewCard from './YouTubePreviewCard';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/AuthContext';
-import SignupModal from './auth/SignupModal';
-import PricingModal from './payments/PricingModal';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { DigestResult, getVideoData } from '@/services/youtubeDigestService';
 import { ErrorCodes } from "@/types/errorCodes";
+import { extractVideoId } from '@/utils/youtubeUtils';
+import { Clipboard, Cookie } from "lucide-react";
+import React, { useEffect, useState } from 'react';
 import PersonalizedGreeting from './PersonalizedGreeting';
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import YouTubePreviewCard from './YouTubePreviewCard';
 interface YoutubeInputProps {
   onSubmit: (url: string, type: string, customPrompt?: string, model?: string, outputFormat?: "html" | "markdown") => Promise<[DigestResult | null, Error | null]>;
   isLoading: boolean;
@@ -34,9 +26,18 @@ enum SummaryType {
   CUSTOM = "custom",
 }
 
+const SUMMARY_OPTIONS = [
+  { value: SummaryType.TLDR, label: "TLDR" },
+  { value: SummaryType.KEY_INSIGHTS, label: "Key Points" },
+  { value: SummaryType.COMPREHENSIVE, label: "Comprehensive" },
+  { value: SummaryType.ARTICLE, label: "In-Depth Analysis" },
+  { value: SummaryType.CUSTOM, label: "Custom Prompt" },
+];
+
 const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPremium = false }) => {
   const [url, setUrl] = useState('');
   const [summaryType, setSummaryType] = useState<SummaryType>(SummaryType.TLDR);
+  const [summaryTypeIndex, setSummaryTypeIndex] = useState(0);
   const [customPrompt, setCustomPrompt] = useState('');
   const [videoInfo, setVideoInfo] = useState(null);
   const [model, setModel] = useState('standard');
@@ -124,9 +125,22 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
     }
   };
 
+  const handleSummaryTypeChange = (value: number[]) => {
+    const index = value[0];
+    setSummaryTypeIndex(index);
+    const selectedType = SUMMARY_OPTIONS[index].value;
+    setSummaryType(selectedType);
+    setShowCustomPrompt(selectedType === SummaryType.CUSTOM);
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto">
       {user && <PersonalizedGreeting />}
+      {!user && (
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          Get 2 free summaries!
+        </p>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center space-x-2'}`}>
           <div className="flex-1 relative">
@@ -149,26 +163,65 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
             </button>
           </div>
           
-          <Select
-            value={summaryType}
-            onValueChange={(value: SummaryType) => {
-              setSummaryType(value);
-              setShowCustomPrompt(value === SummaryType.CUSTOM);
-            }}
-            disabled={isLoading}
-          >
-            <SelectTrigger className={isMobile ? "w-full" : "w-[180px]"}>
-              <SelectValue placeholder="Summary Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="tldr">TLDR</SelectItem>
-              <SelectItem value="key_insights">Key Insights</SelectItem>
-              <SelectItem value="comprehensive">Comprehensive</SelectItem>
-              <SelectItem value="article">Article Format</SelectItem>
-              <SelectItem value="custom">Custom Prompt</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
+        {isValidUrl && videoId && <div className={'w-full space-y-3'}>
+          <div className="text-center">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Select your digestion style
+            </label>
+          </div>
+          <div className="relative">
+            <Slider
+              value={[summaryTypeIndex]}
+              onValueChange={handleSummaryTypeChange}
+              max={SUMMARY_OPTIONS.length - 1}
+              min={0}
+              step={1}
+              disabled={isLoading}
+              className="w-full"
+            />
+            {/* Visual tick marks */}
+            <div className="absolute top-0 w-full h-full flex items-center pointer-events-none">
+              {SUMMARY_OPTIONS.map((_, index) => {
+                const percentage = (index / (SUMMARY_OPTIONS.length - 1)) * 100;
+                return (
+                  <div
+                    key={index}
+                    className={`absolute w-2 h-2 rounded-full border-2 ${
+                      index === summaryTypeIndex 
+                        ? 'opacity-0 pointer-events-none' 
+                        : 'bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-500'
+                    }`}
+                    style={{
+                      left: `${percentage}%`,
+                      transform: 'translateX(-50%)'
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+          <div className="relative h-6 mt-2">
+            {SUMMARY_OPTIONS.map((option, index) => {
+              const percentage = (index / (SUMMARY_OPTIONS.length - 1)) * 100;
+              return (
+                <div 
+                  key={option.value}
+                  className="absolute text-center leading-tight whitespace-pre-line text-xs"
+                  style={{ 
+                    left: `${percentage}%`,
+                    transform: 'translateX(-50%)',
+                    top: 0
+                  }}
+                >
+                  <span className={`${index === summaryTypeIndex ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                    {option.label.replace(' ', '\n')}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>}
         {isValidUrl && videoId && (
           <YouTubePreviewCard videoId={videoId} videoInfo={videoInfo} />
         )}
@@ -214,38 +267,24 @@ const YoutubeInput: React.FC<YoutubeInputProps> = ({ onSubmit, isLoading, isPrem
         </Button>
       </form>
 
-      {!isLoading && <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+      {!isLoading && !videoId && <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
         <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Tips for Better Results:</h3>
         <ul className="text-sm space-y-2 text-blue-700 dark:text-blue-300">
           <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
             <span className="block w-1 h-1 rounded-full bg-blue-400" />
-            Select videos that have been on YouTube for at least a few hours.
+            For best results, try videos that have been on YouTube for a few hours or more.
           </li>
           <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
             <span className="block w-1 h-1 rounded-full bg-blue-400" />
-            Prefer videos with clear audio quality for better accuracy.
+            Videos with clear audio quality help our AI capture every detail accurately.
           </li>
           <li className="flex items-center gap-2" style={{ fontSize: '0.875rem' }}>
             <span className="block w-1 h-1 rounded-full bg-blue-400" />
-            Educational content and tutorials typically yield the most meaningful summaries.
+            Educational content and tutorials work great for generating detailed summaries and insights.
           </li>
         </ul>
       </div>}
-
-      <SignupModal 
-        isOpen={showSignupModal} 
-        onClose={() => setShowSignupModal(false)} 
-        onSignupSuccess={() => {
-          setShowSignupModal(false);
-        }}
-      />
-
-      <PricingModal 
-        isOpen={showPricingModal} 
-        onClose={() => setShowPricingModal(false)} 
-      />
     </div>
   );
-};
-
+}
 export default YoutubeInput;

@@ -1,4 +1,5 @@
-import { hasTimestampLinks } from "./youtubeUtils";
+// We don't need to import ReactMarkdown here
+// import ReactMarkdown from 'react-markdown';
 
 /**
  * Format the summary type into a display-friendly string
@@ -76,22 +77,7 @@ export const isContentEmpty = (content: string): boolean => {
   return !content || content.trim() === "";
 };
 
-export const applyStyles = (videoId: string | null, html: string): string => {
-  console.log("Applying styles to HTML content...", html);
-
-  if (!videoId) {
-    console.error("No video ID provided for styling timestamps.");
-  } else {
-    html = html.replace(
-      /\[\[(\d+(?:\.\d+)?)\]\]/gi,
-      `<button onclick="window.open('https://youtu.be/${videoId}?t=$1s', '_blank')" ` +
-        `class="inline-flex items-center gap-1 px-2 py-1 mx-1 bg-red-50 hover:bg-red-100 ` +
-        `text-red-700 hover:text-red-800 rounded-md text-sm font-medium transition-all ` +
-        `duration-200 border border-red-200 hover:border-red-300 cursor-pointer hover:shadow-sm" ` +
-        `title="Jump to $1s in video"><span class="text-red-500">🔗</span></button>`
-    );
-  }
-
+export const applyStyles = (html: string): string => {
   return html
     .replace(/<h1>/g, '<h1 class="text-2xl font-bold mb-4">')
     .replace(/<h2>/g, '<h2 class="text-xl font-semibold mb-3">')
@@ -115,11 +101,4 @@ export const applyStyles = (videoId: string | null, html: string): string => {
       /<td>/g,
       '<td class="border border-gray-300 dark:border-gray-700 px-4 py-2">'
     );
-};
-
-/**
- * Check if content contains timestamp links
- */
-export const contentHasTimestamps = (content: string): boolean => {
-  return hasTimestampLinks(content);
 };

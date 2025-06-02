@@ -1,12 +1,11 @@
 export interface PricingPlan {
   id: string;
   planName: string;
-  amount: number;
+  planPrice: number;
   credits: number;
   currency: string;
   region: string;
   features: string[];
-  isPopular: boolean;
   subunitMultiplier: number | null;
 }
 

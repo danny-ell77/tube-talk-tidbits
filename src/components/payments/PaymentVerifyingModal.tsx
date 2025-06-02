@@ -31,6 +31,7 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const finalTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Cleanup function
   const cleanup = () => {
     if (subscriptionRef.current) {
       subscriptionRef.current.unsubscribe();
@@ -50,6 +51,7 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
     }
   };
 
+  // Function to check payment status via API
   const checkPaymentStatus = async () => {
     if (!user || !isMountedRef.current) return false;
     
@@ -66,8 +68,10 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
       }
 
       const currentCredits = data?.credits || 0;
-
-      if (currentCredits >= expectedCredits) {
+      const previousCredits = user?.credits || 0;
+      
+      // Check if credits increased by expected amount (or close to it)
+      if (currentCredits >= previousCredits + expectedCredits) {
         if (isMountedRef.current) {
           updateCredits(currentCredits);
           onClose(true);
@@ -81,11 +85,13 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
     return false;
   };
 
+  // Start polling fallback
   const startPolling = () => {
     if (!isMountedRef.current) return;
     
     setIsPolling(true);
     
+    // Poll every 5 seconds for 1 minute
     pollingIntervalRef.current = setInterval(async () => {
       const success = await checkPaymentStatus();
       if (success) {
@@ -93,6 +99,7 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
       }
     }, 5000);
 
+    // Final timeout after 1 more minute
     finalTimeoutRef.current = setTimeout(() => {
       if (isMountedRef.current) {
         setHasTimedOut(true);
@@ -109,16 +116,19 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
       return;
     }
 
+    // Reset states
     setHasTimedOut(false);
     setIsPolling(false);
 
+    // Set initial timeout for 2 minutes before falling back to polling
     timeoutRef.current = setTimeout(() => {
       if (isMountedRef.current) {
         console.log('Real-time verification timed out, starting polling...');
         startPolling();
       }
-    }, 2000);
+    }, 2 * 60 * 1000);
 
+    // Subscribe to profile changes
     subscriptionRef.current = supabase
       .channel(`profile-${user.id}`)
       .on('postgres_changes',
@@ -132,16 +142,20 @@ const PaymentVerifyingModal: React.FC<PaymentVerifyingModalProps> = ({
           console.log('Realtime payload:', payload);
           if (payload.eventType === 'UPDATE') {
             const newCredits = +(payload.new.credits || 0);
-            if (newCredits >= expectedCredits) {
+            const oldCredits = user?.credits || 0;
+            
+            // Verify the credit increase matches expectations
+            // if (newCredits >= oldCredits + expectedCredits) {
               updateCredits(newCredits);
               cleanup();
               onClose(true);
-            }
+            // }
           }
         }
       )
       .subscribe();
 
+    // Cleanup function
     return () => {
       isMountedRef.current = false;
       cleanup();
