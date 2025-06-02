@@ -66,6 +66,20 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .spinning-border {
+          animation: spin-border 2s linear infinite;
+        }
+        
+        @keyframes spin-border {
+          0% { border-image: repeating-linear-gradient(0deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          25% { border-image: repeating-linear-gradient(90deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          50% { border-image: repeating-linear-gradient(180deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          75% { border-image: repeating-linear-gradient(270deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+          100% { border-image: repeating-linear-gradient(360deg, #D97706 0, #D97706 10px, transparent 10px, transparent 20px) 4; }
+        }
+      `}</style>
     </section>
   );
 };
