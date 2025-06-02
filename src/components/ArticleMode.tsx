@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
 import { formatType, formatContent, applyStyles } from '@/utils/formatUtils';
 import { marked } from 'marked';
+import { extractVideoId } from '@/utils/youtubeUtils';
 
 interface ArticleModeProps {
   result: DigestResult;
@@ -21,14 +22,16 @@ const ArticleMode: React.FC<ArticleModeProps> = ({ result }) => {
 
   const formattedContent = formatContent(content, type, "markdown");
 
+  const videoId = extractVideoId(videoUrl);
+
   // Use provided title or extract from URL
-  const displayTitle = title || `Video: ${videoUrl.split('v=')[1]?.split('&')[0]}`;
+  const displayTitle = title || `Video: ${videoId}`;
 
   const renderContent = () => {
     if (outputFormat === "markdown" && formattedContent.markdown) {
       return (
         <div className="prose dark:prose-invert max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: applyStyles(marked.parse(formattedContent.markdown) as string) }} />
+          <div dangerouslySetInnerHTML={{ __html: applyStyles(videoId, marked.parse(formattedContent.markdown) as string) }} />
         </div>
       );
     } else if (formattedContent.__html) {

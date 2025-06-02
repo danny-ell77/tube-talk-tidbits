@@ -8,6 +8,7 @@ import ExportButton from './ExportButton';
 import ExportPDF from './ExportPDF';
 import { formatType, formatContent, applyStyles } from '@/utils/formatUtils';
 import { marked } from "marked";
+import { extractVideoId } from '@/utils/youtubeUtils';
 
 interface SummaryCardProps {
   title: string;
@@ -40,16 +41,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     toast.success("Summary copied to clipboard!");
   };
 
-  const getModelBadgeClass = () => {
-    switch (model) {
-      case 'premium':
-        return 'bg-amber-100 text-amber-800';
-      case 'advanced':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const videoId = extractVideoId(videoUrl);
 
   const formattedContent = formatContent(content, type, outputFormat);
   const displayTitle = title || videoUrl.split('v=')[1]?.split('&')[0] || 'YouTube Video';
@@ -96,11 +88,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             {formattedContent.markdown ? (
               <div>
                 {(
-                  <div dangerouslySetInnerHTML={{ __html: applyStyles(marked.parse(String(formattedContent.markdown)) as string) }} />
+                  <div dangerouslySetInnerHTML={{ __html: applyStyles(videoId, marked.parse(String(formattedContent.markdown)) as string) }} />
                 )}
               </div>
             ) : formattedContent.__html ? (
-              <div dangerouslySetInnerHTML={{ __html: applyStyles(formattedContent.__html) }} />
+              <div dangerouslySetInnerHTML={{ __html: applyStyles(videoId, formattedContent.__html) }} />
             ) : (
               <p className="text-sm sm:text-base">{content}</p>
             )}
