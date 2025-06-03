@@ -77,7 +77,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose }) => {
     
     setProcessing(plan.id);
       const multiplier = plan.subunitMultiplier || 100;
-      const amount = convertToSmallestUnit(plan.amount, plan.currency, multiplier);
+      const amount = convertToSmallestUnit(plan.amount, multiplier);
       
       try {
         onClose();

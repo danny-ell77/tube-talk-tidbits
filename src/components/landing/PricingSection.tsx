@@ -7,7 +7,6 @@ import {
   convertToSmallestUnit
 } from '@/services/paystackService';
 import SignupModal from '../auth/SignupModal';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
 import { detectRegion, Region } from '@/services/pricingService';
@@ -28,21 +27,18 @@ interface PricingPlan {
 }
 
 const PricingSection = () => {
-  const navigate = useNavigate();
-  const { user, updateCredits } = useAuth();
+  const { user } = useAuth();
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showVerifyingModal, setShowVerifyingModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
-  const [region, setRegion] = useState<Region>('INTL');
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currencySymbol, setCurrencySymbol] = useState('$');
 
   useEffect(() => {
     const detectedRegion = detectRegion();
-    setRegion(detectedRegion);
     setCurrencySymbol(detectedRegion === 'NG' ? '₦' : '$');
     fetchPricingPlans(detectedRegion);
   }, []);
@@ -91,7 +87,7 @@ const PricingSection = () => {
     
     setProcessingPlan(plan.id);
     const multiplier = plan.subunitMultiplier || 100;
-    const amount = convertToSmallestUnit(plan.amount, plan.currency, multiplier);
+    const amount = convertToSmallestUnit(plan.amount, multiplier);
     
     try {
       initializePayment({

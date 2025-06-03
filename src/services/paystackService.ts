@@ -109,7 +109,6 @@ export const initializePayment = (config: PaystackConfig) => {
 
 export const convertToSmallestUnit = (
   amount: number,
-  currency = "USD",
   multiplier = 100
 ) => {
   return Math.round(amount * multiplier);

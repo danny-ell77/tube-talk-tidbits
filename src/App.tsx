@@ -14,7 +14,6 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { HelmetProvider } from 'react-helmet-async';
 import ProfilePage from "./pages/Profile";
 
 const queryClient = new QueryClient();
@@ -46,7 +45,6 @@ const AppInitializer = ({ children }: { children: React.ReactNode }) => {
   // }, [user, loading, initialized, getOrCreateProfile]);
   
   useEffect(() => {
-    debugger;
     const initApp = async () => {
       if (initialized) return;
 
@@ -68,8 +66,7 @@ const AppInitializer = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <ThemeProvider defaultTheme="light">
               <TooltipProvider>
@@ -113,7 +110,6 @@ const App = () => {
             </ThemeProvider>
           </AuthProvider>
       </QueryClientProvider>
-    </HelmetProvider>
   );
 };
 
